@@ -3,11 +3,15 @@
     xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:t="http://www.tei-c.org/ns/1.0"
     xmlns:e="http://distantreading.net/eltec/ns" exclude-result-prefixes="xs t e" version="2.0">
     <xsl:output method="html"/>
+    
+    <xsl:param name="corpus">XXX</xsl:param>
+    <xsl:param name='catalog'>yes</xsl:param>
+    
     <xsl:template match="/">
         <html>
             <head>
                 <meta http-equiv="Content-Type" content="text/html"/>
-                <title>ELTeC test report</title>
+                <title>ELTeC reporter</title>
             </head>
             <body>
                 <xsl:variable name="textCount">
@@ -16,11 +20,12 @@
                 <xsl:variable name="wordCount">
                     <xsl:value-of select="xs:integer(sum(//t:measure[@unit='words']))"/>
                 </xsl:variable>
+                 
                 <xsl:message><xsl:value-of select="$textCount"/><xsl:text> texts found containing </xsl:text>
                     <xsl:value-of select="$wordCount"/> 
                     <xsl:text> words</xsl:text></xsl:message>
 
-
+<xsl:if test="$catalog = 'yes'">
 
                 <table class="catalogue">
                     <tr class="label">
@@ -89,127 +94,80 @@
                                     select="../t:teiHeader/t:profileDesc/t:textDesc/e:authorGender/@key"
                                 />
                             </td>
-                           <!-- <td>
-                                <xsl:value-of
-                                    select="../t:teiHeader/t:profileDesc/t:textDesc/e:size/@key"
-                                />
-                            </td>-->
-                            <td>
+                                     <td>
                                 <xsl:value-of
                                     select="../t:teiHeader/t:profileDesc/t:textDesc/e:canonicity/@key"
                                 />
                             </td>
-                            <!--<td>
-                                <xsl:value-of
-                                    select="../t:teiHeader/t:profileDesc/t:textDesc/e:timeSlot/@key"
-                                />
-                            </td>-->
-
-
+                          
                         </tr>
                     </xsl:for-each>
                 </table>
+</xsl:if>
+                
                 <table class="balance">
-                    <thead>Balance counts </thead>
+                    <thead><xsl:value-of select="$corpus"/> Balance counts for <xsl:value-of 
+                        select="$textCount"/> texts (<xsl:value-of 
+                            select="$wordCount"/> words) </thead>
+                    
                     <tr>
+                        <td>authorSex</td>
                         <xsl:variable name="authorG" select="//e:authorGender"/>
-                        <td>Author Gender</td>
-                        <xsl:variable name="genderVals">M,F,U</xsl:variable>
-                        <xsl:for-each select="tokenize($genderVals, ',')">
-                            <xsl:variable name="val">
-                                <xsl:value-of select="."/>
-                            </xsl:variable>
-                            <td>
-                                <xsl:value-of select="$val"/>
-                                <xsl:text> : </xsl:text>
-                                <xsl:value-of
-                                    select="
-                                        e:checkBalance($textCount/3,
-                                        count($authorG[@key = $val]))"
-                                />
-                            </td>
-                        </xsl:for-each>
-                    </tr><tr><xsl:variable name="sizes" select="//e:size"/>
-                        <td>Size</td>
-                        <xsl:variable name="sizeVals">short,medium,long</xsl:variable>
-                        <xsl:for-each select="tokenize($sizeVals, ',')">
-                            <xsl:variable name="val">
-                                <xsl:value-of select="."/>
-                            </xsl:variable>
-                            <td>
-                                <xsl:value-of select="$val"/>
-                                <xsl:text> : </xsl:text>
-                                <xsl:value-of
-                                    select="
-                                    e:checkBalance($textCount/3,
-                                    count($sizes[@key = $val]))"
-                                />
-                            </td>
-                        </xsl:for-each> </tr>
-                    <tr><xsl:variable name="canons" select="//e:canonicity"/>
-                        <td>Canonicity</td>
-                        <xsl:variable name="canonVals">low,medium,high</xsl:variable>
-                        <xsl:for-each select="tokenize($canonVals, ',')">
-                            <xsl:variable name="val">
-                                <xsl:value-of select="."/>
-                            </xsl:variable>
-                            <td>
-                                <xsl:value-of select="$val"/>
-                                <xsl:text> : </xsl:text>
-                                <xsl:value-of
-                                    select="
-                                    e:checkBalance($textCount/3,
-                                    count($canons[@key = $val]))"
-                                />
-                            </td>
-                        </xsl:for-each> </tr></table>
-                <table class="balance">
-                    <tr><xsl:variable name="slots" select="//e:timeSlot"/>
-                        <td>Time Slot</td>
-                        <xsl:variable name="slotVals">T1,T2,T3,T4</xsl:variable>
-                        <xsl:for-each select="tokenize($slotVals, ',')">
-                            <xsl:variable name="val">
-                                <xsl:value-of select="."/>
-                            </xsl:variable>
-                            <td>
-                                <xsl:value-of select="$val"/>
-                                <xsl:text> : </xsl:text>
-                                <xsl:value-of
-                                    select="
-                                    e:checkBalance($textCount/4,
-                                    count($slots[@key = $val]))"
-                                />
-                            </td>
-                        </xsl:for-each> </tr>
-
+                       <td> 
+                        <xsl:value-of select="e:showBalance($authorG,$textCount,'M,F,U')"/>
+                       </td> 
+                    </tr>
+                    <tr>
+                        <td>novelSize</td>
+                        <xsl:variable name="size" select="//e:size"/>
+                        <td> 
+                            <xsl:value-of select="e:showBalance($size,$textCount,'short,medium,long')"/>
+                        </td> 
+                    </tr>
+                    <tr>
+                        <td>canonicity</td>
+                        <xsl:variable name="canonicity" select="//e:canonicity"/>
+                        <td> 
+                            <xsl:value-of select="e:showBalance($canonicity,$textCount,'low,medium,high')"/>
+                        </td> 
+                    </tr> <tr>
+                        <td>period</td>
+                        <xsl:variable name="timeSlot" select="//e:timeSlot"/>
+                        <td> 
+                            <xsl:value-of select="e:showBalance($timeSlot,$textCount,'T1,T2,T3,T4')"/>
+                        </td> 
+                    </tr>
                 </table>
             </body>
         </html>
 
-
     </xsl:template>
 
-    <xsl:function name="e:checkBalance" as="xs:string">
-        <xsl:param name="target" as="xs:integer"/>
-        <xsl:param name="count" as="xs:integer"/>
-        <xsl:variable name="whoops">
-            <xsl:if test="$count lt $target">
-                <xsl:text> ** Unbalanced : need at least </xsl:text>
-                <xsl:value-of select="$target - $count"/>
-                <xsl:text> more **</xsl:text>
-            </xsl:if>
-        </xsl:variable>
-        <xsl:value-of select="concat($count, $whoops)"/>
-
-    </xsl:function>
-
-    <xsl:function name="e:word-count" as="xs:integer" xmlns:functx="http://www.functx.com">
-        <xsl:param name="arg" as="xs:string?"/>
-
-        <xsl:sequence
-            select="
-                count(tokenize($arg, '\W+')[. != ''])
-                "/>
-
-    </xsl:function>
+    <xsl:function name="e:showBalance" as="item()*">
+        <xsl:param name="nodes"></xsl:param>
+         <xsl:param name="totalVal" as="xs:integer"/>
+        <xsl:param name="values" as="xs:string"/> 
+        
+        <xsl:variable name="target" select="$totalVal div count(tokenize($values,','))"/>
+  <!--      <xsl:message>Target is <xsl:value-of select="$target"/></xsl:message>
+  -->          
+     <xsl:for-each select="tokenize($values, ',')">
+            <xsl:variable name="val">
+                <xsl:value-of select="."/>
+            </xsl:variable>
+            <xsl:variable name="count">
+                <xsl:value-of select="count($nodes[@key = $val])"/>
+            </xsl:variable>
+     <!--    <xsl:message>... count for <xsl:value-of select="$val"/> is <xsl:value-of select="$count"/></xsl:message>
+     -->       <xsl:choose> 
+                <xsl:when test="$target &gt; $count">
+                     <xsl:value-of select="concat($val, ':', $count, '! ')"/>
+            </xsl:when>
+                <xsl:otherwise >
+                          <xsl:value-of select="concat($val,':',$count,' ')"/>
+                </xsl:otherwise>
+                
+            </xsl:choose>    
+        </xsl:for-each>
+   </xsl:function>
 </xsl:stylesheet>
