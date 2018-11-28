@@ -45,9 +45,9 @@ from lxml import etree
 
 # === Parameters ===
 
-workingDir = join("..", "..", "ELTeC-por")
+workingDir = join("..", "..", "ELTeC-fra")
 
-teiFolder = join(workingDir, "level1", "*.eltec")
+teiFolder = join(workingDir, "level1", "*.xml")
 metadataFolder = join(workingDir, "Metadata")
 
 xpaths = {"xmlid" : "//tei:TEI/@xml:id", 
@@ -62,7 +62,9 @@ xpaths = {"xmlid" : "//tei:TEI/@xml:id",
           "first-ed" : "//tei:bibl[@type='edition-first']/tei:date/text()",
           "language" : "//tei:langUsage/tei:language/@ident"}
 
-ordering = ["filename", "xmlid", "au-name", "title", "au-birth", "au-death", "au-gender", "au-ids", "first-ed", "title-ids", "sizeCat", "canonicity", "time-slot", "numwords", "language"]
+ordering = ["filename", "xmlid", "au-name", "title", "au-birth", "au-death",
+            "au-gender", "au-ids", "first-ed", "title-ids", "sizeCat", "canonicity",
+            "time-slot", "numwords", "language"]
 
 
 # === Functions ===
@@ -87,7 +89,8 @@ def get_metadatum(xml, xpath):
     are not split into individual columns.
     """
     try: 
-        namespaces = {'tei':'http://www.tei-c.org/ns/1.0', 'eltec':'http://distantreading.net/eltec/ns'}       
+        namespaces = {'tei':'http://www.tei-c.org/ns/1.0',
+                      'eltec':'http://distantreading.net/eltec/ns'}       
         metadatum = xml.xpath(xpath, namespaces=namespaces)[0]
     except: 
         metadatum = "NA"
@@ -105,7 +108,8 @@ def get_authordata(xml):
     """
     try: 
         namespaces = {'tei':'http://www.tei-c.org/ns/1.0'}       
-        authordata = xml.xpath("//tei:titleStmt/tei:author/text()", namespaces=namespaces)[0]
+        authordata = xml.xpath("//tei:titleStmt/tei:author/text()",
+                               namespaces=namespaces)[0]
         name = re.search("(.*?) \(", authordata).group(1)
         birth = re.search("\((\d\d\d\d)", authordata).group(1)
         death = re.search("(\d\d\d\d)\)", authordata).group(1)
