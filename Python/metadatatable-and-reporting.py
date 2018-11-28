@@ -59,12 +59,13 @@ xpaths = {"xmlid" : "//tei:TEI/@xml:id",
           "sizeCat" : "//tei:textDesc/eltec:size/@key",
           "canonicity" : "//tei:textDesc/eltec:canonicity/@key",
           "time-slot" : "//tei:textDesc/eltec:timeSlot/@key",
-          "first-ed" : "//tei:bibl[@type='edition-first']/tei:date/text()",
+          "copytext-yr" : "//tei:bibl[@type='copyText']/tei:date/text()",
+          "firsted-yr" : "//tei:bibl[@type='firstEdition']/tei:date/text()",
           "language" : "//tei:langUsage/tei:language/@ident"}
 
 ordering = ["filename", "xmlid", "au-name", "title", "au-birth", "au-death",
-            "au-gender", "au-ids", "first-ed", "title-ids", "sizeCat", "canonicity",
-            "time-slot", "numwords", "language"]
+            "au-gender", "au-ids", "copytext-yr", "firsted-yr", "title-ids",
+            "sizeCat", "canonicity", "time-slot", "numwords", "language"]
 
 
 # === Functions ===
