@@ -41,6 +41,7 @@ from os.path import join
 from os.path import basename
 import pandas as pd
 from lxml import etree
+from collections import Counter
 
 
 # === Parameters ===
@@ -49,6 +50,7 @@ workingDir = join("..", "..", "ELTeC-fra")
 
 teiFolder = join(workingDir, "level1", "*.xml")
 metadataFolder = join(workingDir, "Metadata")
+reportFile = join(workingDir, "report.md")
 
 xpaths = {"xmlid" : "//tei:TEI/@xml:id", 
           "title" : "//tei:titleStmt/tei:title/text()",
@@ -138,7 +140,6 @@ def build_balancereport(allmetadata):
     Based on the metadata extracted in the previous steps, 
     calculate some basic corpus composition indicators. 
     """
-    from collections import Counter
     allmetadata = pd.DataFrame(allmetadata)
     allmetadata = allmetadata[ordering]
     # Number of novels
@@ -208,9 +209,58 @@ def build_fullreport(allmetadata):
     return report
 
 
+def make_buildmd(allmetadata, fullreport, reportFile, metadataFolder):
+    """
+    Creates several plots from some metadata 
+    and a report.md markdown file embedding the plots.
+    """
+    allmetadata = pd.DataFrame(allmetadata)
+    import pygal
+    from pygal.style import CleanStyle
+    from pygal.style import Style   
+    mystyle = CleanStyle(font_family="sans-serif")
+    # Pygal chart configuration
+    from pygal import Config
+    config = Config()
+    config.legend_at_bottom=True
+    config.legend_at_bottom_columns=3
+    config.print_values=True
+    config.style=mystyle
+    #config.width=500
+    #config.height=300
+    config.font_family="Arial"
+    # Donut chart for author genders
+    genders = dict(Counter(allmetadata.loc[:,"au-gender"]))
+    chart = pygal.Pie(config,
+    title ="Number of novels per author gender",
+    inner_radius=.60,
+    font_family="sans-serif")
+    chart.add("male", genders["M"])
+    chart.add("female", genders["F"])
+    chart.add("other", 0)
+    chart.render_to_file(join(metadataFolder, "au-genders.svg"))
+    # Bar chart for time periods
+    timeslots = dict(Counter(allmetadata.loc[:,"time-slot"]))
+    chart = pygal.Bar(config, range=(0,30),
+    title ="Number of novels per 20-year period",
+    font_family="sans-serif",
+    legend_at_bottom_columns=4)
+    chart.add("1840-1859", timeslots["T1"])
+    chart.add("1860-1879", timeslots["T2"])
+    chart.add("1880-1899", timeslots["T3"])
+    chart.add("1900-1919", timeslots["T4"])
+    chart.render_to_file(join(metadataFolder, "timeslots.svg"))
+    # Save report.md with embedded charts
+    reportmd = "## Corpus composition for ELTeC-fra\n\n<img src=\"/Metadata/au-genders.svg\">\n<img src=\"/Metadata/timeslots.svg\">"
+    with open(reportFile, "w", encoding="utf8") as outfile: 
+        outfile.write(reportmd)
+    
+    
+
+
 # === Coordinating function ===
 
-def main(teiFolder, metadataFolder, xpaths, ordering):
+def main(teiFolder, metadataFolder, xpaths, ordering, reportFile):
     """
     From a collection of ELTeC XML-TEI files,
     create a CSV file with some metadata about each file.
@@ -240,5 +290,6 @@ def main(teiFolder, metadataFolder, xpaths, ordering):
     save_report(balancereport, join(metadataFolder, "report_composition.txt"))
     fullreport = build_fullreport(allmetadata)
     save_report(fullreport, join(metadataFolder, "report_full.txt"))
+    make_buildmd(allmetadata, fullreport, reportFile, metadataFolder)
     
-main(teiFolder, metadataFolder, xpaths, ordering)
+main(teiFolder, metadataFolder, xpaths, ordering, reportFile)
