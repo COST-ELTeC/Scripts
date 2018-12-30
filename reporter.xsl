@@ -11,6 +11,7 @@
         <html>
             <head>
                 <meta http-equiv="Content-Type" content="text/html"/>
+                <link rel="stylesheet" type="text/css" href="eltec-styler.css"/>
                 <title>ELTeC reporter</title>
             </head>
             <body>
@@ -39,68 +40,77 @@
                         <td>Sex</td>
                          <td>Reprints</td>
                     </tr>
-                    <xsl:for-each select="t:teiCorpus/t:TEI/t:text">
+                    <xsl:for-each select="t:teiCorpus/t:TEI/t:teiHeader">
                         <tr>
                             <xsl:variable name="wc">
-                                <xsl:value-of select="../t:teiHeader/t:fileDesc/t:extent/t:measure[@unit='words']"/>
+                                <xsl:choose>
+                                    <xsl:when test="t:fileDesc/t:extent/t:measure[@unit='words']">
+                                        <xsl:value-of select="t:fileDesc/t:extent/t:measure[@unit='words']"/>
+                                    </xsl:when>
+                                    <xsl:otherwise>0</xsl:otherwise>
+                                </xsl:choose>
+                               
                             </xsl:variable>
                             <xsl:variable name="pc">
-                                <xsl:value-of select="../t:teiHeader/t:fileDesc/t:extent/t:measure[@unit='pages']"/>
+                                <xsl:value-of select="t:fileDesc/t:extent/t:measure[@unit='pages']"/>
                             </xsl:variable>
                             
                             <xsl:variable name="date">
                                 
                                 <xsl:choose>
                                       
-                                    <xsl:when test="../t:teiHeader//t:relatedItem[@type='copyText']">
-                                        <xsl:value-of select="../t:teiHeader//t:sourceDesc/t:bibl/t:relatedItem[@type='copyText']/t:bibl/t:date"/>
-                                    </xsl:when><xsl:when test="../t:teiHeader//t:sourceDesc/t:bibl[@type='copyText']"> 
-                                        <xsl:value-of select="../t:teiHeader//t:sourceDesc/t:bibl[@type='copyText']/t:date"/> </xsl:when>
-                                    <xsl:when test="../t:teiHeader//t:sourceDesc/t:bibl[@type='edition-first']"> 
-                                        <xsl:value-of select="../t:teiHeader//t:sourceDesc/t:bibl[@type='edition-first']/t:date"/> </xsl:when>
+                                    <xsl:when test="t:fileDesc/t:sourceDesc//t:relatedItem[@type='copyText']">
+                                        <xsl:value-of select="t:fileDesc/t:sourceDesc//t:relatedItem[@type='copyText']/t:bibl/t:date"/>
+                                    </xsl:when><xsl:when test="t:fileDesc/t:sourceDesc/t:bibl[@type='copyText']"> 
+                                        <xsl:value-of select="t:fileDesc/t:sourceDesc/t:bibl[@type='copyText']/t:date"/> </xsl:when>
+                                    <xsl:when test="t:fileDesc/t:sourceDesc/t:bibl[@type='edition-first']"> 
+                                        <xsl:value-of select="t:fileDesc/t:sourceDesc/t:bibl[@type='edition-first']/t:date"/> </xsl:when>
                                     <xsl:otherwise>
                                         <xsl:text>???? </xsl:text>
                                     </xsl:otherwise>
-                                </xsl:choose>
-                              
+                                </xsl:choose>                             
                           </xsl:variable>
+                     <xsl:variable name="claimedSize">
+                         <xsl:value-of
+                             select="t:profileDesc/t:textDesc/e:size/@key" />
+                     </xsl:variable>
                      
                             <td>
                                 <xsl:value-of select="ancestor::t:TEI/@xml:id"/>
                             </td>
                             <td>
-                                <xsl:value-of select="../t:teiHeader/t:encodingDesc/@n"/>
+                                <xsl:value-of select="t:encodingDesc/@n"/>
                             </td>
                             <td>
                                 <xsl:value-of select="$pc"/> 
                             </td><td>
                                 <xsl:value-of select="$wc"/> (<xsl:value-of
-                                    select="../t:teiHeader/t:profileDesc/t:textDesc/e:size/@key"
-                                />)
+                                    select="$claimedSize"/>) 
+                                <xsl:value-of select="e:checkSize($wc,$claimedSize)"/>
                             </td>
                             <td>
                                 <xsl:value-of select="$date"/> ( <xsl:value-of
-                                    select="../t:teiHeader/t:profileDesc/t:textDesc/e:timeSlot/@key"
+                                    select="t:profileDesc/t:textDesc/e:timeSlot/@key"
                                 />)
                             </td>
                             
                             <td>
                                 <xsl:value-of
-                                    select="../t:teiHeader/t:fileDesc/t:titleStmt/t:title[1]"/>
+                                    select="t:fileDesc/t:titleStmt/t:title[1]"/>
                             </td>
                             <td>
                                 <xsl:value-of
-                                    select="../t:teiHeader/t:fileDesc/t:titleStmt/t:author[1]/text()"
+                                    select="t:fileDesc/t:titleStmt/t:author[1]/text()"
                                 />
                             </td>
                             <td>
                                 <xsl:value-of
-                                    select="../t:teiHeader/t:profileDesc/t:textDesc/e:authorGender/@key"
+                                    select="t:profileDesc/t:textDesc/e:authorGender/@key"
                                 />
                             </td>
                                      <td>
                                 <xsl:value-of
-                                    select="../t:teiHeader/t:profileDesc/t:textDesc/e:canonicity/@key"
+                                    select="t:profileDesc/t:textDesc/e:canonicity/@key"
                                 />
                             </td>
                           
@@ -146,6 +156,16 @@
         </html>
 
     </xsl:template>
+<xsl:function name="e:checkSize" >
+    <xsl:param name="count" as="xs:integer"/>
+    <xsl:param name="code"/>
+   <xsl:variable name="actualCode"> <xsl:choose>
+        <xsl:when test="$count lt 50000">short</xsl:when>
+        <xsl:when test="$count lt 100000">medium</xsl:when>
+        <xsl:when test="$count gt 100000">long</xsl:when>
+    </xsl:choose></xsl:variable>
+    <xsl:if test="$code ne $actualCode"> !!</xsl:if>
+</xsl:function>
 
     <xsl:function name="e:showBalance" as="item()*">
         <xsl:param name="nodes"></xsl:param>
