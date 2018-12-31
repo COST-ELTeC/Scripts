@@ -1,6 +1,7 @@
 ECHO=
 LOCAL=/home/lou/Public
-REPO=ELTeC-xxx
+LANG=xxx
+REPO=ELTeC-$(LANG)
 PREFIX=ELTEC
 SCHEMA1=$(LOCAL)/WG1/distantreading.github.io/Schema/eltec-1.rng
 CORPUS=$(LOCAL)/$(REPO)
@@ -30,4 +31,4 @@ driver:
 
 report:
 	echo report on corpus balance
-	saxon -xi $(CORPUS)/driver.tei $(REPORTER) >balance_report.html
+	saxon -xi $(CORPUS)/driver.tei $(REPORTER) corpus=$(LANG) >$(CORPUS)/balance_report.html

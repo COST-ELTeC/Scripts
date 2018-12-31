@@ -4,7 +4,7 @@ contains generic scripts for manipulating, processing, validating individual ELT
 - `Makefile`
   - copy this into the root of your local copy of an ELTEC repo
   - edit LOCAL to point to the path for your local copy of the repo
-  - edit CORPUS to match the name of your repo (e.g. `ELTEC-eng`)
+  - edit LANG to match the language of your repo (e.g. `eng` for English)
   - edit the PREFIX to match the prefix of your text files (e.g. `ENG`)
   - run `make driver` to generate a driver file which will process all available text files
   - run `make validate` to check validity of each text file individually
