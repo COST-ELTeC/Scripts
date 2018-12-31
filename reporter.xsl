@@ -12,6 +12,8 @@
             <head>
                 <meta http-equiv="Content-Type" content="text/html"/>
                 <link rel="stylesheet" type="text/css" href="eltec-styler.css"/>
+                <link rel="stylesheet" type="text/css" href="https://distantreading.github.io/css/eltec-styler.css"/>
+             
                 <title>ELTeC reporter</title>
             </head>
             <body>
@@ -120,36 +122,39 @@
 </xsl:if>
                 
                 <table class="balance">
-                    <thead><xsl:value-of select="$corpus"/> Balance counts for <xsl:value-of 
+                    <thead><tr><th><xsl:value-of select="$corpus"/> </th><th>Balance counts for <xsl:value-of 
                         select="$textCount"/> texts (<xsl:value-of 
-                            select="$wordCount"/> words) </thead>
+                            select="$wordCount"/> words)</th> </tr></thead>
                     
                     <tr>
-                        <td>authorSex</td>
+                        <td class="label">authorSex</td>
                         <xsl:variable name="authorG" select="//e:authorGender"/>
-                       <td> 
-                        <xsl:value-of select="e:showBalance($authorG,$textCount,'M,F,U')"/>
-                       </td> 
+                      
+                        <xsl:for-each select="e:showBalance($authorG,$textCount,'M,F,U')">  <td><xsl:value-of select="."/></td></xsl:for-each>
+                        
                     </tr>
                     <tr>
-                        <td>novelSize</td>
+                        <td class="label">novelSize</td>
                         <xsl:variable name="size" select="//e:size"/>
-                        <td> 
-                            <xsl:value-of select="e:showBalance($size,$textCount,'short,medium,long')"/>
-                        </td> 
+                        
+                        <xsl:for-each select="e:showBalance($size,$textCount,'short,medium,long')">  <td><xsl:value-of select="."/></td></xsl:for-each>
+                         
                     </tr>
                     <tr>
-                        <td>canonicity</td>
+                        <td class="label">canonicity</td>
                         <xsl:variable name="canonicity" select="//e:canonicity"/>
-                        <td> 
-                            <xsl:value-of select="e:showBalance($canonicity,$textCount,'low,medium,high')"/>
-                        </td> 
+                         
+                        <xsl:for-each select="e:showBalance($canonicity,$textCount,'low,medium,high')">  <td><xsl:value-of select="."/></td></xsl:for-each>
+                         
                     </tr> <tr>
-                        <td>period</td>
+                        <td class="label">period</td>
                         <xsl:variable name="timeSlot" select="//e:timeSlot"/>
-                        <td> 
-                            <xsl:value-of select="e:showBalance($timeSlot,$textCount,'T1,T2,T3,T4')"/>
-                        </td> 
+                        <xsl:for-each
+                            select="e:showBalance($timeSlot,$textCount,'T1,T2,T3,T4')">
+                            <td><xsl:value-of select="."/></td>
+                        </xsl:for-each>
+                          
+                         
                     </tr>
                 </table>
             </body>
@@ -185,13 +190,12 @@
      <!--    <xsl:message>... count for <xsl:value-of select="$val"/> is <xsl:value-of select="$count"/></xsl:message>
      -->       <xsl:choose> 
                 <xsl:when test="$target &gt; $count">
-                     <xsl:value-of select="concat($val, ':', $count, '! ')"/>
+                     <xsl:value-of select="concat($val, '=', $count, '!')"/>
             </xsl:when>
                 <xsl:otherwise >
-                          <xsl:value-of select="concat($val,':',$count,' ')"/>
-                </xsl:otherwise>
-                
-            </xsl:choose>    
+                          <xsl:value-of select="concat($val,'=',$count)"/>
+                </xsl:otherwise>             
+            </xsl:choose>   
         </xsl:for-each>
    </xsl:function>
 </xsl:stylesheet>
