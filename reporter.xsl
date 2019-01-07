@@ -76,9 +76,10 @@
                                             />
                                         </xsl:when>
                                         <xsl:when
-                                            test="t:fileDesc/t:sourceDesc/t:bibl[@type = 'copyText']">
+                                            test="t:fileDesc/t:sourceDesc//t:bibl[@type = 'copyText']">
                                             <xsl:value-of
-                                                select="t:fileDesc/t:sourceDesc/t:bibl[@type = 'copyText']/t:date"
+                                                select="t:fileDesc/t:sourceDesc//t:bibl[@type =
+                                                'copyText'][1]/t:date"
                                             />
                                         </xsl:when>
                                         <xsl:when
