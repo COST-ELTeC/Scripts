@@ -13,7 +13,6 @@
                 <meta http-equiv="Content-Type" content="text/html"/>
                 <link rel="stylesheet" type="text/css"
                     href="https://distantreading.github.io/css/eltec-styler.css"/>
-
                 <title>ELTeC reporter</title>
             </head>
             <body>
@@ -24,26 +23,27 @@
                     <xsl:value-of select="xs:integer(sum(//t:measure[@unit = 'words']))"/>
                 </xsl:variable>
 
-                <xsl:message>
+                <xsl:variable name="status">
                     <xsl:value-of select="$textCount"/>
-                    <xsl:text> texts found containing </xsl:text>
+                    <xsl:text> texts containing </xsl:text>
                     <xsl:value-of select="$wordCount"/>
                     <xsl:text> words</xsl:text>
-                </xsl:message>
+                </xsl:variable>
 
                 <xsl:if test="$catalog = 'yes'">
-
-                    <table class="catalogue">
+<h4><xsl:value-of select="$status"/></h4>                    
+<p>Click on a column heading to sort by that data.</p>
+                    <table class="catalogue" id="theTable">
                         <tr class="label">
-                            <td>Identifier</td>
-                            <td>Encoding</td>
-                            <td>Page count</td>
-                            <td>Word count (Size)</td>
-                            <td>Date (Slot)</td>
-                            <td>Title</td>
-                            <td>Author</td>
-                            <td>Sex</td>
-                            <td>Reprints</td>
+                            <th onclick="sortTable(0)">Identifier</th>
+                            <th onclick="sortTable(1)">Encoding</th>
+                            <th onclick="sortTable(2)">Page count</th>
+                            <th onclick="sortTable(3)">Word count (Size)</th>
+                            <th onclick="sortTable(4)">Date (Slot)</th>
+                            <th onclick="sortTable(5)">Title</th>
+                            <th onclick="sortTable(6)">Author</th>
+                            <th onclick="sortTable(7)">Sex</th>
+                            <th onclick="sortTable(8)">Reprints</th>
                         </tr>
                         <xsl:for-each select="t:teiCorpus/t:TEI/t:teiHeader">
                             <xsl:sort select="ancestor::t:TEI/@xml:id"/>
@@ -228,6 +228,63 @@
 
                     </tr>
                 </table>
+                
+                <script>
+                    function sortTable(n) {
+                    var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+                    table = document.getElementById("theTable");
+                    switching = true;
+                    //Set the sorting direction to ascending:
+                    dir = "asc"; 
+                    /*Make a loop that will continue until
+                    no switching has been done:*/
+                    while (switching) {
+                    //start by saying: no switching is done:
+                    switching = false;
+                    rows = table.rows;
+                    /*Loop through all table rows (except the
+                    first, which contains table headers):*/
+                    for (i = 1; i &lt; (rows.length - 1); i++) {
+                    //start by saying there should be no switching:
+                    shouldSwitch = false;
+                    /*Get the two elements you want to compare,
+                    one from current row and one from the next:*/
+                    x = rows[i].getElementsByTagName("td")[n];
+                    y = rows[i + 1].getElementsByTagName("td")[n];
+                    /*check if the two rows should switch place,
+                    based on the direction, asc or desc:*/
+                    if (dir == "asc") {
+                    if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                    //if so, mark as a switch and break the loop:
+                    shouldSwitch= true;
+                    break;
+                    }
+                    } else if (dir == "desc") {
+                    if (x.innerHTML.toLowerCase() &lt; y.innerHTML.toLowerCase()) {
+                    //if so, mark as a switch and break the loop:
+                    shouldSwitch = true;
+                    break;
+                    }
+                    }
+                    }
+                    if (shouldSwitch) {
+                    /*If a switch has been marked, make the switch
+                    and mark that a switch has been done:*/
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                    //Each time a switch is done, increase this count by 1:
+                    switchcount ++;      
+                    } else {
+                    /*If no switching has been done AND the direction is "asc",
+                    set the direction to "desc" and run the while loop again.*/
+                    if (switchcount == 0 &amp;&amp; dir == "asc") {
+                    dir = "desc";
+                    switching = true;
+                    }
+                    }
+                    }
+                    }
+                </script>
             </body>
         </html>
 
