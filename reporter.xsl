@@ -37,13 +37,13 @@
                         <tr class="label">
                             <th onclick="sortTable(0)">Identifier</th>
                             <th onclick="sortTable(1)">Encoding</th>
-                            <th onclick="sortTable(2)">Page count</th>
-                            <th onclick="sortTable(3)">Word count (Size)</th>
-                            <th onclick="sortTable(4)">Date (Slot)</th>
-                            <th onclick="sortTable(5)">Title</th>
-                            <th onclick="sortTable(6)">Author</th>
-                            <th onclick="sortTable(7)">Sex</th>
-                            <th onclick="sortTable(8)">Reprints</th>
+                            <th onclick="sortTableNumerically(2)">Pages</th>
+                            <th onclick="sortTableNumerically(3)">Words</th><th onclick="sortTable(4)">(Size)</th>
+                            <th onclick="sortTable(5)">Date (Slot)</th>
+                            <th onclick="sortTable(6)">Title</th>
+                            <th onclick="sortTable(7)">Author</th>
+                            <th onclick="sortTable(8)">Sex</th>
+                            <th onclick="sortTable(9)">Reprints</th>
                         </tr>
                         <xsl:for-each select="t:teiCorpus/t:TEI/t:teiHeader">
                             <xsl:sort select="ancestor::t:TEI/@xml:id"/>
@@ -107,7 +107,7 @@
                                     <xsl:value-of select="$pc"/>
                                 </td>
                                 <td>
-                                    <xsl:value-of select="$wc"/> (<xsl:value-of
+                                    <xsl:value-of select="$wc"/> </td><td>(<xsl:value-of
                                         select="$claimedSize"/>) <xsl:value-of
                                         select="e:checkSize($wc, $claimedSize)"/>
                                 </td>
@@ -253,7 +253,15 @@
                     y = rows[i + 1].getElementsByTagName("td")[n];
                     /*check if the two rows should switch place,
                     based on the direction, asc or desc:*/
+                    
+                    //if (Number(x.innerHTML) > Number(y.innerHTML)) {
+                    //shouldSwitch = true;
+                    //break;
+                    //}
+                    
+                    
                     if (dir == "asc") {
+                    
                     if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
                     //if so, mark as a switch and break the loop:
                     shouldSwitch= true;
@@ -261,6 +269,61 @@
                     }
                     } else if (dir == "desc") {
                     if (x.innerHTML.toLowerCase() &lt; y.innerHTML.toLowerCase()) {
+                    //if so, mark as a switch and break the loop:
+                    shouldSwitch = true;
+                    break;
+                    }
+                    }
+                    }
+                    if (shouldSwitch) {
+                    /*If a switch has been marked, make the switch
+                    and mark that a switch has been done:*/
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                    //Each time a switch is done, increase this count by 1:
+                    switchcount ++;      
+                    } else {
+                    /*If no switching has been done AND the direction is "asc",
+                    set the direction to "desc" and run the while loop again.*/
+                    if (switchcount == 0 &amp;&amp; dir == "asc") {
+                    dir = "desc";
+                    switching = true;
+                    }
+                    }
+                    }
+                    }
+                    function sortTableNumerically(n) {
+                    var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+                    table = document.getElementById("theTable");
+                    switching = true;
+                    //Set the sorting direction to ascending:
+                    dir = "asc"; 
+                    /*Make a loop that will continue until
+                    no switching has been done:*/
+                    while (switching) {
+                    //start by saying: no switching is done:
+                    switching = false;
+                    rows = table.rows;
+                    /*Loop through all table rows (except the
+                    first, which contains table headers):*/
+                    for (i = 1; i &lt; (rows.length - 1); i++) {
+                    //start by saying there should be no switching:
+                    shouldSwitch = false;
+                    /*Get the two elements you want to compare,
+                    one from current row and one from the next:*/
+                    x = rows[i].getElementsByTagName("td")[n];
+                    y = rows[i + 1].getElementsByTagName("td")[n];
+                    /*check if the two rows should switch place,
+                    based on the direction, asc or desc:*/
+                        if (dir == "asc") {
+                    
+                    if (Number(x.innerHTML) > Number(y.innerHTML)) {
+                    //if so, mark as a switch and break the loop:
+                    shouldSwitch= true;
+                    break;
+                    }
+                    } else if (dir == "desc") {
+                    if (Number(x.innerHTML) > Number(y.innerHTML)) {
                     //if so, mark as a switch and break the loop:
                     shouldSwitch = true;
                     break;
