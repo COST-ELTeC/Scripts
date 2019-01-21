@@ -1,0 +1,9 @@
+LANGS="cze eng fra hun ita nor por rom slv spa srp"
+cp summary-head.html summary.html
+for lang in $LANGS; do
+    echo "$lang";
+    cd ../ELTeC-$lang;
+    saxon -xi corpus=$lang  driver.tei ../Scripts/summarize.xsl >> ../Scripts/summary.html;
+    cd ../Scripts;
+  done
+cat summary-tail.html >> summary.html
