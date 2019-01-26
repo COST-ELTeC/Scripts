@@ -3,7 +3,6 @@ cd /home/lou/Public/
 for lang in $LANGS; do
     echo "$lang";
 cd ELTeC-$lang; 
-make driver report;  cd ..
+git pull;   cd ..;
 done
-#saxon -xi corpus=SLV  driver.tei ../Scripts/reporter1.xsl > slv.html
 

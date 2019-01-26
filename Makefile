@@ -15,6 +15,10 @@ CORPUS1=$(LOCAL)/$(REPO)/level1
 SCHEMA0=$(LOCAL)/WG1/distantreading.github.io/Schema/eltec-0.rng
 CORPUS0=$(LOCAL)/$(REPO)/level0
 REPORTER=$(LOCAL)/Scripts/reporter.xsl
+EXPOSE=$(LOCAL)/Scripts/expose.xsl
+EXPOSEDIR=$(LOCAL)/WG1/distantreading.github.io/ELTeC/$(LANG)
+
+
 CURRENT=`pwd`
 
 validate:
@@ -36,3 +40,8 @@ driver:
 report:
 	echo report on corpus balance
 	saxon -xi $(CORPUS)/driver.tei $(REPORTER) corpus=$(LANG) >$(CORPUS)/balance_report.html
+expose:
+	cd $(CORPUS);
+	find level? | grep $(PREFIX) | sort | while read f; do \
+	echo $$f; \
+	saxon fileName=$$f $$f $(EXPOSE) > $(EXPOSEDIR)/`basename $$f .xml`.html; done
