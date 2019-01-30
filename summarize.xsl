@@ -18,7 +18,12 @@
 
 <tr>
         <td class="lang">
-            <xsl:value-of select="$corpus"/>
+            <a>
+<xsl:attribute name="href">
+<xsl:value-of select="concat($corpus,'/index.html')"/>
+</xsl:attribute>
+	      <xsl:value-of select="$corpus"/>
+	    </a>
         </td>
         <td><xsl:value-of select="$textCount"/> 
         </td><td><xsl:value-of select="$wordCount"/> </td>

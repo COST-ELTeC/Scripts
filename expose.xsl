@@ -4,9 +4,10 @@
     xmlns:e="http://distantreading.net/eltec/ns" exclude-result-prefixes="xs t e" version="2.0">
     <xsl:output method="html"/>
     <xsl:param name="fileName">level0/ENG18740_Ouida.xml</xsl:param>
-    <xsl:param name="folder">https://raw.githubusercontent.com/COST-ELTeC/ELTeC-eng/master/</xsl:param>
+    <xsl:param name='lang'>eng</xsl:param>
+    <xsl:param name="folder">https://raw.githubusercontent.com/COST-ELTeC/ELTeC-</xsl:param>
     <xsl:variable name="gitURL">
-        <xsl:value-of select="concat($folder,$fileName)"/>
+        <xsl:value-of select="concat($folder,$lang,'/master/',$fileName)"/>
     </xsl:variable>
     
     <xsl:template match="/">

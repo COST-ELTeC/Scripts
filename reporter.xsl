@@ -5,15 +5,14 @@
     <xsl:output method="html"/>
 
     <xsl:param name="corpus">XXX</xsl:param>
-    <xsl:param name="catalog">yes</xsl:param>
-
+   
     <xsl:template match="/">
         <html>
             <head>
                 <meta http-equiv="Content-Type" content="text/html"/>
                 <link rel="stylesheet" type="text/css"
                     href="https://distantreading.github.io/css/eltec-styler.css"/>
-                <title>ELTeC reporter</title>
+                <title><xsl:value-of select="concat('Contents of ELTeC-',$corpus)"/></title>
             </head>
             <body>
                 <xsl:variable name="textCount">
@@ -30,9 +29,9 @@
                     <xsl:text> words</xsl:text>
                 </xsl:variable>
 
-                <xsl:if test="$catalog = 'yes'">
+                
 <h4><xsl:value-of select="$status"/></h4>                    
-<p>Click on a column heading to sort by that data.</p>
+<p>Click on a column heading to sort. Click on a text identifier to read the text (may not work in older browsers).</p>
                     <table class="catalogue" id="theTable">
                         <tr class="label">
                             <th onclick="sortTable(0)">Identifier</th>
@@ -88,6 +87,12 @@
                                                 select="t:fileDesc/t:sourceDesc/t:bibl[@type = 'edition-first']/t:date"
                                             />
                                         </xsl:when>
+                                        <xsl:when
+                                            test="t:fileDesc/t:sourceDesc/t:bibl[@type = 'firstEdition']">
+                                            <xsl:value-of
+                                                select="t:fileDesc/t:sourceDesc/t:bibl[@type = 'firstEdition']/t:date"
+                                            />
+                                        </xsl:when>
                                         <xsl:otherwise>
                                             <xsl:text>???? </xsl:text>
                                         </xsl:otherwise>
@@ -98,7 +103,12 @@
                                 </xsl:variable>
 
                                 <td>
-                                    <xsl:value-of select="ancestor::t:TEI/@xml:id"/>
+                                    <a>
+                                        <xsl:attribute name="href">
+                                            <xsl:value-of select="concat(ancestor::t:TEI/@xml:id,'.html')"/> 
+                                        </xsl:attribute>
+                                        <xsl:value-of select="ancestor::t:TEI/@xml:id"/>
+                                    </a>
                                 </td>
                                 <td>
                                     <xsl:value-of select="t:encodingDesc/@n"/>
@@ -134,7 +144,7 @@
                             </tr>
                         </xsl:for-each>
                     </table>
-                </xsl:if>
+             <!--   
 
                 <table class="balance">
                     <thead>
@@ -227,8 +237,7 @@
 
 
                     </tr>
-                </table>
-                <xsl:if test="$catalog = 'yes'">    
+                </table>-->
                 <script>
                     function sortTable(n) {
                     var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
@@ -347,7 +356,7 @@
                     }
                     }
                     }
-                </script></xsl:if>
+                </script>
             </body>
         </html>
 
