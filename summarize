@@ -1,5 +1,5 @@
 #do not run this command around midnight!
-LANGS="cze eng fra hun ita nor por rom slv spa srp"
+LANGS="cze deu eng fra hun ita nor por rom slv spa srp"
 cp summary-head.html ../WG1/distantreading.github.io/ELTeC/index.html
 for lang in $LANGS; do
     echo "$lang";
@@ -7,4 +7,5 @@ for lang in $LANGS; do
     saxon -xi corpus=$lang  driver.tei ../Scripts/summarize.xsl >> ../WG1/distantreading.github.io/ELTeC/index.html
     cd ../Scripts;
   done
+  echo "<p>Last updated on `echo date --iso`</p>" >> ../WG1/distantreading.github.io/ELTeC/index.html
 cat summary-tail.html >> ../WG1/distantreading.github.io/ELTeC/index.html

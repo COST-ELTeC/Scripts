@@ -122,7 +122,7 @@
                                         select="e:checkSize($wc, $claimedSize)"/>
                                 </td>
                                 <td>
-                                    <xsl:value-of select="$date"/> ( <xsl:value-of
+                                    <xsl:value-of select="$date"/> (<xsl:value-of
                                         select="t:profileDesc/t:textDesc/e:timeSlot/@key"/>) </td>
 
                                 <td>
