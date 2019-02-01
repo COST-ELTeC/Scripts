@@ -1,4 +1,4 @@
-LANGS="cze eng fra hun ita nor por rom slv spa srp"
+LANGS="cze deu eng fra hun ita nor por rom slv spa srp"
 cd /home/lou/Public/
 for lang in $LANGS; do
     echo "$lang";
