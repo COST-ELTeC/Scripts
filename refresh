@@ -2,8 +2,7 @@ LANGS="cze eng fra hun ita nor por rom slv spa srp"
 cd /home/lou/Public/
 for lang in $LANGS; do
     echo "$lang";
-cd ELTeC-$lang; git pull; 
-make validate; cd ..
+cd ELTeC-$lang; 
+git pull;   cd ..;
 done
-#saxon -xi corpus=SLV  driver.tei ../Scripts/reporter1.xsl > slv.html
 

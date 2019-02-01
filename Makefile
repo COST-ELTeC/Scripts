@@ -1,9 +1,3 @@
-#GENERIC MAKEFILE
-# You will need to change at least the declarations for
-# LOCAL and LANG and possibly also PREFIX
-# Change SCHEMA declarations to point to local copies of the schemas
-# at https://distantreading.github.io/Schema or to use the online versions
-#
 ECHO=
 LOCAL=/home/lou/Public
 LANG=xxx
@@ -15,6 +9,8 @@ CORPUS1=$(LOCAL)/$(REPO)/level1
 SCHEMA0=$(LOCAL)/WG1/distantreading.github.io/Schema/eltec-0.rng
 CORPUS0=$(LOCAL)/$(REPO)/level0
 REPORTER=$(LOCAL)/Scripts/reporter.xsl
+EXPOSE=$(LOCAL)/Scripts/expose.xsl
+EXPOSEDIR=$(LOCAL)/WG1/distantreading.github.io/ELTeC/$(LANG)
 CURRENT=`pwd`
 
 validate:
@@ -22,7 +18,7 @@ validate:
 	find level1 | grep $(PREFIX) | sort | while read f; do \
 		echo $$f; \
 		jing  $(SCHEMA1) $$f ; done; cd $(CURRENT);
-	find level0 | grep $(PREFIX) | sort | while read f; do \
+	find level0 | grep  $(PREFIX) | sort | while read f; do \
 		echo $$f; \
 		jing  $(SCHEMA0) $$f ; done; cd $(CURRENT);
 driver:
@@ -35,4 +31,12 @@ driver:
 
 report:
 	echo report on corpus balance
-	saxon -xi $(CORPUS)/driver.tei $(REPORTER) corpus=$(LANG) >$(CORPUS)/balance_report.html
+	saxon -xi $(CORPUS)/driver.tei $(REPORTER) corpus=$(LANG) >$(CORPUS)/index.html
+expose:
+	cd $(CORPUS);
+	find level? | grep $(PREFIX) | sort | while read f; do \
+	g=`echo $$f  | cut -d_ -f1`;\
+	id=`echo $$g  | cut -d/ -f2`;\
+	echo $$id; \
+	saxon fileName=$$f lang=$(LANG) $$f $(EXPOSE) > $(EXPOSEDIR)/$$id.html; \
+	cp $(CORPUS)/index.html $(EXPOSEDIR);  done
