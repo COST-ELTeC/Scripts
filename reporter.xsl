@@ -15,6 +15,11 @@
                 <title><xsl:value-of select="concat('Contents of ELTeC-',$corpus)"/></title>
             </head>
             <body>
+                
+                <xsl:variable name="today">
+                    <xsl:value-of select="format-date(current-date(), 
+                        '[Y0001]-[M01]-[D01]')"/>
+                </xsl:variable>
                 <xsl:variable name="textCount">
                     <xsl:value-of select="count(//t:text)"/>
                 </xsl:variable>
@@ -23,6 +28,11 @@
                 </xsl:variable>
 
                 <xsl:variable name="status">
+                    <xsl:text>On </xsl:text>
+                    <xsl:value-of select="$today"/>
+                    <xsl:text> </xsl:text>
+                    <xsl:value-of select="$corpus"/>
+                    <xsl:text> has </xsl:text>
                     <xsl:value-of select="$textCount"/>
                     <xsl:text> texts containing </xsl:text>
                     <xsl:value-of select="$wordCount"/>
