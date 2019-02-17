@@ -1,6 +1,14 @@
 # Scripts
 contains generic scripts for manipulating, processing, validating individual ELTeC repositories
 
+- `refresh` : update local copies of each repo; update driver.tei in each repo
+- `summarize` : update index.html summary in distantreading.github.io/ELTeC
+- `report` : update index.html for each subdirectory on distantreading.github.io/ELTeC
+- `expose` : update HTML links for each text in each subdirectory on distantreading.github.io/ELTeC
+
+Don't forget to push changes from the distantreading.github.io after making them!
+
+
 - `Makefile`
   - copy this into the root of your local copy of an ELTEC repo
   - edit LOCAL to point to the path for your local copy of the repo
