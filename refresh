@@ -1,8 +1,19 @@
-LANGS="cze deu eng fra hun ita nor por rom slv spa srp"
+LPS="cze/CS deu/deu eng/ENG fra/ hun/ ita/IT nor/ELTEC por/POR rom/ slv/SL spa/SPA srp/SRP"
 cd /home/lou/Public/
-for lang in $LANGS; do
-    echo "$lang";
+for lp in $LPS; do
+  lang=`echo $lp | cut -d/ -f1`;\
+  pref=`echo $lp | cut -d/ -f2`;\
+    echo "$lang : $pref";
 cd ELTeC-$lang; 
-git pull;   cd ..;
+git pull;
+	echo rebuild driver file
+	echo '<teiCorpus xmlns="http://www.tei-c.org/ns/1.0" xmlns:xi="http://www.w3.org/2001/XInclude"><teiHeader><fileDesc> <titleStmt> <title>TEI Corpus testharness</title></titleStmt> <publicationStmt><p>Unpublished test file</p></publicationStmt><sourceDesc><p>No source driver file</p> </sourceDesc> </fileDesc> </teiHeader>' > driver.tei;\
+	for f in  level?/$pref*.xml; do \
+	echo "<xi:include href='$f'/>" >> driver.tei; \
+	done;\
+	 echo "</teiCorpus>" >> driver.tei
+
+cd /home/lou/Public;
 done
+
 

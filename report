@@ -1,0 +1,7 @@
+LANGS="cze deu eng fra hun ita nor por rom slv spa srp"
+for lang in $LANGS; do
+echo "$lang";
+    cd ../ELTeC-$lang;
+    saxon -xi driver.tei ../Scripts/reporter.xsl corpus=$lang >../WG1/distantreading.github.io/ELTeC/$lang/index.html
+    cd ../Scripts;
+  done

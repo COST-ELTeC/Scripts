@@ -7,5 +7,6 @@ for lang in $LANGS; do
     saxon -xi corpus=$lang  driver.tei ../Scripts/summarize.xsl >> ../WG1/distantreading.github.io/ELTeC/index.html
     cd ../Scripts;
   done
-  echo "<p>Last updated on `echo date --iso`</p>" >> ../WG1/distantreading.github.io/ELTeC/index.html
+  today=`date --iso`
+echo "<p>Last updated on $today</p>" >> ../WG1/distantreading.github.io/ELTeC/index.html
 cat summary-tail.html >> ../WG1/distantreading.github.io/ELTeC/index.html
