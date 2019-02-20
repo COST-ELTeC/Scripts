@@ -20,11 +20,11 @@ for lang in LANGS:
   print(repoName)
   gitPull(repoName)
   os.chdir(repoName)
-  with open('drover.tei','w') as f:
+  with open('driver.tei','w') as f:
     print >> f, '<teiCorpus xmlns="http://www.tei-c.org/ns/1.0" xmlns:xi="http://www.w3.org/2001/XInclude"><teiHeader><fileDesc> <titleStmt> <title>TEI Corpus testharness</title></titleStmt> <publicationStmt><p>Unpublished test file</p></publicationStmt><sourceDesc><p>No source driver file</p> </sourceDesc> </fileDesc> </teiHeader>'
     FILES=glob.glob('level?/*.xml')
     for FILE in FILES:
-	print >> f,  "<xi:include href='"+FILE+"'/>"
+      print >> f,  "<xi:include href='"+FILE+"'/>"
     print >> f, "</teiCorpus>" 
 
 
