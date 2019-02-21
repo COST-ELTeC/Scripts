@@ -24,7 +24,7 @@
                     <xsl:value-of select="count(//t:text)"/>
                 </xsl:variable>
                 <xsl:variable name="wordCount">
-                    <xsl:value-of select="xs:integer(sum(//t:measure[@unit = 'words']))"/>
+                    <xsl:value-of select="sum(//t:measure[@unit = 'words'])"/>
                 </xsl:variable>
 
                 <xsl:variable name="status">

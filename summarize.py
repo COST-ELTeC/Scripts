@@ -15,13 +15,13 @@ summaryTail="</table>"+dateLine+"</body></html>"
 
 LANGS=('cze', 'deu', 'eng', 'fra', 'hun', 'ita', 'nor', 'por', 'rom', 'slv', 'spa', 'srp')
 
-shutil.copyfile(scriptRoot+'summary-head.html', webRoot+'indox.html')
+shutil.copyfile(scriptRoot+'summary-head.html', webRoot+'index.html')
 
 for LANG in LANGS:
     repoName=repoRoot+LANG
     print("Summarizing repo "+repoName)
-    command="saxon -xi -s:" + repoName + "/driver.tei -xsl:" + summarizer + ' corpus='+LANG + ' >>'+webRoot+'/indox.html'
+    command="saxon -xi -s:" + repoName + "/driver.tei -xsl:" + summarizer + ' corpus='+LANG + '>>'+webRoot+'/index.html'
     subprocess.check_output(command,shell=True)
 
-with open(webRoot+'indox.html', 'a') as file:
+with open(webRoot+'index.html', 'a') as file:
     file.write(summaryTail)
