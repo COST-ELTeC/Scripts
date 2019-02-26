@@ -1,12 +1,20 @@
 # Scripts
 contains generic scripts for manipulating, processing, validating individual ELTeC repositories
 
-- `refresh` : update local copies of each repo; update driver.tei in each repo
-- `summarize` : update index.html summary in distantreading.github.io/ELTeC
-- `report` : update index.html for each subdirectory on distantreading.github.io/ELTeC
-- `expose` : update HTML links for each text in each subdirectory on distantreading.github.io/ELTeC
+ - REFRESH
+  Updates your local copy of each repo by doing "git pull"; write a new version of the file driver.tei.  Run `python3 Scripts/refresh.py` (or bash script `refresh`)
 
-Don't forget to push changes from the distantreading.github.io after making them!
+ - SUMMARIZE
+  Processes the driver.tei file made by REFRESH to create a new summary of the whole collection as an index.html file stored in your local copy of the distantreading.github.io repository. Run `python3 Scripts/summarize.py` (or bash script `summarize`)
+
+ - REPORT
+  Processes the driver.tei file made by REFRESH to create a new index.html file listing titles etc. for each repository, stored in your local copy of the distantreading.github.io repository. Run `python3 Scripts/report.py` (or bash script `report`)
+
+ - EXPOSE
+  Processes the driver.tei file made by REFRESH to create HTML link files for each title in each repository, stored in your local copy of the distantreading.github.io repository. These link files transform and display the source XML files direct from the main repository, using CSS and Javascript files stored in the distantreading.github.io repository.
+  Run `python3 Scripts/expose.py` 
+
+* N extremely B * if you run any of these except the first, don't forget to commit and push the changes if you want them to be visible at http://distantreading.,github.io/ELTeC !!
 
 
 - `Makefile`
