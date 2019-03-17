@@ -39,9 +39,17 @@
          <xsl:for-each select="tokenize($corpora,',')">
              <xsl:variable name="corpus"><xsl:value-of select="."/>
              </xsl:variable>
-             
-                <td><xsl:value-of select="$ROOT//tagcount[@corpus=$corpus]/node[@name=$tag]/@count"/></td>
-       
+             <xsl:variable name="count">
+               <xsl:value-of select="$ROOT//tagcount[@corpus=$corpus]/node[@name=$tag]/@count"/>
+             </xsl:variable>
+             <td>
+             <xsl:choose>
+                 <xsl:when test="$count gt '0'">
+                     <xsl:value-of select="$count"/>
+                 </xsl:when>
+                 <xsl:otherwise>0</xsl:otherwise>
+             </xsl:choose> 
+             </td>
          </xsl:for-each>
             </tr>
      </xsl:for-each>
