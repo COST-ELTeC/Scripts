@@ -37,6 +37,9 @@ rd0301,Aimard,BanditsArizona,blanche,1881,T3,tbc,male,72114,medium,1
             <xsl:value-of select="$wordCount"/>
             <xsl:text> words</xsl:text>
         </xsl:variable>
+	
+	<xsl:result-document href="metadata.csv">
+	  
 <xsl:text>id,author-name,book-title,subgenre,year,year-cat,canon-cat,gender-cat,length,length-cat,counter
 </xsl:text>
         <xsl:for-each select="t:teiCorpus/t:TEI/t:teiHeader">
@@ -107,7 +110,7 @@ rd0301,Aimard,BanditsArizona,blanche,1881,T3,tbc,male,72114,medium,1
             <xsl:text>,1
 </xsl:text>
         </xsl:for-each>
-
+</xsl:result-document>
     </xsl:template>
    
 </xsl:stylesheet>
