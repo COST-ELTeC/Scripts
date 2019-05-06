@@ -12,12 +12,14 @@
           <xsl:variable name="ROOT" select="document('tagCounts.xml')"/>
          
      <xsl:variable name="corpora">cze,deu,eng,fra,hun,ita,nor,por,rom,slv,spa,srp</xsl:variable>
-     <xsl:variable name="tags">text,body,front,back,div,p,l,quote,head,trailer,title,foreign,gap,hi,emph,label,pb,ref,milestone,corr,note</xsl:variable>
+     <xsl:variable name="tags">body,front,back,div,p,l,quote,head,trailer,title,foreign,gap,hi,emph,label,pb,ref,milestone,corr,note</xsl:variable>
         
         <html>
             <link rel="stylesheet" type="text/css" href="../css/summary.css"/>
-                <head><title>Tag counts</title></head>
-                <body><table>
+                <head><title>Tag counts per corpus</title></head>
+                <body>
+                    <h2>Tags used within &lt;text&gt; only</h2>
+                    <table>
                     <thead>
 <tr>
     <td/>

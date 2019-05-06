@@ -31,7 +31,7 @@
                         </td><td><xsl:value-of select="count(//e:authorGender[@key = 'F'])"/>  </td>
                            <td class="sep"><xsl:value-of select="count(//e:size[@key = 'short'])"/> 
                         </td><td><xsl:value-of select="count(//e:size[@key= 'medium'])"/> </td>
-                        <td> <xsl:value-of select="count(//e:size[@key= 'medium'])"/></td>
+                        <td> <xsl:value-of select="count(//e:size[@key= 'long'])"/></td>
                            <td class="sep"><xsl:value-of select="count(//e:timeSlot[@key = 'T1'])"/> 
                         </td><td><xsl:value-of select="count(//e:timeSlot [@key= 'T2'])"/> </td>
                         <td> <xsl:value-of select="count(//e:timeSlot[@key = 'T3'])"/></td>
