@@ -28,7 +28,7 @@ exclude-result-prefixes="xs t e "
                     <xsl:value-of select="count(//t:text)"/>
                 </xsl:variable>
                 <xsl:variable name="wordCount">
-                    <xsl:value-of select="sum(//t:measure[@unit = 'words'])"/>
+                    <xsl:value-of select="format-number(sum(//t:measure[@unit = 'words']),'#')"/>
                 </xsl:variable>
 
                 <xsl:variable name="status">
@@ -97,15 +97,19 @@ exclude-result-prefixes="xs t e "
                            select="t:fileDesc/t:sourceDesc/t:bibl/t:relatedItem[@type = 'copyText']/t:bibl/t:date"
                        />
                    </xsl:when>
-                    <xsl:when test="t:fileDesc/t:sourceDesc/t:bibl[@type = 'edition-first']">
+                   <!-- <xsl:when test="t:fileDesc/t:sourceDesc/t:bibl[@type = 'edition-first']">
                         <xsl:value-of
                             select="t:fileDesc/t:sourceDesc/t:bibl[@type = 'edition-first']/t:date"
                         />
-                    </xsl:when>
-                    <xsl:when test="t:fileDesc/t:sourceDesc//t:bibl[@type = 'firstEdition']">
+                    </xsl:when>-->
+                    <xsl:when test="t:fileDesc/t:sourceDesc/t:bibl/t:relatedItem/t:bibl[@type = 'firstEdition']">
                         <xsl:value-of
-                            select="t:fileDesc/t:sourceDesc//t:bibl[@type = 'firstEdition']/t:date"/>
+                            select="t:fileDesc/t:sourceDesc/t:bibl/t:relatedItem/t:bibl[@type = 'firstEdition']/t:date"/>
                     </xsl:when>
+                   <xsl:when test="t:fileDesc/t:sourceDesc//t:bibl[@type = 'firstEdition']">
+                       <xsl:value-of
+                           select="t:fileDesc/t:sourceDesc//t:bibl[@type = 'firstEdition']/t:date"/>
+                   </xsl:when>
                     <xsl:otherwise>
                         <xsl:text>????</xsl:text>
                     </xsl:otherwise>
