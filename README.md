@@ -1,5 +1,5 @@
 # Scripts
-contains generic scripts for manipulating, processing, validating individual ELTeC repositories
+This folder contains generic scripts for manipulating, processing, validating individual ELTeC repositories
 
 ## python scripts
 
@@ -18,10 +18,13 @@ contains generic scripts for manipulating, processing, validating individual ELT
 
 *N extremely B* if you run any of these except the first, don't forget to commit and push the changes if you want them to be visible at the website https://distantreading.github.io/ELTeC !!
 
-These scripts will all need editing to specify the path names for your local installation. They also assume you can run `saxon` from the command line.
+These scripts assume you can run `saxon` from the command line, and that you have a local installation of `Rscript`.
 
-
-## shell scripts
+You will need to edit these scripts:
+ - to specify path names for your local installation
+ - if you add a new lamguage repository
+ 
+ # shell scripts
 
 - `Makefile`
   - copy this into the root of your local copy of an ELTEC repo
@@ -33,4 +36,15 @@ These scripts will all need editing to specify the path names for your local ins
   - run `make report` to generate a *balance report* using the `reporter.xsl` stylesheet
 
 
+## updating the eltec
 
+To issue a complete new update run the scripts in the order shown above, i.e.
+
+python refresh.py
+python report.py
+python summarize.py
+python expose.py
+
+These scripts will update your local copy of the distantreading.github.io pages. You still need to push them to the repo to see changes on the web.
+
+If you've added any new texts since the last time, you will also need to add the new files to the distantreading.github.io/ELTeC/xxx language repo.
