@@ -11,11 +11,12 @@
 
 <!-- Script to tidy up headers
         - check titleSmt/title and titleStmt author and warn if they are unconformant
-        - check sourceDesc/bibl/@type  for valid values
-            - change "copyText" to "printEdition"
+        - check sourceDesc/bibl/@type for valid values and change if necessary
             - change null value to "unspecified"
         - remove relatedItem tag
-        - add change element to revisionDesc
+        - if titleStmt/author has a VIAF idno, move it to an attribute value
+        - correct invalid pointer value # to #unspecified 
+        - add a change element to revisionDesc
 -->
         
     <!-- IdentityTransform -->
@@ -27,49 +28,67 @@
     </xsl:template>
 
 <xsl:template match="TEI">
-    <xsl:message><xsl:value-of select="concat(@xml:id, '  ', teiHeader/fileDesc/titleStmt/title[1])"/>)</xsl:message>
-    <xsl:copy>     <xsl:apply-templates select="@*"/><xsl:apply-templates/>
-</xsl:copy></xsl:template>
+    <xsl:message><xsl:value-of select="teiHeader/fileDesc/titleStmt/title[1]"/></xsl:message>
+    <xsl:copy>     
+     <xsl:apply-templates select="@*"/>
+     <xsl:apply-templates/>
+    </xsl:copy>
+</xsl:template>
+    
     <xsl:template match="titleStmt/title[1]">
-        <xsl:variable select="substring-before(., ': ELTeC')" name="theTitle"/>
-        <xsl:message>
-            <xsl:value-of select="$theTitle"/>
-        </xsl:message>
-        <xsl:if test="string-length($theTitle) &lt; 1">
-            <xsl:message>
-                <xsl:value-of select="concat(., ' is a defective title')"/>
-            </xsl:message>
+        <xsl:variable select="substring-before(., ' ELTeC')" name="theTitle"/>
+     <xsl:if test="string-length($theTitle) &lt; 1">
+            <xsl:message>... title lacks ' ELTeC'</xsl:message>
         </xsl:if>
         <xsl:copy>
-            <xsl:apply-templates select="@*"/>
-            <xsl:apply-templates/>
+    <xsl:apply-templates select="@*"/>
+     <xsl:apply-templates/>
         </xsl:copy>
     </xsl:template>
 
     <xsl:template match="titleStmt/author">
+             
+        
         <xsl:variable select="normalize-space(.)" name="theString"/>
         <xsl:variable select="substring-before($theString, '(')" name="theAuthor"/>
-        <xsl:variable select="substring-after($theString, '(')" name="theDates"/>
+        <xsl:variable select="substring-before(substring-after($theString, '('),')')" name="theDates"/>
+       <!-- sometimes we have two parenthesized expressions:
+           Blah, blah (wibble, Wibble) (1830-1902)
+           -->
         <xsl:choose>
             <xsl:when test="string-length($theAuthor) &lt; 1">
                 <xsl:message>[<xsl:value-of select="$theString"/>] has no dates!</xsl:message>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:if test="not(matches($theAuthor, '[A-Z][a-z ]+,'))">
-                    <xsl:message>[<xsl:value-of select="$theAuthor"/>] is a strange author: no
-                        comma?</xsl:message>
+                <xsl:if test="not(matches($theAuthor, '\[?[\p{L} \-]+,'))">
+                    <xsl:message>[<xsl:value-of select="$theAuthor"/>] is a strange author: no comma?</xsl:message>
                 </xsl:if>
-                <xsl:if test="not(matches($theDates, '1[789]\d\d\-1[89]\d\d\)'))">
-                    <xsl:message>[<xsl:value-of select="$theString"/>] datestring is strange!
+                <xsl:if test="not(matches($theDates, '1[789]\d\d\s*\-\s*1[89]\d\d'))">
+                    <xsl:message>[<xsl:value-of select="$theString"/>] implausible author dates!
                     </xsl:message>
                 </xsl:if>
             </xsl:otherwise>
         </xsl:choose>
-        <xsl:copy>
-            <xsl:apply-templates select="@*"/>
-            <xsl:apply-templates/>
-        </xsl:copy>
+        <xsl:choose>
+            <xsl:when test="idno[@type='viaf']">              
+        <xsl:element name="author" xmlns="http://www.tei-c.org/ns/1.0">
+            <xsl:attribute name="ref">
+                <xsl:value-of select="concat('viaf:',idno[@type='viaf'])"/>
+            </xsl:attribute>
+                 <xsl:value-of select="concat($theAuthor, ' (', $theDates, ')')"/>
+        </xsl:element>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:copy>
+                    <xsl:apply-templates select="@*"/>
+                    <xsl:apply-templates/>
+                </xsl:copy>
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:template>
+
+<xsl:template match="titleStmt/author/idno"/>
+    
 
     <xsl:template match="sourceDesc">
         <xsl:copy> <xsl:apply-templates select="bibl"/>
@@ -83,7 +102,7 @@
      </xsl:if>   <xsl:apply-templates/>
     </xsl:template>
 
-   <xsl:template match="bibl[not(@type)]">
+   <xsl:template match="bibl[not(@type) and ancestor::sourceDesc]">
     <xsl:if test="$verbose">    <xsl:message>Untyped bibl : changed to 'unspecified'</xsl:message>
     </xsl:if>    <xsl:copy>
             <xsl:attribute name="type">
@@ -112,13 +131,38 @@
                     <xsl:if test="$verbose">   <xsl:message>Wrongly typed bibl : changed 'source' to 'digitalSource'</xsl:message>
                     </xsl:if>     <xsl:text>digitalSource</xsl:text>
                 </xsl:when>
+                <xsl:when test=". eq 'digital-source'">
+                    <xsl:if test="$verbose">   <xsl:message>Wrongly typed bibl : changed 'digital-source' to 'digitalSource'</xsl:message>
+                    </xsl:if>     <xsl:text>digitalSource</xsl:text>
+                </xsl:when>
+                <xsl:when test=". eq 'print-source'">
+                    <xsl:if test="$verbose">   <xsl:message>Wrongly typed bibl : changed 'print-source' to 'printSource'</xsl:message>
+                    </xsl:if>     <xsl:text>printSource</xsl:text>
+                </xsl:when>
+                <xsl:when test=". eq 'printEdition'">
+                    <xsl:if test="$verbose">   <xsl:message>Wrongly typed bibl : changed 'printEdition' to 'printSource'</xsl:message>
+                    </xsl:if>     <xsl:text>printSource</xsl:text>
+                </xsl:when>
+                <xsl:when test=". eq 'CopyText'">
+                    <xsl:if test="$verbose">   <xsl:message>Wrongly typed bibl : changed 'CopyText' to 'printSource'</xsl:message>
+                    </xsl:if>     <xsl:text>printSource</xsl:text>
+                </xsl:when>
+                <xsl:when test=". eq 'firstedition'">
+                    <xsl:if test="$verbose">   <xsl:message>Wrongly typed bibl : changed 'firstedition' to 'firstEdition'</xsl:message>
+                    </xsl:if>     <xsl:text>firstEdition</xsl:text>
+                </xsl:when>
                 <xsl:otherwise>
                     <xsl:value-of select="."/>
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:attribute>
     </xsl:template>
-    
+
+    <xsl:template match="ref[@target='#']">
+      <ref xmlns="http://www.tei-c.org/ns/1.0" target="#unspecified">
+	<xsl:apply-templates/>
+      </ref>
+    </xsl:template>
     
     <xsl:template match="milestone[not(@unit)]">
      <xsl:if test="$verbose">   <xsl:message>Milestone needs a unit</xsl:message>
