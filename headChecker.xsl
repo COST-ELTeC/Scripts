@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xpath-default-namespace="http://www.tei-c.org/ns/1.0" exclude-result-prefixes="xs" version="2.0">
+    xpath-default-namespace="http://www.tei-c.org/ns/1.0" 
+    xmlns:e="http://distantreading.net/eltec/ns"
+exclude-result-prefixes="xs e" version="2.0">
 
-    <xsl:param name="fixIt"/>
+    <xsl:param name="publish">10.5281/zenodo.8468</xsl:param>
+<!-- iff true, update publicationStmt -->
+
     <xsl:param name="verbose"/>
+<!-- iff true, witter on -->
+
     <xsl:variable name="today">
         <xsl:value-of select="format-date(current-date(),'[Y0001]-[M01]-[D01]')"/>
     </xsl:variable>
@@ -16,6 +22,7 @@
         - remove relatedItem tag
         - if titleStmt/author has a VIAF idno, move it to an attribute value
         - correct invalid pointer value # to #unspecified 
+        - change canonicity@key medium to unspecified
         - add a change element to revisionDesc
 -->
         
@@ -47,9 +54,7 @@
     </xsl:template>
 
     <xsl:template match="titleStmt/author">
-             
-        
-        <xsl:variable select="normalize-space(.)" name="theString"/>
+       <xsl:variable select="normalize-space(.)" name="theString"/>
         <xsl:variable select="substring-before($theString, '(')" name="theAuthor"/>
         <xsl:variable select="substring-before(substring-after($theString, '('),')')" name="theDates"/>
        <!-- sometimes we have two parenthesized expressions:
@@ -87,8 +92,7 @@
         </xsl:choose>
     </xsl:template>
 
-<xsl:template match="titleStmt/author/idno"/>
-    
+<xsl:template match="titleStmt/author/idno"/>    
 
     <xsl:template match="sourceDesc">
         <xsl:copy> <xsl:apply-templates select="bibl"/>
@@ -111,10 +115,12 @@
             <xsl:apply-templates/>
         </xsl:copy>
     </xsl:template>
+
 <xsl:template match="div//bibl">
     <xsl:message>Misplaced bibl changed to label</xsl:message>
     <label xmlns="http://www.tei-c.org/ns/1.0"><xsl:apply-templates/></label>
 </xsl:template>
+
     <xsl:template match="bibl/@type">
         <xsl:attribute name="type">
             <xsl:choose>
@@ -158,8 +164,34 @@
         </xsl:attribute>
     </xsl:template>
 
+<xsl:template match="e:canonicity/@key">
+<xsl:if test=". eq 'medium'">
+<xsl:attribute name="key" >unspecified</xsl:attribute>
+</xsl:if>
+</xsl:template>
+
+<xsl:template match="publicationStmt">
+    <publicationStmt  xmlns="http://www.tei-c.org/ns/1.0" >
+        <xsl:choose>
+<xsl:when test="$publish">
+        <distributor>COST Action ELTeC</distributor>
+        <date when="{$today}"/>
+        <availability>                                       
+            <licence
+                target="https://creativecommons.org/licenses/by/4.0/">
+                Licenced under CC-BY 4.0 </licence>
+        </availability>
+        <ref type="doi" target="{$publish}"/>                                  
+    </xsl:when>
+<xsl:otherwise>
+<xsl:apply-templates/>
+</xsl:otherwise>
+   </xsl:choose> 
+    </publicationStmt>
+</xsl:template>
+
     <xsl:template match="ref[@target='#']">
-      <ref xmlns="http://www.tei-c.org/ns/1.0" target="#unspecified">
+        <ref xmlns="http://www.tei-c.org/ns/1.0" target="#unspecified">
 	<xsl:apply-templates/>
       </ref>
     </xsl:template>
