@@ -6,7 +6,7 @@ repoRoot='/home/lou/Public/ELTeC-'
 webRoot='/home/lou/Public/WG1/distantreading.github.io/ELTeC/'
 reporter='/home/lou/Public/Scripts/expose.xsl'
 
-LANGS=('cze', 'deu', 'eng', 'fra', 'hun', 'ita', 'nor', 'por', 'rom', 'slv', 'spa', 'srp')
+LANGS=('cze', 'deu', 'eng', 'fra', 'gre', 'hun', 'ita', 'nor', 'por', 'rom', 'slv', 'spa', 'srp')
 
 for LANG in LANGS:
     repoName=repoRoot+LANG

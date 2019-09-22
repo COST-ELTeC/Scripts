@@ -13,7 +13,7 @@ dateLine='<p>Last updated: '+time.strftime("%Y-%m-%d")+'</p>'
 
 summaryTail="</table>"+dateLine+"</body></html>"
 
-LANGS=('cze', 'deu', 'eng', 'fra', 'hun', 'ita', 'nor', 'por', 'rom', 'slv', 'spa', 'srp')
+LANGS=('cze', 'deu', 'eng', 'fra', 'gre', 'hun', 'ita', 'nor', 'por', 'rom', 'slv', 'spa', 'srp')
 
 shutil.copyfile(scriptRoot+'summary-head.html', webRoot+'index.html')
 
