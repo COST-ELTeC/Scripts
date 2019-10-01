@@ -17,6 +17,9 @@
         - if titleStmt/author has a VIAF idno, move it to an attribute value
         - correct invalid pointer value # to #unspecified 
         - add a change element to revisionDesc
+        - check that name is correctly used in header
+        - change key=medium to key=unspecified on canonicity
+        
 -->
         
     <!-- IdentityTransform -->
@@ -36,13 +39,12 @@
 </xsl:template>
     
     <xsl:template match="titleStmt/title[1]">
-        <xsl:variable select="substring-before(., ' ELTeC')" name="theTitle"/>
-     <xsl:if test="string-length($theTitle) &lt; 1">
-            <xsl:message>... title lacks ' ELTeC'</xsl:message>
-        </xsl:if>
         <xsl:copy>
     <xsl:apply-templates select="@*"/>
      <xsl:apply-templates/>
+     <xsl:if test="not(contains(., 'ELTeC'))">
+<xsl:text> : ELTeC edition</xsl:text>
+</xsl:if>
         </xsl:copy>
     </xsl:template>
 
@@ -64,7 +66,7 @@
                     <xsl:message>[<xsl:value-of select="$theAuthor"/>] is a strange author: no comma?</xsl:message>
                 </xsl:if>
                 <xsl:if test="not(matches($theDates, '1[789]\d\d\s*\-\s*1[89]\d\d'))">
-                    <xsl:message>[<xsl:value-of select="$theString"/>] implausible author dates!
+                    <xsl:message>[<xsl:value-of select="$theString"/>] implausible author dates (<xsl:value-of select="$theDates"/>)!
                     </xsl:message>
                 </xsl:if>
             </xsl:otherwise>
@@ -89,6 +91,7 @@
 
 <xsl:template match="titleStmt/author/idno"/>
     
+<!-- deal with sourceDesc -->
 
     <xsl:template match="sourceDesc">
         <xsl:copy> <xsl:apply-templates select="bibl"/>
@@ -111,10 +114,12 @@
             <xsl:apply-templates/>
         </xsl:copy>
     </xsl:template>
+
 <xsl:template match="div//bibl">
     <xsl:message>Misplaced bibl changed to label</xsl:message>
     <label xmlns="http://www.tei-c.org/ns/1.0"><xsl:apply-templates/></label>
 </xsl:template>
+
     <xsl:template match="bibl/@type">
         <xsl:attribute name="type">
             <xsl:choose>
@@ -158,6 +163,39 @@
         </xsl:attribute>
     </xsl:template>
 
+<!-- deal with publicationStmt -->
+
+<!-- deal with canonicity -->
+
+<xsl:template match="*:canonicity/@key">
+<xsl:attribute name="key">
+<xsl:choose>
+<xsl:when test=".='medium'">unspecified</xsl:when>
+<xsl:otherwise>
+     <xsl:value-of select="."/>
+</xsl:otherwise>
+</xsl:choose>
+</xsl:attribute></xsl:template>
+
+
+    <xsl:template match="revisionDesc">
+        <xsl:copy>
+        <change xmlns="http://www.tei-c.org/ns/1.0" when="{$today}">Header fixed by headChecker script</change>
+        <xsl:apply-templates/>
+        </xsl:copy>
+    </xsl:template>
+
+<xsl:template match="name">
+    <xsl:choose>
+        <xsl:when test="parent::change"> <xsl:value-of select="."/></xsl:when>
+        <xsl:when test="parent::respStmt"> <xsl:copy><xsl:apply-templates/></xsl:copy></xsl:when>
+ <xsl:otherwise><xsl:message>Unexpected name element found: ignored </xsl:message>
+ <xsl:value-of select="."/>
+ </xsl:otherwise>
+    </xsl:choose>
+</xsl:template>
+
+
     <xsl:template match="ref[@target='#']">
       <ref xmlns="http://www.tei-c.org/ns/1.0" target="#unspecified">
 	<xsl:apply-templates/>
@@ -169,10 +207,5 @@
     </xsl:if>    <milestone xmlns="http://www.tei-c.org/ns/1.0" unit="unspecified"/>
     </xsl:template>
     
-    <xsl:template match="revisionDesc">
-        <xsl:copy>
-        <change xmlns="http://www.tei-c.org/ns/1.0" when="{$today}">Header fixed by headChecker script</change>
-        <xsl:apply-templates/>
-        </xsl:copy>
-    </xsl:template>
+
 </xsl:stylesheet>
