@@ -8,6 +8,15 @@
     <xsl:variable name="today">
         <xsl:value-of select="format-date(current-date(),'[Y0001]-[M01]-[D01]')"/>
     </xsl:variable>
+    <xsl:variable name="textId">
+        <xsl:value-of select="TEI/@xml:id"/>
+ <xsl:if test="not(matches(TEI/@xml:id,'[A-Z]+[0-9]+'))">
+     <xsl:message>Weird xml_id!</xsl:message>
+ </xsl:if>
+    </xsl:variable>
+    <xsl:variable name="DOI">
+        <xsl:value-of select="concat('https://doi.org/10.5281/zenodo.3462435','_',$textId)"/> 
+    </xsl:variable>
 
 <!-- Script to tidy up headers
         - check titleSmt/title and titleStmt author and warn if they are unconformant
@@ -19,6 +28,7 @@
         - add a change element to revisionDesc
         - check that name is correctly used in header
         - change key=medium to key=unspecified on canonicity
+        - add publicationStmt with zenodo key
         
 -->
         
@@ -165,6 +175,19 @@
 
 <!-- deal with publicationStmt -->
 
+<xsl:template match="publicationStmt">
+    <publicationStmt>
+        <distributor 
+            ref="https://zenodo.org/communities/distant-reading">Distant Reading for European Literary History (COST Action 16204)
+        </distributor>
+        <date><xsl:value-of select="$today"/></date>
+        <availability>
+            <licence target="https://creativecommons.org/licenses/by/4.0/"/>
+        </availability>
+        <ref target="{$DOI}" type="doi" />  
+       </publicationStmt>
+</xsl:template>
+
 <!-- deal with canonicity -->
 
 <xsl:template match="*:canonicity/@key">
@@ -180,7 +203,7 @@
 
     <xsl:template match="revisionDesc">
         <xsl:copy>
-        <change xmlns="http://www.tei-c.org/ns/1.0" when="{$today}">Header fixed by headChecker script</change>
+        <change xmlns="http://www.tei-c.org/ns/1.0" when="{$today}">Header adjusted by headChecker script</change>
         <xsl:apply-templates/>
         </xsl:copy>
     </xsl:template>
