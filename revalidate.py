@@ -4,7 +4,7 @@ import os
 
 repoRoot='/home/lou/Public/ELTeC-'
 headfix='/home/lou/Public/Scripts/headChecker.xsl'
-schemaFile='/home/lou/Public/WG1/dev/eltec-1.xml.rnc'
+schemaFile='/home/lou/Public/WG1/dev/eltec-1.rnc'
 
 LANGS=('cze', 'deu', 'eng', 'fra', 'hun', 'ita', 'nor', 'por', 'rom', 'slv', 'spa', 'srp')
 

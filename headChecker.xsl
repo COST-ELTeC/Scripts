@@ -14,6 +14,15 @@ exclude-result-prefixes="xs e" version="2.0">
     <xsl:variable name="today">
         <xsl:value-of select="format-date(current-date(),'[Y0001]-[M01]-[D01]')"/>
     </xsl:variable>
+    <xsl:variable name="textId">
+        <xsl:value-of select="TEI/@xml:id"/>
+ <xsl:if test="not(matches(TEI/@xml:id,'[A-Z]+[0-9]+'))">
+     <xsl:message>Weird xml_id!</xsl:message>
+ </xsl:if>
+    </xsl:variable>
+    <xsl:variable name="DOI">
+        <xsl:value-of select="concat('https://doi.org/10.5281/zenodo.3462435','_',$textId)"/> 
+    </xsl:variable>
 
 <!-- Script to tidy up headers
         - check titleSmt/title and titleStmt author and warn if they are unconformant
@@ -24,6 +33,10 @@ exclude-result-prefixes="xs e" version="2.0">
         - correct invalid pointer value # to #unspecified 
         - change canonicity@key medium to unspecified
         - add a change element to revisionDesc
+        - check that name is correctly used in header
+        - change key=medium to key=unspecified on canonicity
+        - add publicationStmt with zenodo key
+        
 -->
         
     <!-- IdentityTransform -->
@@ -43,13 +56,12 @@ exclude-result-prefixes="xs e" version="2.0">
 </xsl:template>
     
     <xsl:template match="titleStmt/title[1]">
-        <xsl:variable select="substring-before(., ' ELTeC')" name="theTitle"/>
-     <xsl:if test="string-length($theTitle) &lt; 1">
-            <xsl:message>... title lacks ' ELTeC'</xsl:message>
-        </xsl:if>
         <xsl:copy>
     <xsl:apply-templates select="@*"/>
      <xsl:apply-templates/>
+     <xsl:if test="not(contains(., 'ELTeC'))">
+<xsl:text> : ELTeC edition</xsl:text>
+</xsl:if>
         </xsl:copy>
     </xsl:template>
 
@@ -69,7 +81,7 @@ exclude-result-prefixes="xs e" version="2.0">
                     <xsl:message>[<xsl:value-of select="$theAuthor"/>] is a strange author: no comma?</xsl:message>
                 </xsl:if>
                 <xsl:if test="not(matches($theDates, '1[789]\d\d\s*\-\s*1[89]\d\d'))">
-                    <xsl:message>[<xsl:value-of select="$theString"/>] implausible author dates!
+                    <xsl:message>[<xsl:value-of select="$theString"/>] implausible author dates (<xsl:value-of select="$theDates"/>)!
                     </xsl:message>
                 </xsl:if>
             </xsl:otherwise>
@@ -92,7 +104,10 @@ exclude-result-prefixes="xs e" version="2.0">
         </xsl:choose>
     </xsl:template>
 
-<xsl:template match="titleStmt/author/idno"/>    
+<xsl:template match="titleStmt/author/idno"/>
+    
+<!-- deal with sourceDesc -->
+
 
     <xsl:template match="sourceDesc">
         <xsl:copy> <xsl:apply-templates select="bibl"/>
@@ -164,12 +179,6 @@ exclude-result-prefixes="xs e" version="2.0">
         </xsl:attribute>
     </xsl:template>
 
-<xsl:template match="e:canonicity/@key">
-<xsl:if test=". eq 'medium'">
-<xsl:attribute name="key" >unspecified</xsl:attribute>
-</xsl:if>
-</xsl:template>
-
 <xsl:template match="publicationStmt">
     <publicationStmt  xmlns="http://www.tei-c.org/ns/1.0" >
         <xsl:choose>
@@ -190,6 +199,54 @@ exclude-result-prefixes="xs e" version="2.0">
     </publicationStmt>
 </xsl:template>
 
+
+<!-- deal with publicationStmt -->
+
+<xsl:template match="publicationStmt">
+    <publicationStmt>
+        <distributor 
+            ref="https://zenodo.org/communities/distant-reading">Distant Reading for European Literary History (COST Action 16204)
+        </distributor>
+        <date><xsl:value-of select="$today"/></date>
+        <availability>
+            <licence target="https://creativecommons.org/licenses/by/4.0/"/>
+        </availability>
+        <ref target="{$DOI}" type="doi" />  
+       </publicationStmt>
+</xsl:template>
+
+<!-- deal with canonicity -->
+
+<xsl:template match="*:canonicity/@key">
+<xsl:attribute name="key">
+<xsl:choose>
+<xsl:when test=".='medium'">unspecified</xsl:when>
+<xsl:otherwise>
+     <xsl:value-of select="."/>
+</xsl:otherwise>
+</xsl:choose>
+</xsl:attribute></xsl:template>
+
+
+    <xsl:template match="revisionDesc">
+        <xsl:copy>
+        <change xmlns="http://www.tei-c.org/ns/1.0" when="{$today}">Header adjusted by headChecker script</change>
+        <xsl:apply-templates/>
+        </xsl:copy>
+    </xsl:template>
+
+<xsl:template match="name">
+    <xsl:choose>
+        <xsl:when test="parent::change"> <xsl:value-of select="."/></xsl:when>
+        <xsl:when test="parent::respStmt"> <xsl:copy><xsl:apply-templates/></xsl:copy></xsl:when>
+ <xsl:otherwise><xsl:message>Unexpected name element found: ignored </xsl:message>
+ <xsl:value-of select="."/>
+ </xsl:otherwise>
+    </xsl:choose>
+</xsl:template>
+
+
+
     <xsl:template match="ref[@target='#']">
         <ref xmlns="http://www.tei-c.org/ns/1.0" target="#unspecified">
 	<xsl:apply-templates/>
@@ -201,10 +258,5 @@ exclude-result-prefixes="xs e" version="2.0">
     </xsl:if>    <milestone xmlns="http://www.tei-c.org/ns/1.0" unit="unspecified"/>
     </xsl:template>
     
-    <xsl:template match="revisionDesc">
-        <xsl:copy>
-        <change xmlns="http://www.tei-c.org/ns/1.0" when="{$today}">Header fixed by headChecker script</change>
-        <xsl:apply-templates/>
-        </xsl:copy>
-    </xsl:template>
+
 </xsl:stylesheet>
