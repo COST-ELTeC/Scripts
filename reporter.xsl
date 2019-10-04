@@ -50,7 +50,7 @@ exclude-result-prefixes="xs t e "
 	  
 <xsl:text>id,author-name,book-title,subgenre,year,year-cat,canon-cat,gender-cat,length,length-cat,counter
 </xsl:text>
-        <xsl:for-each select="t:teiCorpus/t:TEI/t:teiHeader">
+        <xsl:for-each select="//t:teiHeader">
             <xsl:sort select="ancestor::t:TEI/@xml:id"/>
 
             <xsl:variable name="wc">
@@ -162,7 +162,7 @@ exclude-result-prefixes="xs t e "
                             <th onclick="sortTable(8)">Sex</th>
                             <th onclick="sortTable(9)">Reprints</th>
                         </tr>
-                        <xsl:for-each select="t:teiCorpus/t:TEI/t:teiHeader">
+                        <xsl:for-each select="//t:teiHeader">
                             <xsl:sort select="ancestor::t:TEI/@xml:id"/>
                             <tr>
                                 <xsl:variable name="wc">
@@ -206,9 +206,9 @@ exclude-result-prefixes="xs t e "
                                             />
                                         </xsl:when>
                                         <xsl:when
-                                            test="t:fileDesc/t:sourceDesc/t:bibl[@type = 'firstEdition']">
+                                            test="t:fileDesc/t:sourceDesc//t:bibl[@type = 'firstEdition']">
                                             <xsl:value-of
-                                                select="t:fileDesc/t:sourceDesc/t:bibl[@type = 'firstEdition']/t:date"
+                                                select="t:fileDesc/t:sourceDesc//t:bibl[@type = 'firstEdition']/t:date"
                                             />
                                         </xsl:when>
                                         <xsl:otherwise>
