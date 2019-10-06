@@ -70,13 +70,25 @@
         - add publicationStmt with zenodo key
         
 -->
-    <!-- IdentityTransform -->
+    <!-- Basically, an identity transform -->
     <xsl:template match="/ | @* | node()">
         <xsl:copy>
             <xsl:apply-templates select="@* | node()"/>
         </xsl:copy>
     </xsl:template>
-    <xsl:template match="TEI">
+
+<!-- but we start by throwing away any existing xmlmodel PI and putting in our own -->
+    
+    <xsl:template match="processing-instruction('xml-model')"/>
+
+    <xsl:template match="TEI"><xsl:text>
+    </xsl:text><xsl:processing-instruction name="xml-model">
+            href="../../Schemas/eltec-1.rng" type="application/xml" 
+            schematypens="http://relaxng.org/ns/structure/1.0"</xsl:processing-instruction>
+        <xsl:text>
+    </xsl:text> <xsl:processing-instruction name="xml-model">
+            href="../../Schemas/eltec-1.rng" type="application/xml" 
+            schematypens="http://purl.oclc.org/dsdl/schematron"</xsl:processing-instruction>
         <xsl:message>
             <xsl:value-of select="teiHeader/fileDesc/titleStmt/title[1]"/>
         </xsl:message>
