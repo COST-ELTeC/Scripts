@@ -4,6 +4,7 @@
     xpath-default-namespace="http://www.tei-c.org/ns/1.0"
     xmlns:e="http://distantreading.net/eltec/ns" exclude-result-prefixes="xs e"
     version="2.0">
+<xsl:param name="fileName">UnknownFile</xsl:param>
     <xsl:param name="publish">10.5281/zenodo.3462435</xsl:param>
     <!-- iff true, update publicationStmt -->
     <xsl:param name="verbose"/>
@@ -89,8 +90,8 @@
     </xsl:text> <xsl:processing-instruction name="xml-model">
             href="../../Schemas/eltec-1.rng" type="application/xml" 
             schematypens="http://purl.oclc.org/dsdl/schematron"</xsl:processing-instruction>
-        <xsl:message>
-            <xsl:value-of select="teiHeader/fileDesc/titleStmt/title[1]"/>
+<xsl:message>
+*** File <xsl:value-of select="$fileName"/> on <xsl:value-of select="$today"/>  (<xsl:value-of select="teiHeader/fileDesc/titleStmt/title[1]"/>) ***
         </xsl:message>
         <xsl:if test="not(matches($textId, '[A-Z]+[0-9]+'))">
             <xsl:message>Weird xml_id : <xsl:value-of select="$textId"

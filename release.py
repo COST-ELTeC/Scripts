@@ -6,7 +6,7 @@ import sys
 repoRoot='/home/lou/Public/ELTeC-'
 headfix='/home/lou/Public/Scripts/headChecker.xsl'
 bodyfix='/home/lou/Public/Scripts/textChecker.xsl'
-schemaFile='/home/lou/Public/Schemas/eltec-1.rnc'
+schemaFile='/home/lou/Public/Schemas/eltec-1.rng'
 
 LANGS=('cze', 'deu', 'eng', 'fra', 'hun', 'ita', 'nor', 'por', 'rom', 'slv', 'spa', 'srp')
 
@@ -31,9 +31,10 @@ else :
 		command="saxon -s:" + repoName + "/" + FILE + \
          ".eltec -xsl:" + bodyfix + ' lang='+LANG + ' fileName=' + FILE + \
          '.eltec' + ' -o:'+FILE+'.eltec.xml'
-		print(command)
+#		print(command)
 		subprocess.check_output(command,shell=True)
-
+		command="jing "+schemaFile+" "+FILE+'.eltec.xml'
+		subprocess.check_output(command,shell=True)
 
 
 

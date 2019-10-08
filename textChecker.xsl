@@ -5,8 +5,6 @@
     
     xmlns:e="http://distantreading.net/eltec/ns" exclude-result-prefixes="xs e"
     version="2.0">
-    <xsl:param name="publish">10.5281/zenodo.3462435</xsl:param>
-    <!-- iff true, update publicationStmt -->
     <xsl:param name="verbose"/>
     <!-- iff true, witter on -->
     <xsl:variable name="today">
@@ -31,6 +29,7 @@
             <xsl:apply-templates select="@* | node()"/>
         </xsl:copy>
     </xsl:template>
+
    
    <!-- look at untyped divs -->
     <xsl:template match="body/div[not(@type)]">
