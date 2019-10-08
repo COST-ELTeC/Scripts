@@ -21,7 +21,7 @@
     </xsl:variable>
     
     <!-- Script to check texts for common errors
-       - check divs and fix where possible
+       - check divs and fix @type where possible
         
 -->
     <!-- IdentityTransform -->
@@ -48,19 +48,58 @@
     <!-- check divs in front -->
     <xsl:template match="front/div[@type]">      
                 <xsl:if test="not(@type ='titlepage' or @type='liminal')">
-          <xsl:message>*** Unrecognized divtype  <xsl:value-of select="@type"/> 
-             ... assuming liminal</xsl:message>
-                <div type="liminal" xmlns="http://www.tei-c.org/ns/1.0">
-                    <xsl:apply-templates/>
-                </div> </xsl:if>
+          <xsl:message>*** Unrecognized divtype  <xsl:value-of select="@type"/></xsl:message>
+              <xsl:choose>
+                  <xsl:when test="contains(@type,'title')">
+                      <xsl:message> ... assuming titlepage</xsl:message>
+                      <div type="titlepage" xmlns="http://www.tei-c.org/ns/1.0">
+                          <xsl:apply-templates/>
+                      </div>    
+                  </xsl:when>
+            
+                  <xsl:otherwise>  <xsl:message> ... assuming liminal</xsl:message>
+              <div type="liminal" xmlns="http://www.tei-c.org/ns/1.0">
+                  <xsl:apply-templates/>
+              </div> </xsl:otherwise>
+              </xsl:choose>
+                </xsl:if>
     </xsl:template>
     <xsl:template match="front/div[not(@type)]">  
-        <xsl:message>*** Unmarked divtype  <xsl:value-of select="@type"/> 
-            ... assuming liminal</xsl:message>
+        <xsl:message>*** Unmarked divtype  <xsl:value-of select="@type"/>  ... assuming liminal</xsl:message>
         <div type="liminal" xmlns="http://www.tei-c.org/ns/1.0">
             <xsl:apply-templates/>
         </div>
     </xsl:template>  
         
-        
+    <xsl:template match="back/div[not(@type)]">  
+        <xsl:message>*** Unmarked divtype  <xsl:value-of select="@type"/>  ... assuming liminal</xsl:message>
+        <div type="liminal" xmlns="http://www.tei-c.org/ns/1.0">
+            <xsl:apply-templates/>
+        </div>
+    </xsl:template>  
+    
+    <!-- following templates added to clean up norwegian texts -->
+    
+    <!-- remove <ref> with content inside <head> -->
+<!--    <xsl:template match="head/ref">
+        <xsl:apply-templates/>
+    </xsl:template>
+    -->
+    
+    <!-- remove <note> elements inside the body-->
+    <xsl:template match="body//note">
+<xsl:message>note inside body removed</xsl:message>
+    </xsl:template>
+    
+    <!-- remove empty front or back and vacuous ref -->
+
+    <xsl:template match="front[not(div)]">
+<xsl:message>Empty front removed</xsl:message></xsl:template>
+    <xsl:template match="back[not(div)]">
+<xsl:message>Empty back removed</xsl:message></xsl:template>
+    
+    <!-- remove invalidly targetted refs -->
+    <xsl:template match="ref[not(starts-with(@target,'http'))]">
+<xsl:message>invalid ref removed</xsl:message></xsl:template>
+    
 </xsl:stylesheet>
