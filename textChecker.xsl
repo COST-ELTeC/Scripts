@@ -22,7 +22,8 @@
     
     <!-- Script to check texts for common errors
        - check divs and fix @type where possible
-        
+       - remove empty front or back
+       - remove ref with invalid target
 -->
     <!-- IdentityTransform -->
     <xsl:template match="/ | @* | node()">
@@ -81,10 +82,11 @@
     <!-- following templates added to clean up norwegian texts -->
     
     <!-- remove <ref> with content inside <head> -->
-<!--    <xsl:template match="head/ref">
+<!--   <xsl:template match="head/ref">
         <xsl:apply-templates/>
+<xsl:message>Untagged ref in head</xsl:message>
     </xsl:template>
-    -->
+-->
     
     <!-- remove <note> elements inside the body-->
     <xsl:template match="body//note">
@@ -99,7 +101,13 @@
 <xsl:message>Empty back removed</xsl:message></xsl:template>
     
     <!-- remove invalidly targetted refs -->
-    <xsl:template match="ref[not(starts-with(@target,'http'))]">
-<xsl:message>invalid ref removed</xsl:message></xsl:template>
-    
-</xsl:stylesheet>
+    <xsl:template match="ref[not(starts-with(@target,'http')) and not(starts-with(@target,'#'))]">
+<xsl:choose>
+<xsl:when test='parent::head'>
+<xsl:apply-templates/>
+<xsl:message>ref in head de-tagged</xsl:message>
+</xsl:when>
+<xsl:otherwise>
+<xsl:message>invalid ref removed</xsl:message>
+</xsl:otherwise>    
+</xsl:choose></xsl:template></xsl:stylesheet>
