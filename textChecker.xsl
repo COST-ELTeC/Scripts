@@ -12,6 +12,9 @@
             select="format-date(current-date(), '[Y0001]-[M01]-[D01]')"/>
     </xsl:variable>
     <xsl:variable name="textId">
+    <xsl:if test="matches(TEI/@xml:id, '[A-Z]+\d+')">
+        
+    </xsl:if>
         <xsl:value-of select="TEI/@xml:id"/>
     </xsl:variable>
     <xsl:variable name="textLang">
@@ -80,13 +83,6 @@
     
     <!-- following templates added to clean up norwegian texts -->
     
-    <!-- remove <ref> with content inside <head> -->
-<!--   <xsl:template match="head/ref">
-        <xsl:apply-templates/>
-<xsl:message>Untagged ref in head</xsl:message>
-    </xsl:template>
--->
-    
     <!-- remove <note> elements inside the body-->
     <xsl:template match="body//note">
 <xsl:message>note inside body removed</xsl:message>
@@ -111,13 +107,31 @@
     <xsl:copy-of select="."></xsl:copy-of>
 </xsl:when>
      <xsl:when test="starts-with(@target,'#')">
-         <xsl:copy-of select="."></xsl:copy-of>
-         <xsl:if test="not(//note[@xml:id=substring-after(@target,'#')])">
-                 <xsl:message>Cannot find note with id <xsl:value-of select="substring-after(@target,'#')"/></xsl:message>
-         </xsl:if>
-       
+         <xsl:variable name="noteId">
+             <xsl:value-of select="substring-after(@target,'#')"/>
+         </xsl:variable>
+        <!-- <xsl:message>Looking for note <xsl:value-of select="$noteId"/></xsl:message>
+         <xsl:message><xsl:value-of select="//note[@xml:id=$noteId]"/></xsl:message>
+        --> <xsl:choose> 
+                <xsl:when test="//note[@xml:id=$noteId]"></xsl:when>           
+    <xsl:otherwise>
+        <xsl:message>Cannot find note with id <xsl:value-of select="$noteId"/></xsl:message>
+     </xsl:otherwise> 
+         </xsl:choose>    
+         <xsl:copy-of select="."/>         
      </xsl:when>
 <xsl:otherwise>
     <xsl:message>invalid ref targetting <xsl:value-of select="@target"/> removed</xsl:message>
 </xsl:otherwise>    
-</xsl:choose></xsl:template></xsl:stylesheet>
+</xsl:choose></xsl:template>
+
+<xsl:template match="body//div[p]">
+    <xsl:if test="div and not(@type='group')">
+        <xsl:message>!!! Invalid div structure: a div cannot contain p and div !!!</xsl:message>
+    </xsl:if>
+    <xsl:copy><xsl:apply-templates/></xsl:copy>
+</xsl:template>
+
+
+
+</xsl:stylesheet>
