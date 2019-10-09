@@ -5,9 +5,9 @@
     xmlns:e="http://distantreading.net/eltec/ns" exclude-result-prefixes="xs e"
     version="2.0">
 <xsl:param name="fileName">UnknownFile</xsl:param>
-    <xsl:param name="publish">10.5281/zenodo.3462435</xsl:param>
+    <xsl:param name="publish">https://doi.org/10.5281/zenodo.3462435</xsl:param>
     <!-- iff true, update publicationStmt -->
-    <xsl:param name="verbose"/>
+    <xsl:param name="verbose">true</xsl:param>
     <!-- iff true, witter on -->
     <xsl:variable name="today">
         <xsl:value-of
@@ -201,57 +201,49 @@
             <xsl:choose>
                 <xsl:when test=". eq 'copyText'">
                     <xsl:if test="$verbose">
-                        <xsl:message>Wrongly typed bibl : changed 'copyText' to
-                            'printSource'</xsl:message>
+  <xsl:message>Wrongly typed bibl : changed 'copyText' to 'printSource'</xsl:message>
                     </xsl:if>
                     <xsl:text>printSource</xsl:text>
                 </xsl:when>
                 <xsl:when test=". eq 'encodedFrom'">
                     <xsl:if test="$verbose">
-                        <xsl:message>Wrongly typed bibl : changed 'encodedFrom'
-                            to 'digitalSource'</xsl:message>
+  <xsl:message>Wrongly typed bibl : changed 'encodedFrom' to 'digitalSource'</xsl:message>
                     </xsl:if>
                     <xsl:text>digitalSource</xsl:text>
                 </xsl:when>
                 <xsl:when test=". eq 'source'">
                     <xsl:if test="$verbose">
-                        <xsl:message>Wrongly typed bibl : changed 'source' to
-                            'digitalSource'</xsl:message>
+                        <xsl:message>Wrongly typed bibl : changed 'source' to     'digitalSource'</xsl:message>
                     </xsl:if>
                     <xsl:text>digitalSource</xsl:text>
                 </xsl:when>
                 <xsl:when test=". eq 'digital-source'">
                     <xsl:if test="$verbose">
-                        <xsl:message>Wrongly typed bibl : changed
-                            'digital-source' to 'digitalSource'</xsl:message>
+                        <xsl:message>Wrongly typed bibl : changed 'digital-source' to 'digitalSource'</xsl:message>
                     </xsl:if>
                     <xsl:text>digitalSource</xsl:text>
                 </xsl:when>
                 <xsl:when test=". eq 'print-source'">
                     <xsl:if test="$verbose">
-                        <xsl:message>Wrongly typed bibl : changed 'print-source'
-                            to 'printSource'</xsl:message>
+                        <xsl:message>Wrongly typed bibl : changed 'print-source'  to 'printSource'</xsl:message>
                     </xsl:if>
                     <xsl:text>printSource</xsl:text>
                 </xsl:when>
                 <xsl:when test=". eq 'printEdition'">
                     <xsl:if test="$verbose">
-                        <xsl:message>Wrongly typed bibl : changed 'printEdition'
-                            to 'printSource'</xsl:message>
+                        <xsl:message>Wrongly typed bibl : changed 'printEdition' to 'printSource'</xsl:message>
                     </xsl:if>
                     <xsl:text>printSource</xsl:text>
                 </xsl:when>
                 <xsl:when test=". eq 'CopyText'">
                     <xsl:if test="$verbose">
-                        <xsl:message>Wrongly typed bibl : changed 'CopyText' to
-                            'printSource'</xsl:message>
+                        <xsl:message>Wrongly typed bibl : changed 'CopyText' to 'printSource'</xsl:message>
                     </xsl:if>
                     <xsl:text>printSource</xsl:text>
                 </xsl:when>
                 <xsl:when test=". eq 'firstedition'">
                     <xsl:if test="$verbose">
-                        <xsl:message>Wrongly typed bibl : changed 'firstedition'
-                            to 'firstEdition'</xsl:message>
+                        <xsl:message>Wrongly typed bibl : changed 'firstedition'  to 'firstEdition'</xsl:message>
                     </xsl:if>
                     <xsl:text>firstEdition</xsl:text>
                 </xsl:when>
@@ -263,24 +255,18 @@
     </xsl:template>
     <xsl:template match="publicationStmt">
         <publicationStmt xmlns="http://www.tei-c.org/ns/1.0">
-            <xsl:choose>
-                <xsl:when test="$publish">
-                    <distributor
-                        ref="https://zenodo.org/communities/distant-reading"
-                        >Distant Reading for European Literary History (COST
-                        Action 16204) </distributor>
-                    <date when="{$today}"/>
-                    <availability>
-                        <licence
-                            target="https://creativecommons.org/licenses/by/4.0/"
-                            ><p> Licenced under CC-BY 4.0 </p></licence>
-                    </availability>
-                    <ref type="doi" target="{$publish}"/>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:apply-templates/>
-                </xsl:otherwise>
-            </xsl:choose>
+<distributor ref="https://zenodo.org/communities/distant-reading"
+ >Distant Reading for European Literary History (COST Action 16204)</distributor>
+ <date when="{$today}"/>
+ <availability>
+    <licence target="https://creativecommons.org/licenses/by/4.0/"/>
+</availability>
+<ref type="doi" target="{$publish}"/>
+ <xsl:if test="p">
+<xsl:comment>
+     <xsl:value-of select="p"/>
+ </xsl:comment>
+ </xsl:if>
         </publicationStmt>
     </xsl:template>
     <!-- deal with canonicity -->
@@ -288,6 +274,8 @@
         <xsl:attribute name="key">
             <xsl:choose>
                 <xsl:when test=". = 'medium'">unspecified</xsl:when>
+                <xsl:when test=". = 'unmarked'">unspecified</xsl:when>
+                
                 <xsl:otherwise>
                     <xsl:value-of select="."/>
                 </xsl:otherwise>

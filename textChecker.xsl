@@ -48,7 +48,7 @@
     <!-- check divs in front -->
     <xsl:template match="front/div[@type]">      
                 <xsl:if test="not(@type ='titlepage' or @type='liminal')">
-          <xsl:message>*** Unrecognized divtype  <xsl:value-of select="@type"/></xsl:message>
+          <xsl:message>Unrecognized divtype  <xsl:value-of select="@type"/></xsl:message>
               <xsl:choose>
                   <xsl:when test="contains(@type,'title')">
                       <xsl:message> ... assuming titlepage</xsl:message>
@@ -65,14 +65,14 @@
                 </xsl:if>
     </xsl:template>
     <xsl:template match="front/div[not(@type)]">  
-        <xsl:message>*** Unmarked divtype  <xsl:value-of select="@type"/>  ... assuming liminal</xsl:message>
+        <xsl:message>No divtype supplied in front ... assuming liminal</xsl:message>
         <div type="liminal" xmlns="http://www.tei-c.org/ns/1.0">
             <xsl:apply-templates/>
         </div>
     </xsl:template>  
         
     <xsl:template match="back/div[not(@type)]">  
-        <xsl:message>*** Unmarked divtype  <xsl:value-of select="@type"/>  ... assuming liminal</xsl:message>
+        <xsl:message>No divtype supplied in back ... assuming liminal</xsl:message>
         <div type="liminal" xmlns="http://www.tei-c.org/ns/1.0">
             <xsl:apply-templates/>
         </div>
@@ -96,17 +96,28 @@
 
     <xsl:template match="front[not(div)]">
 <xsl:message>Empty front removed</xsl:message></xsl:template>
+    
     <xsl:template match="back[not(div)]">
 <xsl:message>Empty back removed</xsl:message></xsl:template>
     
     <!-- remove invalidly targetted refs -->
-    <xsl:template match="ref[not(starts-with(@target,'http')) and not(starts-with(@target,'#'))]">
-<xsl:choose>
+<xsl:template match="ref[@target]">
+ <xsl:choose>
 <xsl:when test='parent::head'>
 <xsl:apply-templates/>
 <xsl:message>ref in head de-tagged</xsl:message>
 </xsl:when>
+<xsl:when test="starts-with(@target,'http')">
+    <xsl:copy-of select="."></xsl:copy-of>
+</xsl:when>
+     <xsl:when test="starts-with(@target,'#')">
+         <xsl:copy-of select="."></xsl:copy-of>
+         <xsl:if test="not(//note[@xml:id=substring-after(@target,'#')])">
+                 <xsl:message>Cannot find note with id <xsl:value-of select="substring-after(@target,'#')"/></xsl:message>
+         </xsl:if>
+       
+     </xsl:when>
 <xsl:otherwise>
-<xsl:message>invalid ref removed</xsl:message>
+    <xsl:message>invalid ref targetting <xsl:value-of select="@target"/> removed</xsl:message>
 </xsl:otherwise>    
 </xsl:choose></xsl:template></xsl:stylesheet>
