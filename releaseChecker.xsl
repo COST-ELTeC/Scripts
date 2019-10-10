@@ -406,6 +406,13 @@
             <xsl:when test="starts-with(@target, 'gut:')">
                 <xsl:copy-of select="."/>
             </xsl:when>
+            <xsl:when test="starts-with(@target, 'ia:')">
+                <xsl:copy-of select="."/>
+            </xsl:when>
+            <xsl:when test="starts-with(@target, 'bod:')">
+                <xsl:copy-of select="."/>
+            </xsl:when>
+            
             <xsl:when test="starts-with(@target, '#')">
                 <xsl:variable name="noteId">
                     <xsl:value-of select="substring-after(@target, '#')"/>
