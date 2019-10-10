@@ -22,9 +22,14 @@ These scripts assume you can run `saxon` from the command line, and that you hav
 
 You will need to edit these scripts:
  - to specify path names for your local installation
- - if you add a new lamguage repository
+ - if you add a new language repository
  
- # shell scripts
+## doing a release on zenodo
+
+The Python script `release.py` checks for some common problems in the way ELTeC texts are encoded, applying fixes wherever possible, and producing a new version of the text with a modified publicationStmt (inter alia) ready for Zenodo. It can be run against a single file for testing purposes,  but it's meant to be used on a whole repository. To run it on the zzz language repository, use a command line like this `python Scripts/release.py zzz 2>zzzLog.txt` This will save the output from the script (it's quite chatty) in a file called zzzLog.txt for you to scan through looking for surprises. In general, any line with exclamation marks on it indicates a need for attention. Note also that this script only validates against the RELAXNG schema; the additional schematron checks defined by our ODD are only implemented when a text is opened in oXygen.  
+
+ 
+ # shell scripts (not updated for a while)
 
 - `Makefile`
   - copy this into the root of your local copy of an ELTEC repo
