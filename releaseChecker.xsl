@@ -93,8 +93,8 @@
             schematypens="http://purl.oclc.org/dsdl/schematron"</xsl:processing-instruction>
         <xsl:text>
 </xsl:text>
-        <xsl:message> *** File <xsl:value-of select="$fileName"/> on <xsl:value-of select="$today"/>
-                (<xsl:value-of select="teiHeader/fileDesc/titleStmt/title[1]"/>) *** </xsl:message>
+        <xsl:message> *** File <xsl:value-of select="$fileName"/> on <xsl:value-of 
+            select="$today"/> (<xsl:value-of select="teiHeader/fileDesc/titleStmt/title[1]"/>) *** </xsl:message>
         <xsl:if test="not(matches($textId, '[A-Z]+[0-9]+'))">
             <xsl:message>Weird xml_id : <xsl:value-of select="$textId"/></xsl:message>
         </xsl:if>
@@ -169,13 +169,16 @@
     </xsl:template>
     <xsl:template match="bibl[not(@type) and ancestor::sourceDesc]">
         <xsl:if test="$verbose">
-            <xsl:message>Untyped bibl : changed to 'unspecified'</xsl:message>
+            <xsl:message>Untyped bibl</xsl:message>
         </xsl:if>
         <xsl:copy>
             <xsl:attribute name="type">
                 <xsl:choose>
                     <xsl:when test="parent::relatedItem[@type = 'sourceEdition']">
                         <xsl:text>firstEdition</xsl:text>
+                    </xsl:when>
+                    <xsl:when test="child::ref[starts-with(@target,'gut:')]">
+                        <xsl:text>digitalSource</xsl:text>
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:text>unspecified</xsl:text>
@@ -301,7 +304,7 @@
 
     <xsl:template match="milestone[not(@unit)]">
         <xsl:if test="$verbose">
-            <xsl:message>Milestone needs a unit</xsl:message>
+            <xsl:message>Milestone unit -> unspecified</xsl:message>
         </xsl:if>
         <milestone xmlns="http://www.tei-c.org/ns/1.0" unit="unspecified"/>
     </xsl:template>
@@ -398,6 +401,9 @@
                 <xsl:message>ref in head de-tagged</xsl:message>
             </xsl:when>
             <xsl:when test="starts-with(@target, 'http')">
+                <xsl:copy-of select="."/>
+            </xsl:when>
+            <xsl:when test="starts-with(@target, 'gut:')">
                 <xsl:copy-of select="."/>
             </xsl:when>
             <xsl:when test="starts-with(@target, '#')">
