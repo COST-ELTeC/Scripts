@@ -46,10 +46,10 @@ from collections import Counter
 
 # === Parameters ===
 
-workingDir = join("..", "..", "ELTeC-eng")
+workingDir = join("..", "..", "ELTeC-por")
 
 teiFolder = join(workingDir, "level1", "*.xml")
-metadataFolder = join(workingDir, "Metadata")
+metadataFolder = join(workingDir, "")
 reportFile = join(workingDir, "report.md")
 
 xpaths = {"xmlid" : "//tei:TEI/@xml:id", 
