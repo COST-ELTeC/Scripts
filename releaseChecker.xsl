@@ -252,9 +252,12 @@
         </xsl:attribute>
     </xsl:template>
     <xsl:template match="publicationStmt">
-        <publicationStmt xmlns="http://www.tei-c.org/ns/1.0">
-            <distributor ref="https://zenodo.org/communities/distant-reading">Distant Reading for European Literary History (COST Action 16204)</distributor>
-            <date when="{$today}"/>
+        <publicationStmt xmlns="http://www.tei-c.org/ns/1.0">         
+            <publisher 
+ref="https://distant-reading.net">COST Action "Distant Reading for European Literary History" (CA16204)</publisher>
+            <distributor
+                ref="https://zenodo.org/communities/eltec/">Zenodo.org</distributor>
+             <date when="{$today}"/>
             <availability>
                 <licence target="https://creativecommons.org/licenses/by/4.0/"/>
             </availability>

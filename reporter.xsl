@@ -42,13 +42,14 @@ exclude-result-prefixes="xs t e "
                     <xsl:value-of select="$wordCount"/>
                     <xsl:text> words</xsl:text>
                 </xsl:variable>
-
+<xsl:variable name="fileName"></xsl:variable>
 
 <!-- recreate metadata.csv file -->	
 
 <xsl:result-document href="metadata.csv">
-	  
-<xsl:text>id,author-name,book-title,subgenre,year,year-cat,canon-cat,gender-cat,length,length-cat,counter
+    <!--filename, xml:id, title, author name, author gender, date of first publication, canonicity category, time period category, text length category, number of words, language-->
+    
+<xsl:text>id,author-name,book-title,year,year-cat,canon-cat,gender-cat,length,length-cat,counter
 </xsl:text>
         <xsl:for-each select="t:teiCorpus/t:TEI/t:teiHeader">
             <xsl:sort select="ancestor::t:TEI/@xml:id"/>
@@ -121,7 +122,6 @@ exclude-result-prefixes="xs t e "
             <xsl:value-of select='replace($authorName,"&apos;","")'/>
             <xsl:text>,</xsl:text>
             <xsl:value-of select='replace($titleName,"&apos;","")'/>
-            <xsl:text>,foo,</xsl:text>
             <xsl:value-of select="$date"/>
             <xsl:text>,</xsl:text>
             <xsl:value-of select="t:profileDesc/t:textDesc/e:timeSlot/@key"/>
