@@ -1,36 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-		xmlns:xs="http://www.w3.org/2001/XMLSchema"
-		xmlns:t="http://www.tei-c.org/ns/1.0"
-		xmlns:e="http://distantreading.net/eltec/ns" 
-
-exclude-result-prefixes="xs t e "		
-    version="2.0">
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:t="http://www.tei-c.org/ns/1.0"
+    xmlns:e="http://distantreading.net/eltec/ns" exclude-result-prefixes="xs t e " version="2.0">
     <xsl:output method="html"/>
 
     <xsl:param name="corpus">XXX</xsl:param>
-   
+
     <xsl:template match="/">
         <html>
             <head>
                 <meta http-equiv="Content-Type" content="text/html"/>
                 <link rel="stylesheet" type="text/css"
                     href="https://distantreading.github.io/css/eltec-styler.css"/>
-                <title><xsl:value-of select="concat('Contents of ELTeC-',$corpus)"/></title>
+                <title>
+                    <xsl:value-of select="concat('Contents of ELTeC-', $corpus)"/>
+                </title>
             </head>
             <body>
-                
                 <xsl:variable name="today">
-                    <xsl:value-of select="format-date(current-date(), 
-                        '[Y0001]-[M01]-[D01]')"/>
+                    <xsl:value-of select="format-date(current-date(),
+                            '[Y0001]-[M01]-[D01]')"
+                    />
                 </xsl:variable>
                 <xsl:variable name="textCount">
                     <xsl:value-of select="count(//t:text)"/>
                 </xsl:variable>
                 <xsl:variable name="wordCount">
-                    <xsl:value-of select="format-number(sum(//t:measure[@unit = 'words']),'#')"/>
+                    <xsl:value-of select="format-number(sum(//t:measure[@unit = 'words']), '#')"/>
                 </xsl:variable>
-
                 <xsl:variable name="status">
                     <xsl:text>On </xsl:text>
                     <xsl:value-of select="$today"/>
@@ -42,322 +39,233 @@ exclude-result-prefixes="xs t e "
                     <xsl:value-of select="$wordCount"/>
                     <xsl:text> words</xsl:text>
                 </xsl:variable>
-<xsl:variable name="fileName"></xsl:variable>
 
-<!-- recreate metadata.csv file -->	
+                <!-- recreate metadata.csv file as used by Rscript -->
 
-<xsl:result-document href="metadata.csv">
-    <!--filename, xml:id, title, author name, author gender, date of first publication, canonicity category, time period category, text length category, number of words, language-->
-    
-<xsl:text>id,author-name,book-title,year,year-cat,canon-cat,gender-cat,length,length-cat,counter
+                <xsl:result-document href="metadata.csv">
+                    <!--filename, xml:id, title, author name, author gender, date of first publication, canonicity category, time period category, text length category, number of words, language-->
+
+                    <xsl:text>id,author-name,book-title,year,year-cat,canon-cat,gender-cat,length,length-cat,counter
 </xsl:text>
-        <xsl:for-each select="t:teiCorpus/t:TEI/t:teiHeader">
-            <xsl:sort select="ancestor::t:TEI/@xml:id"/>
-
-            <xsl:variable name="wc">
-                <xsl:choose>
-                    <xsl:when test="t:fileDesc/t:extent/t:measure[@unit = 'words']">
-                        <xsl:value-of select="t:fileDesc/t:extent/t:measure[@unit = 'words']"/>
-                    </xsl:when>
-                    <xsl:otherwise>0</xsl:otherwise>
-                </xsl:choose>
-
-            </xsl:variable>
-           
-            <xsl:variable name="authorText">
-                <xsl:value-of
-                    select="normalize-space(t:fileDesc/t:titleStmt/t:author[1])"/>
-            </xsl:variable>
-            
-            <xsl:variable name="authorName">
-                <xsl:choose>
-                    <xsl:when test="contains($authorText,',')">
-                        <xsl:value-of select="substring-before($authorText,',')"/>
-                    </xsl:when>
-                    <xsl:when test="contains($authorText,'(')">
-                        <xsl:value-of select="substring-before($authorText,'(')"/>
-                    </xsl:when>
-                    <xsl:otherwise>Illformed Author</xsl:otherwise>
-                </xsl:choose>
-            </xsl:variable>
-            
-            <xsl:variable name="titleName">
-                <xsl:value-of
-                    select="replace(substring-before(t:fileDesc/t:titleStmt/t:title[1],':'),'[\s,]','')"/>
-                     </xsl:variable>
-            
-            <xsl:variable name="date">
-               <xsl:choose>
-                   <xsl:when test="t:fileDesc/t:sourceDesc//t:bibl[@type = 'copyText']">
-                       <xsl:value-of
-                           select="t:fileDesc/t:sourceDesc//t:bibl[@type = 'copyText']/t:date"
-                       />
-                   </xsl:when>
-                   <xsl:when test="t:fileDesc/t:sourceDesc/t:bibl/t:relatedItem[@type = 'copyText']">
-                       <xsl:value-of
-                           select="t:fileDesc/t:sourceDesc/t:bibl/t:relatedItem[@type = 'copyText']/t:bibl/t:date"
-                       />
-                   </xsl:when>
-                   <!-- <xsl:when test="t:fileDesc/t:sourceDesc/t:bibl[@type = 'edition-first']">
-                        <xsl:value-of
-                            select="t:fileDesc/t:sourceDesc/t:bibl[@type = 'edition-first']/t:date"
-                        />
-                    </xsl:when>-->
-                    <xsl:when test="t:fileDesc/t:sourceDesc/t:bibl/t:relatedItem/t:bibl[@type = 'firstEdition']">
-                        <xsl:value-of
-                            select="t:fileDesc/t:sourceDesc/t:bibl/t:relatedItem/t:bibl[@type = 'firstEdition']/t:date"/>
-                    </xsl:when>
-                   <xsl:when test="t:fileDesc/t:sourceDesc//t:bibl[@type = 'firstEdition']">
-                       <xsl:value-of
-                           select="t:fileDesc/t:sourceDesc//t:bibl[@type = 'firstEdition']/t:date"/>
-                   </xsl:when>
-                    <xsl:otherwise>
-                        <xsl:text>????</xsl:text>
-                    </xsl:otherwise>
-                </xsl:choose>
-            </xsl:variable>
-            
-            <xsl:value-of select="ancestor::t:TEI/@xml:id"/>
-            <xsl:text>,</xsl:text>
-            <xsl:value-of select='replace($authorName,"&apos;","")'/>
-            <xsl:text>,</xsl:text>
-            <xsl:value-of select='replace($titleName,"&apos;","")'/>
-            <xsl:text>,</xsl:text>
-            <xsl:value-of select="$date"/>
-            <xsl:text>,</xsl:text>
-            <xsl:value-of select="t:profileDesc/t:textDesc/e:timeSlot/@key"/>
-            <xsl:text>,</xsl:text>
-            <xsl:value-of select="t:profileDesc/t:textDesc/e:canonicity/@key"/>
-            <xsl:text>,</xsl:text>
-            <xsl:value-of select="t:profileDesc/t:textDesc/e:authorGender/@key"/>
-            <xsl:text>,</xsl:text>
-            <xsl:value-of select="$wc"/>
-            <xsl:text>,</xsl:text>
-            <xsl:value-of select="t:profileDesc/t:textDesc/e:size/@key"/>
-            <xsl:text>,1
-</xsl:text>
-        </xsl:for-each>
-</xsl:result-document>
-
-		
-<h4><xsl:value-of select="$status"/></h4>                    
-
-<p class="graphic">
-    <img src="mosaic.png"/>
-    <input type="button" value="Explainer" onclick="window.open('../explainer.html','popUpWindow',
-        'height=600,width=500,left=100,top=100,resizable=yes,
-        scrollbars=yes,toolbar=no,menubar=no,location=no,directories=no, status=yes');"/>
-</p>
-
-
-<p class="explain">Click on a column heading to sort. Click on a text identifier to read the text (may not work in older browsers).</p>
-                    <table class="catalogue" id="theTable">
-                        <tr class="label">
-                            <th onclick="sortTable(0)">Identifier</th>
-                            <th onclick="sortTable(1)">Encoding</th>
-                            <th onclick="sortTableNumerically(2)">Pages</th>
-                            <th onclick="sortTableNumerically(3)">Words</th>
-			    <th onclick="sortTable(4)">(Size)</th>
-                            <th onclick="sortTable(5)">Date (Slot)</th>
-                            <th onclick="sortTable(6)">Title</th>
-                            <th onclick="sortTable(7)">Author</th>
-                            <th onclick="sortTable(8)">Sex</th>
-                            <th onclick="sortTable(9)">Reprints</th>
-                        </tr>
-                        <xsl:for-each select="t:teiCorpus/t:TEI/t:teiHeader">
-                            <xsl:sort select="ancestor::t:TEI/@xml:id"/>
-                            <tr>
-                                <xsl:variable name="wc">
-                                    <xsl:choose>
-                                        <xsl:when
-                                            test="t:fileDesc/t:extent/t:measure[@unit = 'words']">
-                                            <xsl:value-of
-                                                select="t:fileDesc/t:extent/t:measure[@unit = 'words']"
-                                            />
-                                        </xsl:when>
-                                        <xsl:otherwise>0</xsl:otherwise>
-                                    </xsl:choose>
-
-                                </xsl:variable>
-                                <xsl:variable name="pc">
+                    <xsl:for-each select="t:teiCorpus/t:TEI/t:teiHeader">
+                        <xsl:sort select="ancestor::t:TEI/@xml:id"/>
+                        <xsl:variable name="wc">
+                            <xsl:choose>
+                                <xsl:when test="t:fileDesc/t:extent/t:measure[@unit = 'words']">
                                     <xsl:value-of
-                                        select="t:fileDesc/t:extent/t:measure[@unit = 'pages']"/>
-                                </xsl:variable>
+                                        select="t:fileDesc/t:extent/t:measure[@unit = 'words']"/>
+                                </xsl:when>
+                                <xsl:otherwise>0</xsl:otherwise>
+                            </xsl:choose>
+                        </xsl:variable>
 
-                                <xsl:variable name="date">
-
-                                    <xsl:choose>
-
-                                        <xsl:when
-                                            test="t:fileDesc/t:sourceDesc//t:relatedItem[@type = 'copyText']">
-                                            <xsl:value-of
-                                                select="t:fileDesc/t:sourceDesc//t:relatedItem[@type = 'copyText']/t:bibl/t:date"
-                                            />
-                                        </xsl:when>
-                                        <xsl:when
-                                            test="t:fileDesc/t:sourceDesc//t:bibl[@type = 'copyText']">
-                                            <xsl:value-of
-                                                select="t:fileDesc/t:sourceDesc//t:bibl[@type =
-                                                'copyText'][1]/t:date"
-                                            />
-                                        </xsl:when>
-                                        <xsl:when
-                                            test="t:fileDesc/t:sourceDesc/t:bibl[@type = 'edition-first']">
-                                            <xsl:value-of
-                                                select="t:fileDesc/t:sourceDesc/t:bibl[@type = 'edition-first']/t:date"
-                                            />
-                                        </xsl:when>
-                                        <xsl:when
-                                            test="t:fileDesc/t:sourceDesc/t:bibl[@type = 'firstEdition']">
-                                            <xsl:value-of
-                                                select="t:fileDesc/t:sourceDesc/t:bibl[@type = 'firstEdition']/t:date"
-                                            />
-                                        </xsl:when>
-                                        <xsl:otherwise>
-                                            <xsl:text>???? </xsl:text>
-                                        </xsl:otherwise>
-                                    </xsl:choose>
-                                </xsl:variable>
-                                <xsl:variable name="claimedSize">
-                                    <xsl:value-of select="t:profileDesc/t:textDesc/e:size/@key"/>
-                                </xsl:variable>
-
-                                <td>
-                                    <a>
-                                        <xsl:attribute name="href">
-                                            <xsl:value-of select="concat(ancestor::t:TEI/@xml:id,'.html')"/> 
-                                        </xsl:attribute>
-                                        <xsl:value-of select="ancestor::t:TEI/@xml:id"/>
-                                    </a>
-                                </td>
-                                <td>
-                                    <xsl:value-of select="t:encodingDesc/@n"/>
-                                </td>
-                                <td>
-                                    <xsl:value-of select="$pc"/>
-                                </td>
-                                <td>
-                                    <xsl:value-of select="$wc"/> </td><td>(<xsl:value-of
-                                        select="$claimedSize"/>) <xsl:value-of
-                                        select="e:checkSize($wc, $claimedSize)"/>
-                                </td>
-                                <td>
-                                    <xsl:value-of select="$date"/> (<xsl:value-of
-                                        select="t:profileDesc/t:textDesc/e:timeSlot/@key"/>) </td>
-
-                                <td>
-                                    <xsl:value-of select="t:fileDesc/t:titleStmt/t:title[1]"/>
-                                </td>
-                                <td>
-                                    <xsl:value-of select="t:fileDesc/t:titleStmt/t:author[1]/text()"
+                        <xsl:variable name="authorText">
+                            <xsl:value-of
+                                select="normalize-space(t:fileDesc/t:titleStmt/t:author[1])"/>
+                        </xsl:variable>
+                        <!--   
+            <xsl:analyze-string select="normalize-space(t:fileDesc/t:titleStmt/t:author[1])"
+                regex="([^(]+)\((\d+)[\-\s]+(\d+)"/>
+      -->
+                        <xsl:variable name="authorName">
+                            <xsl:choose>
+                                <xsl:when test="contains($authorText, ',')">
+                                    <xsl:value-of select="substring-before($authorText, ',')"/>
+                                </xsl:when>
+                                <xsl:when test="contains($authorText, '(')">
+                                    <xsl:value-of select="substring-before($authorText, '(')"/>
+                                </xsl:when>
+                                <xsl:otherwise>Illformed Author</xsl:otherwise>
+                            </xsl:choose>
+                        </xsl:variable>
+                       <!-- <xsl:variable name="authorBirth">
+                            <xsl:choose>
+                                <xsl:when test="contains($authorText, '(')">
+                                    <xsl:value-of
+                                        select="substring-before(substring-after($authorText, '('), '-')"
                                     />
-                                </td>
-                                <td>
+                                </xsl:when>
+                                <xsl:otherwise>?</xsl:otherwise>
+                            </xsl:choose>
+                        </xsl:variable>
+                        <xsl:variable name="authorDeath">
+                            <xsl:choose>
+                                <xsl:when test="contains($authorText, '(')">
                                     <xsl:value-of
-                                        select="t:profileDesc/t:textDesc/e:authorGender/@key"/>
-                                </td>
-                                <td>
+                                        select="substring-before(substring-after($authorText, '('), '-')"
+                                    />
+                                </xsl:when>
+                                <xsl:otherwise>?</xsl:otherwise>
+                            </xsl:choose>
+                        </xsl:variable>
+-->
+
+
+                        <xsl:variable name="titleName">
+                            <xsl:value-of
+                                select="replace(substring-before(t:fileDesc/t:titleStmt/t:title[1], ':'), '[\s,]', '')"
+                            />
+                        </xsl:variable>
+
+                        <xsl:variable name="date">
+                            <xsl:choose>
+                                <xsl:when
+                                    test="t:fileDesc/t:sourceDesc//t:bibl[@type = 'firstEdition']">
                                     <xsl:value-of
-                                        select="t:profileDesc/t:textDesc/e:canonicity/@key"/>
-                                </td>
+                                        select="t:fileDesc/t:sourceDesc//t:bibl[@type = 'firstEdition']/t:date"
+                                    />
+                                </xsl:when>
+                                <xsl:when
+                                    test="t:fileDesc/t:sourceDesc//t:bibl[@type = 'printSource']">
+                                    <xsl:value-of
+                                        select="t:fileDesc/t:sourceDesc//t:bibl[@type = 'printSource']/t:date"
+                                    />
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:text>?</xsl:text>
+                                </xsl:otherwise>
+                            </xsl:choose>
+                        </xsl:variable>
 
-                            </tr>
-                        </xsl:for-each>
-                    </table>
-             <!--   
+                        <xsl:value-of select="ancestor::t:TEI/@xml:id"/>
+                        <xsl:text>,</xsl:text>
+                        <xsl:value-of select='replace($authorName, "&apos;", "")'/>
+                        <xsl:text>,</xsl:text>
+                        <xsl:value-of select='replace($titleName, "&apos;", "")'/>
+                        <xsl:text>,</xsl:text>
+                        <xsl:value-of select="$date"/>
+                        <xsl:text>,</xsl:text>
+                        <xsl:value-of select="t:profileDesc/t:textDesc/e:timeSlot/@key"/>
+                        <xsl:text>,</xsl:text>
+                        <xsl:value-of select="t:profileDesc/t:textDesc/e:canonicity/@key"/>
+                        <xsl:text>,</xsl:text>
+                        <xsl:value-of select="t:profileDesc/t:textDesc/e:authorGender/@key"/>
+                        <xsl:text>,</xsl:text>
+                        <xsl:value-of select="$wc"/>
+                        <xsl:text>,</xsl:text>
+                        <xsl:value-of select="t:profileDesc/t:textDesc/e:size/@key"/>
+                        <xsl:text>,1
+</xsl:text>
+                    </xsl:for-each>
+                </xsl:result-document>
 
-                <table class="balance">
-                    <thead>
+
+                <h4>
+                    <xsl:value-of select="$status"/>
+                </h4>
+
+                <p class="graphic">
+                    <img src="mosaic.png"/>
+                    <input type="button" value="Explainer"
+                        onclick="window.open('../explainer.html','popUpWindow',
+        'height=600,width=500,left=100,top=100,resizable=yes,
+        scrollbars=yes,toolbar=no,menubar=no,location=no,directories=no, status=yes');"
+                    />
+                </p>
+
+
+                <p class="explain">Click on a column heading to sort. Click on a text identifier to
+                    read the text (may not work in older browsers).</p>
+                <table class="catalogue" id="theTable">
+                    <tr class="label">
+                        <th onclick="sortTable(0)">Identifier</th>
+                        <th onclick="sortTable(1)">Encoding</th>
+                        <th onclick="sortTableNumerically(2)">Pages</th>
+                        <th onclick="sortTableNumerically(3)">Words</th>
+                        <th onclick="sortTable(4)">(Size)</th>
+                        <th onclick="sortTable(5)">Date (Slot)</th>
+                        <th onclick="sortTable(6)">Title</th>
+                        <th onclick="sortTable(7)">Author</th>
+                        <th onclick="sortTable(8)">Sex</th>
+                        <th onclick="sortTable(9)">Reprints</th>
+                    </tr>
+                    <xsl:for-each select="t:teiCorpus/t:TEI/t:teiHeader">
+                        <xsl:sort select="ancestor::t:TEI/@xml:id"/>
                         <tr>
-                            <th>
-                                <xsl:value-of select="$corpus"/>
-                            </th>
-                            <th>Balance </th><th>(<xsl:value-of select="$textCount"/> texts
-                                    </th><th><xsl:value-of select="$wordCount"/> words)</th>
+                            <xsl:variable name="wc">
+                                <xsl:choose>
+                                    <xsl:when test="t:fileDesc/t:extent/t:measure[@unit = 'words']">
+                                        <xsl:value-of
+                                            select="t:fileDesc/t:extent/t:measure[@unit = 'words']"
+                                        />
+                                    </xsl:when>
+                                    <xsl:otherwise>0</xsl:otherwise>
+                                </xsl:choose>
+
+                            </xsl:variable>
+                            <xsl:variable name="pc">
+                                <xsl:value-of
+                                    select="t:fileDesc/t:extent/t:measure[@unit = 'pages']"/>
+                            </xsl:variable>
+                           <xsl:variable name="date">
+                                <xsl:choose>
+                                    <xsl:when
+                                        test="t:fileDesc/t:sourceDesc//t:bibl[@type = 'firstEdition']">
+                                        <xsl:value-of
+                                            select="t:fileDesc/t:sourceDesc//t:bibl[@type = 'firstEdition']/t:date"
+                                        />
+                                    </xsl:when>
+                                    <xsl:when
+                                        test="t:fileDesc/t:sourceDesc//t:bibl[@type = 'printSource']">
+                                        <xsl:value-of
+                                            select="t:fileDesc/t:sourceDesc//t:bibl[@type = 'printSource']/t:date"
+                                        />
+                                    </xsl:when>
+
+                                    <xsl:otherwise>
+                                        <xsl:text>? </xsl:text>
+                                    </xsl:otherwise>
+                                </xsl:choose>
+            
+                            </xsl:variable>
+
+                            <xsl:variable name="claimedSize">
+                                <xsl:value-of select="t:profileDesc/t:textDesc/e:size/@key"/>
+                            </xsl:variable>
+
+                            <td>
+                                <a>
+                                    <xsl:attribute name="href">
+                                        <xsl:value-of
+                                            select="concat(ancestor::t:TEI/@xml:id, '.html')"/>
+                                    </xsl:attribute>
+                                    <xsl:value-of select="ancestor::t:TEI/@xml:id"/>
+                                </a>
+                            </td>
+                            <td>
+                                <xsl:value-of select="t:encodingDesc/@n"/>
+                            </td>
+                            <td>
+                                <xsl:value-of select="$pc"/>
+                            </td>
+                            <td>
+                                <xsl:value-of select="$wc"/>
+                            </td>
+                            <td>(<xsl:value-of select="$claimedSize"/>) <xsl:value-of
+                                    select="e:checkSize($wc, $claimedSize)"/>
+                            </td>
+                            <td>
+                                <xsl:value-of select="$date"/> (<xsl:value-of
+                                    select="t:profileDesc/t:textDesc/e:timeSlot/@key"/>) </td>
+
+                            <td>
+                                <xsl:value-of select="substring-before(t:fileDesc/t:titleStmt/t:title[1],' : ')"/>
+                            </td>
+                            <td>
+                                <xsl:value-of select="t:fileDesc/t:titleStmt/t:author[1]/text()"/>
+                            </td>
+                            <td>
+                                <xsl:value-of select="t:profileDesc/t:textDesc/e:authorGender/@key"
+                                />
+                            </td>
+                            <td>
+                                <xsl:value-of select="t:profileDesc/t:textDesc/e:canonicity/@key"/>
+                            </td>
+
                         </tr>
-                    </thead>
-
-                    <tr>
-                        <td class="label">authorSex</td>
-                        <xsl:variable name="authorG" select="//e:authorGender"/>
-
-                        <xsl:for-each select="e:showBalance($authorG, $textCount, 'M,F,U')">
-                            <xsl:choose>
-                                <xsl:when test="ends-with(., '!')">
-                                    <td class="red">
-                                        <xsl:value-of select="."/>
-                                    </td>
-                                </xsl:when>
-                                <xsl:otherwise>
-                                    <td>
-                                        <xsl:value-of select="."/>
-                                    </td>
-                                </xsl:otherwise>
-                            </xsl:choose>
-                        </xsl:for-each>
-                    </tr>
-                    <tr>
-                        <td class="label">novelSize</td>
-                        <xsl:variable name="size" select="//e:size"/>
-
-                        <xsl:for-each select="e:showBalance($size, $textCount, 'short,medium,long')">
-                            <xsl:choose>
-                                <xsl:when test="ends-with(., '!')">
-                                    <td class="red">
-                                        <xsl:value-of select="."/>
-                                    </td>
-                                </xsl:when>
-                                <xsl:otherwise>
-                                    <td>
-                                        <xsl:value-of select="."/>
-                                    </td>
-                                </xsl:otherwise>
-                            </xsl:choose>
-                        </xsl:for-each>
-
-                    </tr>
-                    <tr>
-                        <td class="label">canonicity</td>
-                        <xsl:variable name="canonicity" select="//e:canonicity"/>
-
-                        <xsl:for-each
-                            select="e:showBalance($canonicity, $textCount, 'low,medium,high')">
-                            <xsl:choose>
-                                <xsl:when test="ends-with(., '!')">
-                                    <td class="red">
-                                        <xsl:value-of select="."/>
-                                    </td>
-                                </xsl:when>
-                                <xsl:otherwise>
-                                    <td>
-                                        <xsl:value-of select="."/>
-                                    </td>
-                                </xsl:otherwise>
-                            </xsl:choose>
-                        </xsl:for-each>
-
-                    </tr>
-                    <tr>
-                        <td class="label">period</td>
-                        <xsl:variable name="timeSlot" select="//e:timeSlot"/>
-                        <xsl:for-each select="e:showBalance($timeSlot, $textCount, 'T1,T2,T3,T4')">
-                            <xsl:choose>
-                                <xsl:when test="ends-with(., '!')">
-                                    <td class="red">
-                                        <xsl:value-of select="."/>
-                                    </td>
-                                </xsl:when>
-                                <xsl:otherwise>
-                                    <td>
-                                        <xsl:value-of select="."/>
-                                    </td>
-                                </xsl:otherwise>
-                            </xsl:choose>
-                        </xsl:for-each>
-
-
-                    </tr>
-                </table>-->
+                    </xsl:for-each>
+                </table>
+   
                 <script>
                     function sortTable(n) {
                     var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;

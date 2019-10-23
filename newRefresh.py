@@ -30,10 +30,11 @@ else :
     for FILE in FILES:
         f.write("<xi:include href='"+FILE+"'/>")
     f.write("</teiCorpus>")
+    f.close();
     print("Reporting on repo "+repoName)
     command="saxon -xi -s:" + repoName + "/driver.tei -xsl:" + reporter + ' corpus='+LANG + ' >'+webRoot+LANG+'/'+outputFile
-    print(command)
-#    subprocess.check_output(command,shell=True)
+#    print(command)
+    subprocess.check_output(command,shell=True)
     command="Rscript "+reportBalance+" --args "+webRoot+LANG
     subprocess.check_output(command,shell=True)
     
