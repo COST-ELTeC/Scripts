@@ -122,6 +122,7 @@ exclude-result-prefixes="xs t e "
             <xsl:value-of select='replace($authorName,"&apos;","")'/>
             <xsl:text>,</xsl:text>
             <xsl:value-of select='replace($titleName,"&apos;","")'/>
+            <xsl:text>,</xsl:text>
             <xsl:value-of select="$date"/>
             <xsl:text>,</xsl:text>
             <xsl:value-of select="t:profileDesc/t:textDesc/e:timeSlot/@key"/>
@@ -155,7 +156,8 @@ exclude-result-prefixes="xs t e "
                             <th onclick="sortTable(0)">Identifier</th>
                             <th onclick="sortTable(1)">Encoding</th>
                             <th onclick="sortTableNumerically(2)">Pages</th>
-                            <th onclick="sortTableNumerically(3)">Words</th><th onclick="sortTable(4)">(Size)</th>
+                            <th onclick="sortTableNumerically(3)">Words</th>
+			    <th onclick="sortTable(4)">(Size)</th>
                             <th onclick="sortTable(5)">Date (Slot)</th>
                             <th onclick="sortTable(6)">Title</th>
                             <th onclick="sortTable(7)">Author</th>

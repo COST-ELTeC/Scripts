@@ -264,7 +264,7 @@ ref="https://distant-reading.net">COST Action "Distant Reading for European Lite
             <ref type="doi" target="{$publish}"/>
             <xsl:if test="p">
                 <xsl:comment>
-     <xsl:value-of select="p"/>
+<xsl:value-of select="p"/>
  </xsl:comment>
             </xsl:if>
         </publicationStmt>

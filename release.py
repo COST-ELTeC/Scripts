@@ -25,10 +25,9 @@ else :
 		command="saxon -s:" + repoName + "/" + FILE + \
          " -xsl:" + release + ' lang='+LANG + ' fileName=' + FILE + \
          ' -o:'+FILE+'.eltec'
-#        print(command)
 		subprocess.check_output(command,shell=True)
-		
 		command="jing "+schemaFile+" "+FILE+'.eltec'
+#                print(command)
 		subprocess.check_output(command,shell=True)
 
 
