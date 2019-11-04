@@ -6,7 +6,7 @@
     <xsl:param name="fileName">UnknownFile</xsl:param>
     <xsl:param name="publish">https://doi.org/10.5281/zenodo.3462435</xsl:param>
     <!-- iff true, update publicationStmt -->
-    <xsl:param name="verbose">true</xsl:param>
+    <xsl:param name="verbose"/>
     <!-- iff true, witter on -->
     <xsl:variable name="today">
         <xsl:value-of select="format-date(current-date(), '[Y0001]-[M01]-[D01]')"/>
@@ -102,6 +102,22 @@
             <xsl:apply-templates select="@*"/>
             <xsl:apply-templates/>
         </xsl:copy>
+	<xsl:message>
+	  <xsl:value-of select="count(teiHeader/fileDesc/sourceDesc//bibl[not(@type)])"/><xsl:text> untyped bibls corrected
+</xsl:text>
+	  <xsl:value-of select="count(teiHeader/fileDesc/sourceDesc//bibl[not(@type='digitalSource' or @type='printSource' or @type='firstEdition')])"/>
+	  <xsl:text> invalid bibl/@type corrections
+</xsl:text>
+	    <xsl:value-of select="count(text//div[not(@type)])"/><xsl:text> untyped divs corrected
+</xsl:text><xsl:value-of select="count(text//div[@type and not(@type='liminal' or @type='chapter' or @type='notes' or @type='letter' or @type='group') ])"/>
+	  <xsl:text> invalid div/@type corrections : </xsl:text></xsl:message>
+	    <xsl:for-each select="text//div[@type and not(@type='liminal' or @type='chapter' or @type='notes' or @type='letter' or @type='group') ]">
+	        <xsl:message><xsl:value-of select="@type"/></xsl:message>
+	    </xsl:for-each><xsl:message><xsl:text>
+</xsl:text>
+	</xsl:message>
+	
+	
     </xsl:template>
     <xsl:template match="titleStmt/title[1]">
         <xsl:copy>
@@ -168,16 +184,22 @@
         <xsl:apply-templates/>
     </xsl:template>
     <xsl:template match="bibl[not(@type) and ancestor::sourceDesc]">
-        <xsl:if test="$verbose">
+<!--        <xsl:if test="$verbose">
             <xsl:message>Untyped bibl</xsl:message>
         </xsl:if>
-        <xsl:copy>
+-->        <xsl:copy>
             <xsl:attribute name="type">
                 <xsl:choose>
                     <xsl:when test="parent::relatedItem[@type = 'sourceEdition']">
                         <xsl:text>firstEdition</xsl:text>
                     </xsl:when>
+                    <xsl:when test="parent::relatedItem[@type = 'printSource']">
+                        <xsl:text>printSource</xsl:text>
+                    </xsl:when>
                     <xsl:when test="child::ref[starts-with(@target,'gut:')]">
+                        <xsl:text>digitalSource</xsl:text>
+                    </xsl:when>
+                    <xsl:when test="child::ref[starts-with(@target,'http:')]">
                         <xsl:text>digitalSource</xsl:text>
                     </xsl:when>
                     <xsl:otherwise>
@@ -320,22 +342,51 @@ ref="https://distant-reading.net">COST Action "Distant Reading for European Lite
 
     <!-- look at untyped divs -->
     <xsl:template match="body//div[not(@type)]">
+        <xsl:if test="$verbose">
         <xsl:message>Untyped div found...</xsl:message>
+	</xsl:if>
         <xsl:choose>
             <xsl:when test="p and not(child::div)">
-                <xsl:message>contains p but not div so marking as chapter</xsl:message>
+                <xsl:if test="$verbose">
+        <xsl:message>contains p but not div so marking as chapter</xsl:message>
+		</xsl:if>
                 <div type="chapter" xmlns="http://www.tei-c.org/ns/1.0">
                     <xsl:apply-templates/>
                 </div>
             </xsl:when>
             <xsl:when test="div">
+        <xsl:if test="$verbose">
                 <xsl:message>contains div so marking as group</xsl:message>
-                <div type="group" xmlns="http://www.tei-c.org/ns/1.0">
+	</xsl:if>
+        <div type="group" xmlns="http://www.tei-c.org/ns/1.0">
                     <xsl:apply-templates/>
                 </div>
             </xsl:when>
         </xsl:choose>
     </xsl:template>
+    
+    <!-- check typed divs -->
+    
+    <xsl:template match="body//div[@type]">
+               <xsl:choose>
+                  <xsl:when test="@type='liminal' or @type='chapter' or @type='letter' or @type='group'">
+                      <div xmlns="http://www.tei-c.org/ns/1.0" type="{@type}">
+                          <xsl:apply-templates/>
+                      </div>
+                  </xsl:when>
+                  <xsl:when test="@type='vol' or @type='volume' or @type='part'">
+                      <div xmlns="http://www.tei-c.org/ns/1.0" type="group">
+                          <xsl:apply-templates/>
+                      </div>
+                  </xsl:when>
+                  <xsl:otherwise>
+                      <div xmlns="http://www.tei-c.org/ns/1.0" type="unrecognized">
+                          <xsl:apply-templates/>
+                      </div>                     
+                  </xsl:otherwise>                 
+              </xsl:choose>
+    </xsl:template>
+    
     <!-- check divs in front -->
     <xsl:template match="front/div[@type]">
         <xsl:choose>
@@ -350,14 +401,15 @@ ref="https://distant-reading.net">COST Action "Distant Reading for European Lite
                 </div>
             </xsl:when>
             <xsl:when test="contains(@type, 'title')">
-                <xsl:message> ... assuming titlepage</xsl:message>
+                <xsl:if test="$verbose">
+                <xsl:message>Unrecognized div@type <xsl:value-of select="@type"/> ... assuming titlepage</xsl:message>
+		</xsl:if>
                 <div type="titlepage" xmlns="http://www.tei-c.org/ns/1.0">
                     <xsl:apply-templates/>
                 </div>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:message>Unrecognized divtype <xsl:value-of select="@type"/> ... assuming
-                    liminal</xsl:message>
+                <xsl:message>Unrecognized div@type <xsl:value-of select="@type"/> ... assuming liminal</xsl:message>
                 <div type="liminal" xmlns="http://www.tei-c.org/ns/1.0">
                     <xsl:apply-templates/>
                 </div>
@@ -366,15 +418,19 @@ ref="https://distant-reading.net">COST Action "Distant Reading for European Lite
 
     </xsl:template>
     <xsl:template match="front/div[not(@type)]">
+        <xsl:if test="$verbose">
         <xsl:message>No divtype supplied in front ... assuming liminal</xsl:message>
+	</xsl:if>
         <div type="liminal" xmlns="http://www.tei-c.org/ns/1.0">
             <xsl:apply-templates/>
         </div>
     </xsl:template>
 
     <xsl:template match="back/div[not(@type)]">
-        <xsl:message>No divtype supplied in back ... assuming liminal</xsl:message>
-        <div type="liminal" xmlns="http://www.tei-c.org/ns/1.0">
+                <xsl:if test="$verbose">
+<xsl:message>No divtype supplied in back ... assuming liminal</xsl:message>
+		</xsl:if>
+		<div type="liminal" xmlns="http://www.tei-c.org/ns/1.0">
             <xsl:apply-templates/>
         </div>
     </xsl:template>
@@ -397,7 +453,7 @@ ref="https://distant-reading.net">COST Action "Distant Reading for European Lite
     </xsl:template>
 
     <!-- remove invalidly targetted refs -->
-    <xsl:template match="ref[@target]">
+    <xsl:template match="ref[@target[string-length(.) gt 1]]">
         <xsl:choose>
             <xsl:when test="parent::head">
                 <xsl:apply-templates/>
@@ -416,7 +472,7 @@ ref="https://distant-reading.net">COST Action "Distant Reading for European Lite
                 <xsl:copy-of select="."/>
             </xsl:when>
             
-            <xsl:when test="starts-with(@target, '#')">
+            <xsl:when test="starts-with(@target, '#')" >
                 <xsl:variable name="noteId">
                     <xsl:value-of select="substring-after(@target, '#')"/>
                 </xsl:variable>
@@ -437,12 +493,18 @@ ref="https://distant-reading.net">COST Action "Distant Reading for European Lite
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
+    
+    <xsl:template match="measure[@unit='pages' and . = '0']">
+        <xsl:message>Suppressed zero page count</xsl:message>
+    </xsl:template>
+        
+    <xsl:template match="bibl[not(matches(.,'[\w]+'))]">
+        <xsl:message>Suppressed vapid bibl</xsl:message>
+    </xsl:template>
+       
 
-    <!--<xsl:template match="ref[@target = '#']">
-        <ref xmlns="http://www.tei-c.org/ns/1.0" target="#unspecified">
-            <xsl:apply-templates/>
-        </ref>
-    </xsl:template>-->
+    <xsl:template match="ref[@target = '#']"/>
+       
     <!--<xsl:template match="body//div[p]">
     <xsl:if test="div and not(@type='group')">
         <xsl:message>!!! Invalid div structure: a div cannot contain p and div !!!</xsl:message>
