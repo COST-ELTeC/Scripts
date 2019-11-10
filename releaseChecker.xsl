@@ -109,9 +109,11 @@
 	  <xsl:text> invalid bibl/@type corrections
 </xsl:text>
 	    <xsl:value-of select="count(text//div[not(@type)])"/><xsl:text> untyped divs corrected
-</xsl:text><xsl:value-of select="count(text//div[@type and not(@type='liminal' or @type='chapter' or @type='notes' or @type='letter' or @type='group') ])"/>
+</xsl:text><xsl:value-of select="count(text//div[@type and 
+    not(@type='liminal' or @type='titlepage'  or @type='chapter' or @type='notes' or @type='letter' or @type='group') ])"/>
 	  <xsl:text> invalid div/@type corrections : </xsl:text></xsl:message>
-	    <xsl:for-each select="text//div[@type and not(@type='liminal' or @type='chapter' or @type='notes' or @type='letter' or @type='group') ]">
+	    <xsl:for-each select="text//div[@type 
+	        and not(@type='liminal' or @type='titlepage' or @type='chapter' or @type='notes' or @type='letter' or @type='group') ]">
 	        <xsl:message><xsl:value-of select="@type"/></xsl:message>
 	    </xsl:for-each><xsl:message><xsl:text>
 </xsl:text>
@@ -482,7 +484,7 @@ ref="https://distant-reading.net">COST Action "Distant Reading for European Lite
                 <xsl:choose>
                     <xsl:when test="//note[@xml:id = $noteId]"/>
                     <xsl:otherwise>
-                        <xsl:message>Cannot find note with id <xsl:value-of select="$noteId"
+                        <xsl:message>!! Cannot find note with id <xsl:value-of select="$noteId"
                             /></xsl:message>
                     </xsl:otherwise>
                 </xsl:choose>

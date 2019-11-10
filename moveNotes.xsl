@@ -9,11 +9,12 @@
         <xsl:value-of select="TEI/@xml:id"/>
     </xsl:variable>
     
-   <xsl:template match="note">
+   <!--<xsl:template match="note">
        <ref xmlns="http://www.tei-c.org/ns/1.0" target="{concat('#',$textId,'_N',position())}"/>
    </xsl:template>
+    -->
     
-    <xsl:template match="text[not(back)]">
+    <!--<xsl:template match="text[not(back)]">
         <text xmlns="http://www.tei-c.org/ns/1.0"> 
             <xsl:apply-templates/>
         <back xmlns="http://www.tei-c.org/ns/1.0">
@@ -23,27 +24,33 @@
                         <xsl:attribute name="xml:id">
                             <xsl:value-of select="concat($textId,'_N',position())"/>
                         </xsl:attribute>
-                        <xsl:value-of select="."/>
+                        <xsl:apply-templates select="."/>
                     </note><xsl:text>
 </xsl:text>
                 </xsl:for-each>          
             </div>
         </back></text>
     </xsl:template>
+    -->
+    
+    <xsl:template match="text/body//note"/>
     
     <xsl:template match="back">
-        <xsl:apply-templates/>
-        <div type="notes">
-            <xsl:for-each select="body//note">
-                <note>
+        <back xmlns="http://www.tei-c.org/ns/1.0">
+          <div type="notes">
+            <xsl:for-each select="//note">
+                <xsl:copy>
                     <xsl:attribute name="xml:id">
-                        <xsl:value-of select="concat($textId,'_N',position())"/>
+                        <xsl:value-of select="@xml:id"/>
                     </xsl:attribute>
-                    <xsl:value-of select="."/>
-                </note>
+                    <xsl:apply-templates/>
+                  </xsl:copy>
             </xsl:for-each>          
         </div>
+        </back>
     </xsl:template>
+    
+    <xsl:template match="note//ref"/>
     
     <!-- Basically, an identity transform -->
     <xsl:template match="/ | @* | node()">
