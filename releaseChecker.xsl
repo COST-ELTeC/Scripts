@@ -348,6 +348,10 @@ ref="https://distant-reading.net">COST Action "Distant Reading for European Lite
         <xsl:message>Untyped div found...</xsl:message>
 	</xsl:if>
         <xsl:choose>
+            <xsl:when test="parent::div[@type='chapter']">
+                <xsl:message>!! Illegal div within chapter: suppressed</xsl:message>
+                <xsl:apply-templates/>
+            </xsl:when>
             <xsl:when test="p and not(child::div)">
                 <xsl:if test="$verbose">
         <xsl:message>contains p but not div so marking as chapter</xsl:message>
@@ -371,6 +375,11 @@ ref="https://distant-reading.net">COST Action "Distant Reading for European Lite
     
     <xsl:template match="body//div[@type]">
                <xsl:choose>
+                   <xsl:when test="parent::div[@type='chapter']">
+                       <xsl:message>!! Illegal div within chapter: suppressed</xsl:message>
+                       <xsl:apply-templates/>
+                   </xsl:when>
+                   
                   <xsl:when test="@type='liminal' or @type='chapter' or @type='letter' or @type='group'">
                       <div xmlns="http://www.tei-c.org/ns/1.0" type="{@type}">
                           <xsl:apply-templates/>
@@ -453,6 +462,21 @@ ref="https://distant-reading.net">COST Action "Distant Reading for European Lite
     <xsl:template match="back[not(div)]">
         <xsl:message>Empty back removed</xsl:message>
     </xsl:template>
+
+<!-- special tweaks for romanian -->
+    <xsl:template match="div[@type='chapter']/div/head">
+        <p xmlns="http://www.tei-c.org/ns/1.0"><label><xsl:value-of select="."/></label> </p>
+    </xsl:template>
+
+<xsl:template match="milestone[@unit='header']"/>
+    <xsl:template match="milestone[@unit='end']"/>
+    <xsl:template match="milestone[@unit='middle']">
+        <milestone xmlns="http://www.tei-c.org/ns/1.0" rend="dots" unit="subchapter"/>
+    </xsl:template>
+    <xsl:template match="milestone[@unit='absent']">
+        <milestone xmlns="http://www.tei-c.org/ns/1.0" rend="space" unit="subchapter"/>
+    </xsl:template>
+    
 
     <!-- remove invalidly targetted refs -->
     <xsl:template match="ref[@target[string-length(.) gt 1]]">
