@@ -12,6 +12,7 @@ def gitPull(repoDir):
 repoRoot='/home/lou/Public/ELTeC-'
 webRoot='/home/lou/Public/WG1/distantreading.github.io/ELTeC/'
 reporter='/home/lou/Public/Scripts/reporter.xsl'
+exposer='/home/lou/Public/Scripts/expose.xsl'
 reportBalance='/home/lou/Public/Scripts/mosaic.R'
 outputFile='index.html'
 
@@ -26,7 +27,7 @@ else :
     f=open("driver.tei","w")
     print("Rewriting driver file")
     f.write('<teiCorpus xmlns="http://www.tei-c.org/ns/1.0" xmlns:xi="http://www.w3.org/2001/XInclude"><teiHeader><fileDesc> <titleStmt> <title>ELTeC '+LANG+' repository</title></titleStmt> <publicationStmt><p>Unpublished test file</p></publicationStmt><sourceDesc><p>Automatically generated source driver file</p> </sourceDesc> </fileDesc> </teiHeader>')
-    FILES=glob.glob('level?/*.xml')
+    FILES=sorted(glob.glob('level?/*.xml'))
     for FILE in FILES:
         f.write("<xi:include href='"+FILE+"'/>")
     f.write("</teiCorpus>")
@@ -37,6 +38,12 @@ else :
     subprocess.check_output(command,shell=True)
     command="Rscript "+reportBalance+" --args "+webRoot+LANG
     subprocess.check_output(command,shell=True)
-    
+    print("Exposing repo "+repoName)
+    for FILE in FILES:
+        bf=os.path.splitext(FILE)[0] 
+        f1=bf.split('/')[1]
+        id=f1.split('_')[0]     
+        command="saxon -s:" + repoName + "/" + FILE + " -xsl:" + exposer + ' lang='+LANG + ' fileName=' + FILE +  ' >'+webRoot+LANG+'/'+id+'.html'
+        subprocess.check_output(command,shell=True)
 
 

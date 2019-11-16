@@ -249,7 +249,7 @@
                                     select="t:profileDesc/t:textDesc/e:timeSlot/@key"/>) </td>
 
                             <td>
-                                <xsl:value-of select="substring-before(t:fileDesc/t:titleStmt/t:title[1],' : ')"/>
+                                <xsl:value-of select="substring-before(t:fileDesc/t:titleStmt/t:title[1],':')"/>
                             </td>
                             <td>
                                 <xsl:value-of select="t:fileDesc/t:titleStmt/t:author[1]/text()"/>

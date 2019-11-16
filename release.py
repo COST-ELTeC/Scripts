@@ -16,7 +16,7 @@ else :
 	repoName=repoRoot+LANG
 	print("Preparing repo "+repoName+ " for release")
 	os.chdir(repoName)
-	FILES=glob.glob('level[01]/*.xml')
+	FILES=sorted(glob.glob('level[01]/*.xml'))
 	for FILE in FILES: 
 		bf=os.path.splitext(FILE)[0] 
 		f1=bf.split('/')[1]
