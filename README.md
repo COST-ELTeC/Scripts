@@ -15,6 +15,9 @@ This folder contains generic scripts for manipulating, processing, validating in
  - EXPOSE
   Processes the driver.tei file made by REFRESH to create HTML link files for each title in each repository, stored in your local copy of the distantreading.github.io repository. These link files transform and display the source XML files direct from the main repository, using CSS and Javascript files stored in the distantreading.github.io repository.
   Run `python3 Scripts/expose.py` 
+  
+ - REFRESHREPO
+  Does the equivalent of REFRESH, REPORT, EXPOSE for a single repository only. Run `python3 Scripts/refreshRepo.py xxx` to update repository for language code xxx. Note that the index page produced by SUMMARIZE is *not* updated by this script.
 
 *N extremely B* if you run any of these except the first, don't forget to commit and push the changes if you want them to be visible at the website https://distantreading.github.io/ELTeC !!
 
