@@ -249,7 +249,15 @@
                                     select="t:profileDesc/t:textDesc/e:timeSlot/@key"/>) </td>
 
                             <td>
-                                <xsl:value-of select="substring-before(t:fileDesc/t:titleStmt/t:title[1],':')"/>
+                                <xsl:choose>
+                                    <xsl:when test="contains(t:fileDesc/t:titleStmt/t:title[1],':')">
+                                        <xsl:value-of select="substring-before(t:fileDesc/t:titleStmt/t:title[1],':')"/>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <xsl:value-of select="substring-before(t:fileDesc/t:titleStmt/t:title[1],'ELT')"/>                                        
+                                    </xsl:otherwise>
+                                </xsl:choose>
+                              
                             </td>
                             <td>
                                 <xsl:value-of select="t:fileDesc/t:titleStmt/t:author[1]/text()"/>
