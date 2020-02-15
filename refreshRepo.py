@@ -10,7 +10,7 @@ def gitPull(repoDir):
     p.wait()
 
 repoRoot='/home/lou/Public/ELTeC-'
-webRoot='/home/lou/Public/WG1/distantreading.github.io/ELTeC/'
+webRoot='/home/lou/Public/distantreading.github.io/ELTeC/'
 reporter='/home/lou/Public/Scripts/reporter.xsl'
 exposer='/home/lou/Public/Scripts/expose.xsl'
 reportBalance='/home/lou/Public/Scripts/mosaic.R'

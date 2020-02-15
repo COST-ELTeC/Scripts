@@ -10,7 +10,7 @@ def gitPull(repoDir):
 
 root='/home/lou/Public/ELTeC-'
 
-LANGS=('cze', 'deu', 'eng', 'fra', 'gre', 'hun', 'ita', 'nor', 'por', 'rom', 'slv', 'spa', 'srp')
+LANGS=('cze', 'deu', 'eng', 'fra', 'gre', 'hun', 'ita','lit', 'nor', 'por', 'rom', 'slv', 'spa', 'srp')
 
 #LPS=['cze/CS', 'deu/deu', 'eng/ENG', 'fra/ hun',/ 'ita/IT', 'nor/ELTEC', 'por/POR', 'rom/', 'slv/SL' 'spa/SPA', 'srp/SRP']
 

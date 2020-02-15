@@ -390,6 +390,11 @@ ref="https://distant-reading.net">COST Action "Distant Reading for European Lite
                           <xsl:apply-templates/>
                       </div>
                   </xsl:when>
+                  <xsl:when test="@type='liminar'">
+                      <div xmlns="http://www.tei-c.org/ns/1.0" type="liminal">
+                          <xsl:apply-templates/>
+                      </div>
+                  </xsl:when>
                   <xsl:otherwise>
                       <div xmlns="http://www.tei-c.org/ns/1.0" type="unrecognized">
                           <xsl:apply-templates/>
