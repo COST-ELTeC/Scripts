@@ -27,7 +27,7 @@ else :
     f=open("driver.tei","w")
     print("Rewriting driver file")
     f.write('<teiCorpus xmlns="http://www.tei-c.org/ns/1.0" xmlns:xi="http://www.w3.org/2001/XInclude"><teiHeader><fileDesc> <titleStmt> <title>ELTeC '+LANG+' repository</title></titleStmt> <publicationStmt><p>Unpublished test file</p></publicationStmt><sourceDesc><p>Automatically generated source driver file</p> </sourceDesc> </fileDesc> </teiHeader>')
-    FILES=sorted(glob.glob('level?/*.xml'))
+    FILES=sorted(glob.glob('level[01]/*.xml'))
     for FILE in FILES:
         f.write("<xi:include href='"+FILE+"'/>")
     f.write("</teiCorpus>")
