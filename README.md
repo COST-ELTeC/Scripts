@@ -16,6 +16,10 @@ This folder contains generic scripts for manipulating, processing, validating in
   Processes the driver.tei file made by REFRESH to create HTML link files for each title in each repository, stored in your local copy of the distantreading.github.io repository. These link files transform and display the source XML files direct from the main repository, using CSS and Javascript files stored in the distantreading.github.io repository.
   Run `python3 Scripts/expose.py` 
   
+  - CHECKREPO
+  Uses the XSLT script `checkUp.xsl` to validate each text in the level0 and level1 folders of the specified repo and prepare it for release. See below for details of the checks and modifications it carries out. A new version of each file is written to a folder called `Out` in the repo. 
+  Run `python3 Scripts/checkRepo.py xxx` to check/update the repository for language code xxx
+  
  - REFRESHREPO
   Does the equivalent of REFRESH, REPORT, EXPOSE for a single repository only. Run `python3 Scripts/refreshRepo.py xxx` to update repository for language code xxx. Note that the index page produced by SUMMARIZE is *not* updated by this script.
 
@@ -27,9 +31,11 @@ You will need to edit these scripts:
  - to specify path names for your local installation
  - if you add a new language repository
  
-## doing a release on zenodo
+## Doing a release on zenodo
 
-The Python script `release.py` checks for some common problems in the way ELTeC texts are encoded, applying fixes wherever possible, and producing a new version of the text with a modified publicationStmt (inter alia) ready for Zenodo. It can be run against a single file for testing purposes,  but it's meant to be used on a whole repository. To run it on the zzz language repository, use a command line like this `python Scripts/release.py zzz 2>zzzLog.txt` This will save the output from the script (it's quite chatty) in a file called zzzLog.txt for you to scan through looking for surprises. In general, any line with exclamation marks on it indicates a need for attention. Note also that this script only validates against the RELAXNG schema; the additional schematron checks defined by our ODD are only implemented when a text is opened in oXygen.  
+The XSLT script `checkUp.xsl` checks for some common problems in the way ELTeC texts are encoded, applying fixes wherever possible, and producing a new version of the text with a modified publicationStmt (inter alia) ready for Zenodo. It can be run against a single file for testing purposes,  but it's meant to be used on a whole repository. To run it on the zzz language repository, use a command line like this `python Scripts/checkRepo.py zzz 2>zzzLog.txt` This will save the output from the script (it's quite chatty) in a file called `zzzLog.txt` for you to scan through looking for surprises. 
+For details of the checks and fixes applied, see the XSLT source code.
+Note that this script only validates against the RELAXNG schema; the additional schematron checks defined by our ODD are only implemented when a text is opened in oXygen or Atom.  
 
  
  # shell scripts (not updated for a while)
