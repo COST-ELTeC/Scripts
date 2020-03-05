@@ -4,17 +4,15 @@ import os
 import sys
 
 repoRoot='/home/lou/Public/ELTeC-'
-release='/home/lou/Public/Scripts/releaseChecker.xsl'
+release='/home/lou/Public/Scripts/checkUp.xsl'
 schemaFile='/home/lou/Public/Schemas/eltec-1.rng'
 
-LANGS=('cze', 'deu', 'eng', 'fra', 'hun', 'ita', 'nor', 'por', 'rom', 'slv', 'spa', 'srp')
-
 if (len(sys.argv) <= 1) :
-	print("And which language repository would sir like to release?")
+	print("And which language repository would sir like to check?")
 else :
 	LANG=sys.argv[1]
 	repoName=repoRoot+LANG
-	print("Preparing repo "+repoName+ " for release")
+	print("Checking repo "+repoName)
 	os.chdir(repoName)
 	FILES=sorted(glob.glob('level[01]/*.xml'))
 	for FILE in FILES: 

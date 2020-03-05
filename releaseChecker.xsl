@@ -102,7 +102,13 @@
             <xsl:apply-templates select="@*"/>
             <xsl:apply-templates/>
         </xsl:copy>
-	<xsl:message>
+        <xsl:variable name="problemBibls">
+            <xsl:value-of select="count(teiHeader/fileDesc/sourceDesc//bibl[not(@type)])"/>
+        </xsl:variable>
+        
+       <xsl:value-of select="e:reportOn(count(teiHeader/fileDesc/sourceDesc//bibl[not(@type)]),'untyped bibls corrected')"/> 
+	
+        <xsl:message>
 	  <xsl:value-of select="count(teiHeader/fileDesc/sourceDesc//bibl[not(@type)])"/><xsl:text> untyped bibls corrected
 </xsl:text>
 	  <xsl:value-of select="count(teiHeader/fileDesc/sourceDesc//bibl[not(@type='digitalSource' or @type='printSource' or @type='firstEdition')])"/>
@@ -299,7 +305,6 @@ ref="https://distant-reading.net">COST Action "Distant Reading for European Lite
             <xsl:choose>
                 <xsl:when test=". = 'medium'">unspecified</xsl:when>
                 <xsl:when test=". = 'unmarked'">unspecified</xsl:when>
-
                 <xsl:otherwise>
                     <xsl:value-of select="."/>
                 </xsl:otherwise>
@@ -544,5 +549,17 @@ ref="https://distant-reading.net">COST Action "Distant Reading for European Lite
 </xsl:template>
 
 -->
+    <xsl:function name="e:reportOn">
+        <xsl:param name="count" as="xs:integer"></xsl:param>
+        <xsl:param name="msg"></xsl:param>
+        <xsl:if test="$count > 0">
+            <xsl:message>
+                <xsl:value-of select="$count"/>
+                <xsl:text>cases of</xsl:text>
+                <xsl:value-of select="$msg"/>
+            </xsl:message>
+            
+        </xsl:if>
+    </xsl:function>
 
 </xsl:stylesheet>
