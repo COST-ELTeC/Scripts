@@ -22,7 +22,7 @@ for lang in LANGS:
     os.chdir(repoName)
     f=open("driver.tei","w")
     f.write('<teiCorpus xmlns="http://www.tei-c.org/ns/1.0" xmlns:xi="http://www.w3.org/2001/XInclude"><teiHeader><fileDesc> <titleStmt> <title>TEI Corpus testharness</title></titleStmt> <publicationStmt><p>Unpublished test file</p></publicationStmt><sourceDesc><p>No source driver file</p> </sourceDesc> </fileDesc> </teiHeader>')
-    FILES=glob.glob('level?/*.xml')
+    FILES=glob.glob('level[01]/*.xml')
     for FILE in FILES:
             f.write("<xi:include href='"+FILE+"'/>")
     f.write("</teiCorpus>")
