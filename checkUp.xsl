@@ -70,20 +70,7 @@
             <xsl:otherwise>ELTeC edition</xsl:otherwise>
         </xsl:choose></xsl:variable>  
 -->
-    <!-- Script to tidy up headers
-        - check titleSmt/title and titleStmt author and warn if they are unconformant
-        - check sourceDesc/bibl/@type for valid values and change if necessary
-            - change null value to "unspecified"
-        - remove relatedItem tag
-        - if titleStmt/author has a VIAF idno, move it to an attribute value
-        - correct invalid pointer value # to #unspecified 
-        - change canonicity@key medium to unspecified
-        - add a change element to revisionDesc
-        - check that name is correctly used in header
-        - change key=medium to key=unspecified on canonicity
-        - add publicationStmt with zenodo key
-        
--->
+    
     <!-- Basically, an identity transform -->
     <xsl:template match="/ | @* | node()">
         <xsl:copy>
@@ -140,10 +127,8 @@
             <xsl:message>ERROR: Unexpected @type=<xsl:value-of select="@type"/>
             </xsl:message>
         </xsl:for-each>
-
-
-
     </xsl:template>
+    
     <xsl:template match="titleStmt/title[1]">
         <xsl:copy>
             <xsl:apply-templates select="@*"/>
@@ -154,6 +139,7 @@
             </xsl:if>
         </xsl:copy>
     </xsl:template>
+    
     <xsl:template match="titleStmt/author">
         <xsl:variable select="normalize-space(.)" name="theString"/>
         <xsl:variable select="substring-before($theString, '(')" name="theAuthor"/>
@@ -214,7 +200,7 @@
         <xsl:apply-templates/>
     </xsl:template>
     <xsl:template match="respStmt[not(resp)]">
-        <xsl:message>ERROR : respStmt missing resp : untagged</xsl:message>
+        <xsl:message>ERROR : respStmt missing resp : de-tagged</xsl:message>
              <xsl:apply-templates/>
     </xsl:template>
     <xsl:template match="bibl//editor">
@@ -388,11 +374,9 @@
         <milestone xmlns="http://www.tei-c.org/ns/1.0" unit="unspecified"/>
     </xsl:template>
 
-
     <!-- look at untyped divs -->
     <xsl:template match="body//div[not(@type)]">
-      
-        <xsl:choose>
+          <xsl:choose>
             <xsl:when test="parent::div[@type = 'chapter']">
                 <xsl:message>ERROR : div not permitted within chapter: replaced with
                     milestone</xsl:message>
@@ -532,6 +516,7 @@
         </p>
     </xsl:template>
 
+   <!-- kill some strange milestones -->
     <xsl:template match="milestone[@unit = 'header']"/>
     <xsl:template match="milestone[@unit = 'end']"/>
     <xsl:template match="milestone[@unit = 'middle']">
@@ -571,19 +556,23 @@
                 <xsl:choose>
                     <xsl:when test="//note[@xml:id = $noteId]"/>
                     <xsl:otherwise>
-                        <xsl:message>!! Cannot find note with id <xsl:value-of select="$noteId"
+                        <xsl:message>ERROR:  Cannot find note with id <xsl:value-of select="$noteId"
                             /></xsl:message>
                     </xsl:otherwise>
                 </xsl:choose>
                 <xsl:copy-of select="."/>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:message>invalid ref targetting <xsl:value-of select="@target"/>
+                <xsl:message>WARNING: invalid ref targetting <xsl:value-of select="@target"/>
                     removed</xsl:message>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
-
+    
+    <xsl:template match="ref[@target = '#']">
+        <xsl:message>Suppressed vapid ref</xsl:message>       
+    </xsl:template>
+    
     <xsl:template match="measure[@unit = 'pages' and . = '0']">
         <xsl:message>Suppressed zero page count</xsl:message>
     </xsl:template>
@@ -591,9 +580,6 @@
     <xsl:template match="bibl[not(matches(., '[\w]+'))]">
         <xsl:message>Suppressed vapid bibl</xsl:message>
     </xsl:template>
-
-
-    <xsl:template match="ref[@target = '#']"/>
 
     <xsl:function name="e:reportOn">
         <xsl:param name="count" as="xs:integer"/>

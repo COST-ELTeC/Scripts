@@ -7,6 +7,10 @@ repoRoot='/home/lou/Public/ELTeC-'
 release='/home/lou/Public/Scripts/checkUp.xsl'
 schemaFile='/home/lou/Public/Schemas/eltec-1.rng'
 
+# writes tidied up version of each .xml file in nominated repo 
+#   to a directory called Out in same repo 
+# validates the result against `schemaFile` using jing
+
 if (len(sys.argv) <= 1) :
 	print("And which language repository would sir like to check?")
 else :
