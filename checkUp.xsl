@@ -209,11 +209,24 @@
         </xsl:if>
         <xsl:apply-templates/>
     </xsl:template>
+    <xsl:template match="bibl/note">
+        <xsl:message>WARNING note tag in bibl removed</xsl:message>
+        <xsl:apply-templates/>
+    </xsl:template>
+    <xsl:template match="respStmt[not(resp)]">
+        <xsl:message>ERROR : respStmt missing resp : untagged</xsl:message>
+             <xsl:apply-templates/>
+    </xsl:template>
+    <xsl:template match="bibl//editor">
+        <xsl:message>ERROR: Editor tag not allowed: converting to respStmt</xsl:message>
+        <respStmt xmlns="http://www.tei-c.org/ns/1.0">
+            <resp>editor</resp>
+            <name><xsl:apply-templates/></name>
+        </respStmt>
+    </xsl:template>
+    
     <xsl:template match="bibl[not(@type) and ancestor::sourceDesc]">
-        <!--        <xsl:if test="$verbose">
-            <xsl:message>Untyped bibl</xsl:message>
-        </xsl:if>
--->
+       
         <xsl:copy>
             <xsl:attribute name="type">
                 <xsl:choose>
@@ -277,6 +290,13 @@
                 <xsl:when test=". eq 'print-source'">
                     <xsl:if test="$verbose">
                         <xsl:message>Wrongly typed bibl : changed 'print-source' to
+                            'printSource'</xsl:message>
+                    </xsl:if>
+                    <xsl:text>printSource</xsl:text>
+                </xsl:when>
+                <xsl:when test=". eq 'print_source'">
+                    <xsl:if test="$verbose">
+                        <xsl:message>Wrongly typed bibl : changed 'print_source' to
                             'printSource'</xsl:message>
                     </xsl:if>
                     <xsl:text>printSource</xsl:text>
