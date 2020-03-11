@@ -24,7 +24,7 @@ else :
 		bf=os.path.splitext(FILE)[0] 
 		f1=bf.split('/')[1]
 		id=f1.split('_')[0]     
-		print("File="+FILE+" id="+id)
+#		print("File="+FILE+" id="+id)
 		command="saxon -s:" + repoName + "/" + FILE + \
          " -xsl:" + release + ' lang='+LANG + ' fileName=' + FILE + \
          ' -o:Out/'+FILE

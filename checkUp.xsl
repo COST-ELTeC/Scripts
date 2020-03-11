@@ -95,8 +95,14 @@
             schematypens="http://purl.oclc.org/dsdl/schematron"</xsl:processing-instruction>
         <xsl:text>
 </xsl:text>
-        <xsl:message> *** File <xsl:value-of select="$fileName"/> on <xsl:value-of select="$today"/>
-                (<xsl:value-of select="teiHeader/fileDesc/titleStmt/title[1]"/>) *** </xsl:message>
+        <xsl:message><xsl:text>*** File </xsl:text>
+            <xsl:value-of select="$fileName"/>
+            <xsl:text> on </xsl:text>
+            <xsl:value-of select="$today"/>
+            <xsl:text> (</xsl:text>
+        <xsl:value-of select="teiHeader/fileDesc/titleStmt/title[1]"/>
+            <xsl:text>) *** 
+</xsl:text></xsl:message>
         <xsl:if test="not(matches($textId, '[A-Z]+[0-9]+'))">
             <xsl:message>Weird xml_id : <xsl:value-of select="$textId"/></xsl:message>
         </xsl:if>
@@ -492,6 +498,30 @@
         </div>
     </xsl:template>
 
+    <xsl:template match="back/div[@type]">
+        <xsl:choose>
+        
+        <xsl:when
+            test="@type = 'liminal' or @type = 'notes'">
+            <div xmlns="http://www.tei-c.org/ns/1.0" type="{@type}">
+                <xsl:apply-templates/>
+            </div>
+        </xsl:when>
+            <xsl:when
+                test="@type = 'Notes'">    
+        <div type="notes" xmlns="http://www.tei-c.org/ns/1.0">
+            <xsl:apply-templates/>
+        </div>
+            </xsl:when>
+            <xsl:otherwise><xsl:message><xsl:text>WARNING : unanticipated div/@type (</xsl:text>
+                <xsl:value-of select="@type"/>
+              <xsl:text>) in back : changed to liminal</xsl:text></xsl:message>
+                <div type="liminal" xmlns="http://www.tei-c.org/ns/1.0">
+                    <xsl:apply-templates/>
+                </div></xsl:otherwise>
+        </xsl:choose> 
+    </xsl:template>
+
       <!-- remove <note> elements inside the body-->
     <xsl:template match="body//note">
         <xsl:message>ERROR : note inside body removed</xsl:message>
@@ -545,7 +575,9 @@
             <xsl:when test="starts-with(@target, 'bod:')">
                 <xsl:copy-of select="."/>
             </xsl:when>
-
+            <xsl:when test="starts-with(@target, 'textgrid:')">
+                <xsl:copy-of select="."/>
+            </xsl:when>
             <xsl:when test="starts-with(@target, '#')">
                 <xsl:variable name="noteId">
                     <xsl:value-of select="substring-after(@target, '#')"/>
