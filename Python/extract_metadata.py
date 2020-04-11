@@ -61,12 +61,11 @@ xpaths = {"xmlid" : "//tei:TEI/@xml:id",
           "sizeCat" : "//tei:textDesc/eltec:size/@key",
           "canonicity" : "//tei:textDesc/eltec:canonicity/@key",
           "time-slot" : "//tei:textDesc/eltec:timeSlot/@key",
-          "copytext-yr" : "//tei:bibl[@type='copyText']/tei:date/text()",
           "firsted-yr" : "//tei:bibl[@type='firstEdition']/tei:date/text()",
           "language" : "//tei:langUsage/tei:language/@ident"}
 
 ordering = ["filename", "xmlid", "au-name", "title", "au-birth", "au-death",
-            "au-gender", "au-ids", "copytext-yr", "firsted-yr", "title-ids",
+            "au-gender", "au-ids", "firsted-yr", "title-ids",
             "sizeCat", "canonicity", "time-slot", "numwords", "language"]
 
 
@@ -97,6 +96,7 @@ def get_metadatum(xml, xpath):
         metadatum = xml.xpath(xpath, namespaces=namespaces)[0]
     except: 
         metadatum = "NA"
+    metadatum = re.sub(" : ELTeC edition", "", metadatum)
     return metadatum
 
 
@@ -131,9 +131,10 @@ def save_metadata(metadata, metadatafile, ordering):
     """
     metadata = pd.DataFrame(metadata)
     metadata = metadata[ordering]
+    metadata = metadata.sort_values(by="firsted-yr", ascending=True)
     print(metadatafile)
     with open(join(metadatafile), "w", encoding="utf8") as outfile: 
-        metadata.to_csv(outfile, sep="\t")
+        metadata.to_csv(outfile, sep="\t", index=None)
 
 
 # === Coordinating function ===
@@ -145,7 +146,7 @@ def main(collection, level, xpaths, ordering):
     """
     workingDir = join("..", "..", collection)
     teiFolder = join(workingDir, level, "*.xml")
-    metadatafile = join("..", "..", collection, collection+"_metadata.csv")
+    metadatafile = join("..", "..", collection, collection+"_metadata.tsv")
     allmetadata = []
     for teiFile in glob.glob(teiFolder): 
         filename,ext = basename(teiFile).split(".")

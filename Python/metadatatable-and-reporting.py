@@ -46,9 +46,9 @@ from collections import Counter
 
 # === Parameters ===
 
-workingDir = join("..", "..", "ELTeC-por")
+workingDir = join("..", "..", "ELTeC-deu")
 
-teiFolder = join(workingDir, "level1", "*.xml")
+teiFolder = join(workingDir, "level0", "*.xml")
 metadataFolder = join(workingDir, "")
 reportFile = join(workingDir, "report.md")
 
