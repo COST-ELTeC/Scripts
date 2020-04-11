@@ -10,7 +10,7 @@ def gitPull(repoDir):
     p.wait()
 
 repoRoot='/home/lou/Public/ELTeC-'
-webRoot='/home/lou/Public/WG1/distantreading.github.io/ELTeC/'
+webRoot='/home/lou/Public/distantreading.github.io/ELTeC/'
 reporter='/home/lou/Public/Scripts/reporter.xsl'
 exposer='/home/lou/Public/Scripts/expose.xsl'
 reportBalance='/home/lou/Public/Scripts/mosaic.R'
@@ -27,7 +27,7 @@ else :
     f=open("driver.tei","w")
     print("Rewriting driver file")
     f.write('<teiCorpus xmlns="http://www.tei-c.org/ns/1.0" xmlns:xi="http://www.w3.org/2001/XInclude"><teiHeader><fileDesc> <titleStmt> <title>ELTeC '+LANG+' repository</title></titleStmt> <publicationStmt><p>Unpublished test file</p></publicationStmt><sourceDesc><p>Automatically generated source driver file</p> </sourceDesc> </fileDesc> </teiHeader>')
-    FILES=sorted(glob.glob('level?/*.xml'))
+    FILES=sorted(glob.glob('level[01]/*.xml'))
     for FILE in FILES:
         f.write("<xi:include href='"+FILE+"'/>")
     f.write("</teiCorpus>")

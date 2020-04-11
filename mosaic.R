@@ -17,7 +17,8 @@ oFile=paste(args[2], "/mosaic.png", sep="")
 print(oFile)
 jpeg(oFile)
 mosaic(~ length.cat + year.cat + gender.cat, data=md,
-       highlighting = "gender.cat", highlighting_fill=c("lightblue", "pink"),
+       highlighting = "gender.cat",
+       highlighting_fill=c("pink","lightblue"),
        direction=c("v","h","h"),
        labeling = labeling_values,
        main="Title counts for each balance criterion"

@@ -45,7 +45,10 @@
                 <xsl:result-document href="metadata.csv">
                     <!--filename, xml:id, title, author name, author gender, date of first publication, canonicity category, time period category, text length category, number of words, language-->
 
-                    <xsl:text>id,author-name,book-title,year,year-cat,canon-cat,gender-cat,length,length-cat,counter
+
+<!--                    <xsl:text>id,author-name,book-title,year,year-cat,canon-cat,gender-cat,length,length-cat,counter
+</xsl:text>-->
+                    <xsl:text>id,year,year-cat,canon-cat,gender-cat,length,length-cat,counter
 </xsl:text>
                     <xsl:for-each select="t:teiCorpus/t:TEI/t:teiHeader">
                         <xsl:sort select="ancestor::t:TEI/@xml:id"/>
@@ -75,7 +78,7 @@
                                 <xsl:when test="contains($authorText, '(')">
                                     <xsl:value-of select="substring-before($authorText, '(')"/>
                                 </xsl:when>
-                                <xsl:otherwise>Illformed Author</xsl:otherwise>
+                                <xsl:otherwise>IllformedAuthor</xsl:otherwise>
                             </xsl:choose>
                         </xsl:variable>
                        <!-- <xsl:variable name="authorBirth">
@@ -129,11 +132,13 @@
 
                         <xsl:value-of select="ancestor::t:TEI/@xml:id"/>
                         <xsl:text>,</xsl:text>
-                        <xsl:value-of select='replace($authorName, "&apos;", "")'/>
+
+      <!--                  <xsl:value-of select='replace($authorName, "&apos;", "")'/>
                         <xsl:text>,</xsl:text>
                         <xsl:value-of select='replace($titleName, "&apos;", "")'/>
-                        <xsl:text>,</xsl:text>
+                        <xsl:text>,</xsl:text>-->
                         <xsl:value-of select="$date"/>
+
                         <xsl:text>,</xsl:text>
                         <xsl:value-of select="t:profileDesc/t:textDesc/e:timeSlot/@key"/>
                         <xsl:text>,</xsl:text>
@@ -397,7 +402,11 @@
         </html>
 
     </xsl:template>
-    <xsl:function name="e:checkSize">
+    <xsl:function name="e:sanitize">
+
+    </xsl:function>
+
+      <xsl:function name="e:checkSize">
         <xsl:param name="count" as="xs:integer"/>
         <xsl:param name="code"/>
         <xsl:variable name="actualCode">

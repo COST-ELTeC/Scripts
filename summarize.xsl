@@ -36,7 +36,9 @@
                         </td><td><xsl:value-of select="count(//e:timeSlot [@key= 'T2'])"/> </td>
                         <td> <xsl:value-of select="count(//e:timeSlot[@key = 'T3'])"/></td>
                         <td> <xsl:value-of select="count(//e:timeSlot[@key = 'T4'])"/></td>
-                        
+                                 <td class="sep"> <xsl:value-of select="count(//e:canonicity[@key = 'high'])"/></td>
+                       <td> <xsl:value-of select="count(//e:canonicity[@key = 'low'])"/></td>
+            
                     </tr>
     </xsl:template>
 </xsl:stylesheet>

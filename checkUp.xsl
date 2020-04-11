@@ -3,6 +3,21 @@
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
     xpath-default-namespace="http://www.tei-c.org/ns/1.0"
     xmlns:e="http://distantreading.net/eltec/ns" exclude-result-prefixes="xs e" version="2.0">
+    
+    <!-- 
+       - check bibls in header and fix @type where possible
+       - check author and title syntax in titleStmt
+       - add @ref to author for VIAF value if available 
+       - remove empty front or back
+       - check syntax for @target values on ref
+       - rewrite any existing publicationStmt to provide zenodo info
+       - check for wrongly nested divs; turn divs into milestones if necessary
+       - suppress relatedItem
+       - change canonicity into reprintCount
+       - add a change element to revisionDesc
+       - remove any note elements not in div type note
+       and  a few more things...
+-->
     <xsl:param name="fileName">UnknownFile</xsl:param>
     <xsl:param name="publish">https://doi.org/10.5281/zenodo.3462435</xsl:param>
     <!-- iff true, update publicationStmt -->
@@ -55,20 +70,7 @@
             <xsl:otherwise>ELTeC edition</xsl:otherwise>
         </xsl:choose></xsl:variable>  
 -->
-    <!-- Script to tidy up headers
-        - check titleSmt/title and titleStmt author and warn if they are unconformant
-        - check sourceDesc/bibl/@type for valid values and change if necessary
-            - change null value to "unspecified"
-        - remove relatedItem tag
-        - if titleStmt/author has a VIAF idno, move it to an attribute value
-        - correct invalid pointer value # to #unspecified 
-        - change canonicity@key medium to unspecified
-        - add a change element to revisionDesc
-        - check that name is correctly used in header
-        - change key=medium to key=unspecified on canonicity
-        - add publicationStmt with zenodo key
-        
--->
+    
     <!-- Basically, an identity transform -->
     <xsl:template match="/ | @* | node()">
         <xsl:copy>
@@ -93,8 +95,14 @@
             schematypens="http://purl.oclc.org/dsdl/schematron"</xsl:processing-instruction>
         <xsl:text>
 </xsl:text>
-        <xsl:message> *** File <xsl:value-of select="$fileName"/> on <xsl:value-of 
-            select="$today"/> (<xsl:value-of select="teiHeader/fileDesc/titleStmt/title[1]"/>) *** </xsl:message>
+        <xsl:message><xsl:text>*** File </xsl:text>
+            <xsl:value-of select="$fileName"/>
+            <xsl:text> on </xsl:text>
+            <xsl:value-of select="$today"/>
+            <xsl:text> (</xsl:text>
+        <xsl:value-of select="teiHeader/fileDesc/titleStmt/title[1]"/>
+            <xsl:text>) *** 
+</xsl:text></xsl:message>
         <xsl:if test="not(matches($textId, '[A-Z]+[0-9]+'))">
             <xsl:message>Weird xml_id : <xsl:value-of select="$textId"/></xsl:message>
         </xsl:if>
@@ -105,28 +113,28 @@
         <xsl:variable name="problemBibls">
             <xsl:value-of select="count(teiHeader/fileDesc/sourceDesc//bibl[not(@type)])"/>
         </xsl:variable>
-        
-       <xsl:value-of select="e:reportOn(count(teiHeader/fileDesc/sourceDesc//bibl[not(@type)]),'untyped bibls corrected')"/> 
-	
-        <xsl:message>
-	  <xsl:value-of select="count(teiHeader/fileDesc/sourceDesc//bibl[not(@type)])"/><xsl:text> untyped bibls corrected
-</xsl:text>
-	  <xsl:value-of select="count(teiHeader/fileDesc/sourceDesc//bibl[not(@type='digitalSource' or @type='printSource' or @type='firstEdition')])"/>
-	  <xsl:text> invalid bibl/@type corrections
-</xsl:text>
-	    <xsl:value-of select="count(text//div[not(@type)])"/><xsl:text> untyped divs corrected
-</xsl:text><xsl:value-of select="count(text//div[@type and 
-    not(@type='liminal' or @type='titlepage'  or @type='chapter' or @type='notes' or @type='letter' or @type='group') ])"/>
-	  <xsl:text> invalid div/@type corrections : </xsl:text></xsl:message>
-	    <xsl:for-each select="text//div[@type 
-	        and not(@type='liminal' or @type='titlepage' or @type='chapter' or @type='notes' or @type='letter' or @type='group') ]">
-	        <xsl:message><xsl:value-of select="@type"/></xsl:message>
-	    </xsl:for-each><xsl:message><xsl:text>
-</xsl:text>
-	</xsl:message>
-	
-	
+
+        <xsl:value-of
+            select="e:reportOn(count(teiHeader/fileDesc/sourceDesc//bibl[not(@type)]), 'untyped bibls corrected')"/>
+        <xsl:value-of
+            select="e:reportOn(count(teiHeader/fileDesc/sourceDesc//bibl[@type and not(@type = 'digitalSource' or @type = 'printSource' or @type = 'firstEdition')]), 'wrongly typed bibls corrected')"/>
+        <xsl:value-of select="e:reportOn(count(text//div[not(@type)]), 'untyped divs corrected')"/>
+        <xsl:value-of
+            select="
+                e:reportOn(count(text//div[@type and
+                not(@type = 'liminal' or @type = 'titlepage' or @type = 'chapter' or @type = 'notes' or @type = 'letter' or @type = 'group')]), ' typed divs corrected')"/>
+
+
+        <xsl:for-each
+            select="
+                text//div[@type
+                and not(@type = 'liminal' or @type = 'titlepage' or @type = 'chapter' or @type = 'notes' or @type = 'letter' or @type = 'group'
+                or @type = 'volume' or @type = 'vol' or @type = 'liminar' or @type = 'Chapter' or @type = 'part' or @type = 'titlePage')]">
+            <xsl:message>ERROR: Unexpected @type=<xsl:value-of select="@type"/>
+            </xsl:message>
+        </xsl:for-each>
     </xsl:template>
+    
     <xsl:template match="titleStmt/title[1]">
         <xsl:copy>
             <xsl:apply-templates select="@*"/>
@@ -137,23 +145,25 @@
             </xsl:if>
         </xsl:copy>
     </xsl:template>
+    
     <xsl:template match="titleStmt/author">
         <xsl:variable select="normalize-space(.)" name="theString"/>
         <xsl:variable select="substring-before($theString, '(')" name="theAuthor"/>
+
         <xsl:variable select="substring-before(substring-after($theString, '('), ')')"
             name="theDates"/>
         <xsl:choose>
             <xsl:when test="string-length($theAuthor) &lt; 1">
-                <xsl:message>*<xsl:value-of select="$theString"/>
-                    <xsl:text>* has no dates!</xsl:text></xsl:message>
+                <xsl:message>WARNING: <xsl:value-of select="$theString"/>
+                    <xsl:text> has no dates</xsl:text></xsl:message>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:if test="not(matches($theAuthor, '\[?[\p{L} \-]+,'))">
-                    <xsl:message>*<xsl:value-of select="$theAuthor"/>
-                        <xsl:text>* strange author: no comma?</xsl:text></xsl:message>
+                    <xsl:message>ERROR: <xsl:value-of select="$theAuthor"/>
+                        <xsl:text> has no comma </xsl:text></xsl:message>
                 </xsl:if>
                 <xsl:if test="not(matches($theDates, '(1[789]\d\d)|\?\s*\-\s*(1[89]\d\d)|\?'))">
-                    <xsl:message>*<xsl:value-of select="$theString"/>
+                    <xsl:message>ERROR <xsl:value-of select="$theString"/>
                         <xsl:text>implausible author dates (</xsl:text><xsl:value-of
                             select="$theDates"/>)! </xsl:message>
                 </xsl:if>
@@ -191,11 +201,25 @@
         </xsl:if>
         <xsl:apply-templates/>
     </xsl:template>
+    <xsl:template match="bibl/note">
+        <xsl:message>WARNING note tag in bibl removed</xsl:message>
+        <xsl:apply-templates/>
+    </xsl:template>
+    <xsl:template match="respStmt[not(resp)]">
+        <xsl:message>ERROR : respStmt missing resp : de-tagged</xsl:message>
+             <xsl:apply-templates/>
+    </xsl:template>
+    <xsl:template match="bibl//editor">
+        <xsl:message>ERROR: Editor tag not allowed: converting to respStmt</xsl:message>
+        <respStmt xmlns="http://www.tei-c.org/ns/1.0">
+            <resp>editor</resp>
+            <name><xsl:apply-templates/></name>
+        </respStmt>
+    </xsl:template>
+    
     <xsl:template match="bibl[not(@type) and ancestor::sourceDesc]">
-<!--        <xsl:if test="$verbose">
-            <xsl:message>Untyped bibl</xsl:message>
-        </xsl:if>
--->        <xsl:copy>
+       
+        <xsl:copy>
             <xsl:attribute name="type">
                 <xsl:choose>
                     <xsl:when test="parent::relatedItem[@type = 'sourceEdition']">
@@ -204,10 +228,10 @@
                     <xsl:when test="parent::relatedItem[@type = 'printSource']">
                         <xsl:text>printSource</xsl:text>
                     </xsl:when>
-                    <xsl:when test="child::ref[starts-with(@target,'gut:')]">
+                    <xsl:when test="child::ref[starts-with(@target, 'gut:')]">
                         <xsl:text>digitalSource</xsl:text>
                     </xsl:when>
-                    <xsl:when test="child::ref[starts-with(@target,'http:')]">
+                    <xsl:when test="child::ref[starts-with(@target, 'http:')]">
                         <xsl:text>digitalSource</xsl:text>
                     </xsl:when>
                     <xsl:otherwise>
@@ -229,49 +253,64 @@
             <xsl:choose>
                 <xsl:when test=". eq 'copyText'">
                     <xsl:if test="$verbose">
-                        <xsl:message>Wrongly typed bibl : changed 'copyText' to  'printSource'</xsl:message>
+                        <xsl:message>Wrongly typed bibl : changed 'copyText' to
+                            'printSource'</xsl:message>
                     </xsl:if>
                     <xsl:text>printSource</xsl:text>
                 </xsl:when>
                 <xsl:when test=". eq 'encodedFrom'">
                     <xsl:if test="$verbose">
-                        <xsl:message>Wrongly typed bibl : changed 'encodedFrom' to  'digitalSource'</xsl:message>
+                        <xsl:message>Wrongly typed bibl : changed 'encodedFrom' to
+                            'digitalSource'</xsl:message>
                     </xsl:if>
                     <xsl:text>digitalSource</xsl:text>
                 </xsl:when>
                 <xsl:when test=". eq 'source'">
                     <xsl:if test="$verbose">
-                        <xsl:message>Wrongly typed bibl : changed 'source' to  'digitalSource'</xsl:message>
+                        <xsl:message>Wrongly typed bibl : changed 'source' to
+                            'digitalSource'</xsl:message>
                     </xsl:if>
                     <xsl:text>digitalSource</xsl:text>
                 </xsl:when>
                 <xsl:when test=". eq 'digital-source'">
                     <xsl:if test="$verbose">
-                        <xsl:message>Wrongly typed bibl : changed 'digital-source' to  'digitalSource'</xsl:message>
+                        <xsl:message>Wrongly typed bibl : changed 'digital-source' to
+                            'digitalSource'</xsl:message>
                     </xsl:if>
                     <xsl:text>digitalSource</xsl:text>
                 </xsl:when>
                 <xsl:when test=". eq 'print-source'">
                     <xsl:if test="$verbose">
-                        <xsl:message>Wrongly typed bibl : changed 'print-source' to  'printSource'</xsl:message>
+                        <xsl:message>Wrongly typed bibl : changed 'print-source' to
+                            'printSource'</xsl:message>
+                    </xsl:if>
+                    <xsl:text>printSource</xsl:text>
+                </xsl:when>
+                <xsl:when test=". eq 'print_source'">
+                    <xsl:if test="$verbose">
+                        <xsl:message>Wrongly typed bibl : changed 'print_source' to
+                            'printSource'</xsl:message>
                     </xsl:if>
                     <xsl:text>printSource</xsl:text>
                 </xsl:when>
                 <xsl:when test=". eq 'printEdition'">
                     <xsl:if test="$verbose">
-                        <xsl:message>Wrongly typed bibl : changed 'printEdition' to 'printSource'</xsl:message>
+                        <xsl:message>Wrongly typed bibl : changed 'printEdition' to
+                            'printSource'</xsl:message>
                     </xsl:if>
                     <xsl:text>printSource</xsl:text>
                 </xsl:when>
                 <xsl:when test=". eq 'CopyText'">
                     <xsl:if test="$verbose">
-                        <xsl:message>Wrongly typed bibl : changed 'CopyText' to 'printSource'</xsl:message>
+                        <xsl:message>Wrongly typed bibl : changed 'CopyText' to
+                            'printSource'</xsl:message>
                     </xsl:if>
                     <xsl:text>printSource</xsl:text>
                 </xsl:when>
                 <xsl:when test=". eq 'firstedition'">
                     <xsl:if test="$verbose">
-                        <xsl:message>Wrongly typed bibl : changed 'firstedition' to 'firstEdition'</xsl:message>
+                        <xsl:message>Wrongly typed bibl : changed 'firstedition' to
+                            'firstEdition'</xsl:message>
                     </xsl:if>
                     <xsl:text>firstEdition</xsl:text>
                 </xsl:when>
@@ -282,12 +321,11 @@
         </xsl:attribute>
     </xsl:template>
     <xsl:template match="publicationStmt">
-        <publicationStmt xmlns="http://www.tei-c.org/ns/1.0">         
-            <publisher 
-ref="https://distant-reading.net">COST Action "Distant Reading for European Literary History" (CA16204)</publisher>
-            <distributor
-                ref="https://zenodo.org/communities/eltec/">Zenodo.org</distributor>
-             <date when="{$today}"/>
+        <publicationStmt xmlns="http://www.tei-c.org/ns/1.0">
+            <publisher ref="https://distant-reading.net">COST Action "Distant Reading for European
+                Literary History" (CA16204)</publisher>
+            <distributor ref="https://zenodo.org/communities/eltec/">Zenodo.org</distributor>
+            <date when="{$today}"/>
             <availability>
                 <licence target="https://creativecommons.org/licenses/by/4.0/"/>
             </availability>
@@ -300,20 +338,23 @@ ref="https://distant-reading.net">COST Action "Distant Reading for European Lite
         </publicationStmt>
     </xsl:template>
     <!-- deal with canonicity -->
-    <xsl:template match="*:canonicity/@key">
-        <xsl:attribute name="key">
-            <xsl:choose>
-                <xsl:when test=". = 'medium'">unspecified</xsl:when>
-                <xsl:when test=". = 'unmarked'">unspecified</xsl:when>
-                <xsl:otherwise>
-                    <xsl:value-of select="."/>
-                </xsl:otherwise>
-            </xsl:choose>
-        </xsl:attribute>
+    <xsl:template match="*:canonicity">
+        <reprintCount xmlns="http://distantreading.net/eltec/ns">
+            <xsl:attribute name="key">
+                <xsl:choose>
+                    <xsl:when test="@key = 'medium'">unspecified</xsl:when>
+                    <xsl:when test="@key = 'unmarked'">unspecified</xsl:when>
+                    <xsl:otherwise>
+                        <xsl:value-of select="@key"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:attribute>
+        </reprintCount>
     </xsl:template>
     <xsl:template match="revisionDesc">
         <xsl:copy>
-            <change xmlns="http://www.tei-c.org/ns/1.0" when="{$today}">Checked by releaseChecker script</change>
+            <change xmlns="http://www.tei-c.org/ns/1.0" when="{$today}">Checked by checkup
+                script</change>
             <xsl:apply-templates/>
         </xsl:copy>
     </xsl:template>
@@ -328,90 +369,90 @@ ref="https://distant-reading.net">COST Action "Distant Reading for European Lite
                 </xsl:copy>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:message>Unexpected name element found: ignored </xsl:message>
+                <xsl:message>Unexpected name tag found: suppressed </xsl:message>
                 <xsl:value-of select="."/>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
 
     <xsl:template match="milestone[not(@unit)]">
-        <xsl:if test="$verbose">
-            <xsl:message>Milestone unit -> unspecified</xsl:message>
-        </xsl:if>
+        <xsl:message>WARNING: Milestone unit unspecified</xsl:message>
         <milestone xmlns="http://www.tei-c.org/ns/1.0" unit="unspecified"/>
     </xsl:template>
 
-    <!-- Script to check texts for common errors
-       - check divs and fix @type where possible
-       - remove empty front or back
-       - remove ref with invalid target
--->
-
     <!-- look at untyped divs -->
     <xsl:template match="body//div[not(@type)]">
-        <xsl:if test="$verbose">
-        <xsl:message>Untyped div found...</xsl:message>
-	</xsl:if>
-        <xsl:choose>
-            <xsl:when test="parent::div[@type='chapter']">
-                <xsl:message>!! Illegal div within chapter: suppressed</xsl:message>
+          <xsl:choose>
+            <xsl:when test="parent::div[@type = 'chapter']">
+                <xsl:message>ERROR : div not permitted within chapter: replaced with
+                    milestone</xsl:message>
+                <milestone xmlns="http://www.tei-c.org/ns/1.0" unit="unspecified"/>
                 <xsl:apply-templates/>
             </xsl:when>
             <xsl:when test="p and not(child::div)">
                 <xsl:if test="$verbose">
-        <xsl:message>contains p but not div so marking as chapter</xsl:message>
-		</xsl:if>
+                    <xsl:message>contains p but not div so marking as chapter</xsl:message>
+                </xsl:if>
                 <div type="chapter" xmlns="http://www.tei-c.org/ns/1.0">
                     <xsl:apply-templates/>
                 </div>
             </xsl:when>
             <xsl:when test="div">
-        <xsl:if test="$verbose">
-                <xsl:message>contains div so marking as group</xsl:message>
-	</xsl:if>
-        <div type="group" xmlns="http://www.tei-c.org/ns/1.0">
+                <xsl:if test="$verbose">
+                    <xsl:message>contains div so marking as group</xsl:message>
+                </xsl:if>
+                <div type="group" xmlns="http://www.tei-c.org/ns/1.0">
                     <xsl:apply-templates/>
                 </div>
             </xsl:when>
         </xsl:choose>
     </xsl:template>
-    
+
     <!-- check typed divs -->
-    
+
     <xsl:template match="body//div[@type]">
-               <xsl:choose>
-                   <xsl:when test="parent::div[@type='chapter']">
-                       <xsl:message>!! Illegal div within chapter: suppressed</xsl:message>
-                       <xsl:apply-templates/>
-                   </xsl:when>
-                   
-                  <xsl:when test="@type='liminal' or @type='chapter' or @type='letter' or @type='group'">
-                      <div xmlns="http://www.tei-c.org/ns/1.0" type="{@type}">
-                          <xsl:apply-templates/>
-                      </div>
-                  </xsl:when>
-                  <xsl:when test="@type='vol' or @type='volume' or @type='part'">
-                      <div xmlns="http://www.tei-c.org/ns/1.0" type="group">
-                          <xsl:apply-templates/>
-                      </div>
-                  </xsl:when>
-                  <xsl:when test="@type='liminar'">
-                      <div xmlns="http://www.tei-c.org/ns/1.0" type="liminal">
-                          <xsl:apply-templates/>
-                      </div>
-                  </xsl:when>
-                  <xsl:otherwise>
-                      <div xmlns="http://www.tei-c.org/ns/1.0" type="unrecognized">
-                          <xsl:apply-templates/>
-                      </div>                     
-                  </xsl:otherwise>                 
-              </xsl:choose>
+        <xsl:choose>
+            <xsl:when test="parent::div[@type = 'chapter']">
+                <xsl:message>ERROR : div not permitted within chapter: replaced with
+                    milestone</xsl:message>
+                <milestone xmlns="http://www.tei-c.org/ns/1.0" unit="{@type}"/>
+                <xsl:apply-templates/>
+            </xsl:when>
+
+            <xsl:when
+                test="@type = 'liminal' or @type = 'chapter' or @type = 'letter' or @type = 'group'">
+                <div xmlns="http://www.tei-c.org/ns/1.0" type="{@type}">
+                    <xsl:apply-templates/>
+                </div>
+            </xsl:when>
+            <xsl:when test="@type = 'vol' or @type = 'volume' or @type = 'part'">
+                <div xmlns="http://www.tei-c.org/ns/1.0" type="group">
+                    <xsl:apply-templates/>
+                </div>
+            </xsl:when>
+            <xsl:when test="@type = 'liminar'">
+                <div xmlns="http://www.tei-c.org/ns/1.0" type="liminal">
+                    <xsl:apply-templates/>
+                </div>
+            </xsl:when>
+            <xsl:when test="@type = 'Chapter'">
+                <div xmlns="http://www.tei-c.org/ns/1.0" type="chapter">
+                    <xsl:apply-templates/>
+                </div>
+            </xsl:when>
+            <xsl:otherwise>
+                <!-- should fail -->
+                <div xmlns="http://www.tei-c.org/ns/1.0" type="unrecognized">
+                    <xsl:apply-templates/>
+                </div>
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:template>
-    
+
     <!-- check divs in front -->
     <xsl:template match="front/div[@type]">
         <xsl:choose>
-            <xsl:when test="@type = 'titlepage'">
+            <xsl:when test="@type = 'titlepage' or @type = 'titlePage'">
                 <div type="titlepage" xmlns="http://www.tei-c.org/ns/1.0">
                     <xsl:apply-templates/>
                 </div>
@@ -421,16 +462,17 @@ ref="https://distant-reading.net">COST Action "Distant Reading for European Lite
                     <xsl:apply-templates/>
                 </div>
             </xsl:when>
-            <xsl:when test="contains(@type, 'title')">
+            <!--<xsl:when test="contains(@type, 'title')">
                 <xsl:if test="$verbose">
                 <xsl:message>Unrecognized div@type <xsl:value-of select="@type"/> ... assuming titlepage</xsl:message>
 		</xsl:if>
                 <div type="titlepage" xmlns="http://www.tei-c.org/ns/1.0">
                     <xsl:apply-templates/>
-                </div>
-            </xsl:when>
+                </div>-->
+            <!--</xsl:when>-->
             <xsl:otherwise>
-                <xsl:message>Unrecognized div@type <xsl:value-of select="@type"/> ... assuming liminal</xsl:message>
+                <xsl:message>Unrecognized div@type <xsl:value-of select="@type"/> ... assuming
+                    liminal</xsl:message>
                 <div type="liminal" xmlns="http://www.tei-c.org/ns/1.0">
                     <xsl:apply-templates/>
                 </div>
@@ -440,27 +482,49 @@ ref="https://distant-reading.net">COST Action "Distant Reading for European Lite
     </xsl:template>
     <xsl:template match="front/div[not(@type)]">
         <xsl:if test="$verbose">
-        <xsl:message>No divtype supplied in front ... assuming liminal</xsl:message>
-	</xsl:if>
+            <xsl:message>No divtype supplied in front ... assuming liminal</xsl:message>
+        </xsl:if>
         <div type="liminal" xmlns="http://www.tei-c.org/ns/1.0">
             <xsl:apply-templates/>
         </div>
     </xsl:template>
 
     <xsl:template match="back/div[not(@type)]">
-                <xsl:if test="$verbose">
-<xsl:message>No divtype supplied in back ... assuming liminal</xsl:message>
-		</xsl:if>
-		<div type="liminal" xmlns="http://www.tei-c.org/ns/1.0">
+        <xsl:if test="$verbose">
+            <xsl:message>No divtype supplied in back ... assuming liminal</xsl:message>
+        </xsl:if>
+        <div type="liminal" xmlns="http://www.tei-c.org/ns/1.0">
             <xsl:apply-templates/>
         </div>
     </xsl:template>
 
-    <!-- following templates added to clean up norwegian texts -->
+    <xsl:template match="back/div[@type]">
+        <xsl:choose>
+        
+        <xsl:when
+            test="@type = 'liminal' or @type = 'notes'">
+            <div xmlns="http://www.tei-c.org/ns/1.0" type="{@type}">
+                <xsl:apply-templates/>
+            </div>
+        </xsl:when>
+            <xsl:when
+                test="@type = 'Notes'">    
+        <div type="notes" xmlns="http://www.tei-c.org/ns/1.0">
+            <xsl:apply-templates/>
+        </div>
+            </xsl:when>
+            <xsl:otherwise><xsl:message><xsl:text>WARNING : unanticipated div/@type (</xsl:text>
+                <xsl:value-of select="@type"/>
+              <xsl:text>) in back : changed to liminal</xsl:text></xsl:message>
+                <div type="liminal" xmlns="http://www.tei-c.org/ns/1.0">
+                    <xsl:apply-templates/>
+                </div></xsl:otherwise>
+        </xsl:choose> 
+    </xsl:template>
 
-    <!-- remove <note> elements inside the body-->
+      <!-- remove <note> elements inside the body-->
     <xsl:template match="body//note">
-        <xsl:message>note inside body removed</xsl:message>
+        <xsl:message>ERROR : note inside body removed</xsl:message>
     </xsl:template>
 
     <!-- remove empty front or back and vacuous ref -->
@@ -473,20 +537,24 @@ ref="https://distant-reading.net">COST Action "Distant Reading for European Lite
         <xsl:message>Empty back removed</xsl:message>
     </xsl:template>
 
-<!-- special tweaks for romanian -->
-    <xsl:template match="div[@type='chapter']/div/head">
-        <p xmlns="http://www.tei-c.org/ns/1.0"><label><xsl:value-of select="."/></label> </p>
+    <!-- special tweaks for romanian -->
+    <xsl:template match="div[@type = 'chapter']/div/head">
+        <p xmlns="http://www.tei-c.org/ns/1.0">
+            <label>
+                <xsl:value-of select="."/>
+            </label>
+        </p>
     </xsl:template>
 
-<xsl:template match="milestone[@unit='header']"/>
-    <xsl:template match="milestone[@unit='end']"/>
-    <xsl:template match="milestone[@unit='middle']">
+   <!-- kill some strange milestones -->
+    <xsl:template match="milestone[@unit = 'header']"/>
+    <xsl:template match="milestone[@unit = 'end']"/>
+    <xsl:template match="milestone[@unit = 'middle']">
         <milestone xmlns="http://www.tei-c.org/ns/1.0" rend="dots" unit="subchapter"/>
     </xsl:template>
-    <xsl:template match="milestone[@unit='absent']">
+    <xsl:template match="milestone[@unit = 'absent']">
         <milestone xmlns="http://www.tei-c.org/ns/1.0" rend="space" unit="subchapter"/>
     </xsl:template>
-    
 
     <!-- remove invalidly targetted refs -->
     <xsl:template match="ref[@target[string-length(.) gt 1]]">
@@ -507,8 +575,10 @@ ref="https://distant-reading.net">COST Action "Distant Reading for European Lite
             <xsl:when test="starts-with(@target, 'bod:')">
                 <xsl:copy-of select="."/>
             </xsl:when>
-            
-            <xsl:when test="starts-with(@target, '#')" >
+            <xsl:when test="starts-with(@target, 'textgrid:')">
+                <xsl:copy-of select="."/>
+            </xsl:when>
+            <xsl:when test="starts-with(@target, '#')">
                 <xsl:variable name="noteId">
                     <xsl:value-of select="substring-after(@target, '#')"/>
                 </xsl:variable>
@@ -518,47 +588,42 @@ ref="https://distant-reading.net">COST Action "Distant Reading for European Lite
                 <xsl:choose>
                     <xsl:when test="//note[@xml:id = $noteId]"/>
                     <xsl:otherwise>
-                        <xsl:message>!! Cannot find note with id <xsl:value-of select="$noteId"
+                        <xsl:message>ERROR:  Cannot find note with id <xsl:value-of select="$noteId"
                             /></xsl:message>
                     </xsl:otherwise>
                 </xsl:choose>
                 <xsl:copy-of select="."/>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:message>invalid ref targetting <xsl:value-of select="@target"/> removed</xsl:message>
+                <xsl:message>WARNING: invalid ref targetting <xsl:value-of select="@target"/>
+                    removed</xsl:message>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
     
-    <xsl:template match="measure[@unit='pages' and . = '0']">
+    <xsl:template match="ref[@target = '#']">
+        <xsl:message>Suppressed vapid ref</xsl:message>       
+    </xsl:template>
+    
+    <xsl:template match="measure[@unit = 'pages' and . = '0']">
         <xsl:message>Suppressed zero page count</xsl:message>
     </xsl:template>
-        
-    <xsl:template match="bibl[not(matches(.,'[\w]+'))]">
+
+    <xsl:template match="bibl[not(matches(., '[\w]+'))]">
         <xsl:message>Suppressed vapid bibl</xsl:message>
     </xsl:template>
-       
 
-    <xsl:template match="ref[@target = '#']"/>
-       
-    <!--<xsl:template match="body//div[p]">
-    <xsl:if test="div and not(@type='group')">
-        <xsl:message>!!! Invalid div structure: a div cannot contain p and div !!!</xsl:message>
-    </xsl:if>
-    <xsl:copy><xsl:apply-templates/></xsl:copy>
-</xsl:template>
-
--->
     <xsl:function name="e:reportOn">
-        <xsl:param name="count" as="xs:integer"></xsl:param>
-        <xsl:param name="msg"></xsl:param>
+        <xsl:param name="count" as="xs:integer"/>
+        <xsl:param name="msg"/>
         <xsl:if test="$count > 0">
             <xsl:message>
+                <xsl:text>WARNING : </xsl:text>
                 <xsl:value-of select="$count"/>
-                <xsl:text>cases of</xsl:text>
+                <xsl:text> </xsl:text>
                 <xsl:value-of select="$msg"/>
             </xsl:message>
-            
+
         </xsl:if>
     </xsl:function>
 
