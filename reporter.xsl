@@ -142,7 +142,8 @@
                         <xsl:text>,</xsl:text>
                         <xsl:value-of select="t:profileDesc/t:textDesc/e:timeSlot/@key"/>
                         <xsl:text>,</xsl:text>
-                        <xsl:value-of select="t:profileDesc/t:textDesc/e:canonicity/@key"/>
+                        <xsl:if test="t:profileDesc/t:textDesc/e:reprintCount"><xsl:value-of select="t:profileDesc/t:textDesc/e:reprintCount/@key"/></xsl:if>
+                        <xsl:if test="t:profileDesc/t:textDesc/e:canonicity"><xsl:value-of select="t:profileDesc/t:textDesc/e:canonicity/@key"/></xsl:if>
                         <xsl:text>,</xsl:text>
                         <xsl:value-of select="t:profileDesc/t:textDesc/e:authorGender/@key"/>
                         <xsl:text>,</xsl:text>
