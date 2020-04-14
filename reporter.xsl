@@ -129,6 +129,13 @@
                                 </xsl:otherwise>
                             </xsl:choose>
                         </xsl:variable>
+                        
+                        <xsl:variable name="dateYear">
+                            <xsl:analyze-string select="$date" regex="(1[89]\d\d)">
+                                <xsl:matching-substring><xsl:value-of select="regex-group(1)"/></xsl:matching-substring>
+                            <xsl:non-matching-substring>?</xsl:non-matching-substring>
+                            </xsl:analyze-string>
+                        </xsl:variable>
 
                         <xsl:value-of select="ancestor::t:TEI/@xml:id"/>
                         <xsl:text>,</xsl:text>
@@ -137,7 +144,8 @@
                         <xsl:text>,</xsl:text>
                         <xsl:value-of select='replace($titleName, "&apos;", "")'/>
                         <xsl:text>,</xsl:text>-->
-                        <xsl:value-of select="$date"/>
+                        
+                        <xsl:value-of select="$dateYear"/>
 
                         <xsl:text>,</xsl:text>
                         <xsl:value-of select="t:profileDesc/t:textDesc/e:timeSlot/@key"/>
