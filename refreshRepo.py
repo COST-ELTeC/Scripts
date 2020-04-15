@@ -11,10 +11,36 @@ def gitPull(repoDir):
 
 repoRoot='/home/lou/Public/ELTeC-'
 webRoot='/home/lou/Public/distantreading.github.io/ELTeC/'
+folderRoot='https://raw.githubusercontent.com/COST-ELTeC/ELTeC-'
 reporter='/home/lou/Public/Scripts/reporter.xsl'
 exposer='/home/lou/Public/Scripts/expose.xsl'
 reportBalance='/home/lou/Public/Scripts/mosaic.R'
 outputFile='index.html'
+string1='''<!DOCTYPE html>
+ <html><head>
+ <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">     
+  <link rel="stylesheet" href="../../css/cetei.css" media="all" title="no title" charset="utf-8"/>
+  <link type="application/tei+xml" rel="alternative" href="'''
+
+string2='''"/>
+<script src="../../js/CETEI.js" charset="utf-8"></script>
+ <script type="text/javascript">
+    var ceteicean = new CETEI();
+    ceteicean.shadowCSS = "../../css/cetei.css";
+    ceteicean.getHTML5("'''
+
+string3='''",function(data) {
+  document.getElementsByTagName("body")[0].appendChild(data);});
+  </script>
+   <title>ELTeC</title>
+    </head>
+    <body>
+        <a href="https://www.distant-reading.net/">
+            <img src="../../media/distantreading.png" alt="logo"/>
+        </a>
+    </body>
+</html>'''
+
 
 if (len(sys.argv) <= 1) :
 	print("And which language repository would sir like to refresh?")
@@ -39,11 +65,13 @@ else :
     command="Rscript "+reportBalance+" --args "+webRoot+LANG
     subprocess.check_output(command,shell=True)
     print("Exposing repo "+repoName)
-    for FILE in FILES:
+    for FILE in FILES: 
         bf=os.path.splitext(FILE)[0] 
         f1=bf.split('/')[1]
         id=f1.split('_')[0]     
-        command="saxon -s:" + repoName + "/" + FILE + " -xsl:" + exposer + ' lang='+LANG + ' fileName=' + FILE +  ' >'+webRoot+LANG+'/'+id+'.html'
-        subprocess.check_output(command,shell=True)
-
+        webFileName=webRoot+LANG+"/"+id+".html"
+        gitURL=folderRoot+LANG+"/master/"+FILE
+        webFile=open(webFileName,'w')
+        webFile.write(string1+gitURL+string2+gitURL+string3)
+        webFile.close
 
