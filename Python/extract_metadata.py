@@ -62,10 +62,11 @@ xpaths = {"xmlid" : "//tei:TEI/@xml:id",
           "canonicity" : "//tei:textDesc/eltec:canonicity/@key",
           "time-slot" : "//tei:textDesc/eltec:timeSlot/@key",
           "firsted-yr" : "//tei:bibl[@type='firstEdition']/tei:date/text()",
+          "digitalSource" : "//tei:bibl[@type='digitalSource']/tei:publisher/text()",
           "language" : "//tei:langUsage/tei:language/@ident"}
 
 ordering = ["filename", "xmlid", "au-name", "title", "au-birth", "au-death",
-            "au-gender", "au-ids", "firsted-yr", "title-ids",
+            "au-gender", "au-ids", "digitalSource", "firsted-yr", "title-ids",
             "sizeCat", "canonicity", "time-slot", "numwords", "language"]
 
 
@@ -97,6 +98,7 @@ def get_metadatum(xml, xpath):
     except: 
         metadatum = "NA"
     metadatum = re.sub(" : ELTeC edition", "", metadatum)
+    metadatum = re.sub(" : édition ELTeC", "", metadatum)
     return metadatum
 
 
