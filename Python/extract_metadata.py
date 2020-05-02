@@ -57,17 +57,18 @@ xpaths = {"xmlid" : "//tei:TEI/@xml:id",
           "title-ids" : "//tei:titleStmt/tei:title/@ref",
           "au-ids" : "//tei:titleStmt/tei:author/@ref",
           "numwords" : "//tei:extent/tei:measure[@unit='words']/text()",
+          "narr-per" : "//tei:textClass/tei:keywords/tei:term[@type='narrative-perspective']/text()",
           "au-gender" : "//tei:textDesc/eltec:authorGender/@key",
           "sizeCat" : "//tei:textDesc/eltec:size/@key",
-          "canonicity" : "//tei:textDesc/eltec:canonicity/@key",
+          "reprintCount" : "//tei:textDesc/eltec:reprintCount/@key",
           "time-slot" : "//tei:textDesc/eltec:timeSlot/@key",
           "firsted-yr" : "//tei:bibl[@type='firstEdition']/tei:date/text()",
           "digitalSource" : "//tei:bibl[@type='digitalSource']/tei:publisher/text()",
           "language" : "//tei:langUsage/tei:language/@ident"}
 
 ordering = ["filename", "xmlid", "au-name", "title", "au-birth", "au-death",
-            "au-gender", "au-ids", "digitalSource", "firsted-yr", "title-ids",
-            "sizeCat", "canonicity", "time-slot", "numwords", "language"]
+            "au-ids", "digitalSource", "firsted-yr", "title-ids", "language", "numwords",
+            "narr-per", "au-gender", "sizeCat", "reprintCount", "time-slot"]
 
 
 # === Functions ===
