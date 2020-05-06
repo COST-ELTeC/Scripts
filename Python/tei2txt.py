@@ -111,9 +111,15 @@ def modernize_text(text, paths):
 
 # === Get word count
 
-def get_wordcount(text): 
-    wordcount = len(re.split("\W+", text))
-    return wordcount
+def get_counts(text): 
+    # tokens
+    tokens = re.split("\W+", text)
+    num_tokens = len(tokens)
+    stopwords = [",", ".", ";", ":", "!", "?", " ", "«", "»", "—"]
+    words = [word for word in tokens if word not in stopwords]
+    num_words = len(words)
+    print(num_tokens, num_words)
+    return num_tokens, num_words
 
 
 
@@ -125,11 +131,15 @@ def save_text(text, paths, filename):
         outfile.write(text)
 
 
-def save_wordcounts(wordcounts): 
-    wordcounts = pd.DataFrame.from_dict(wordcounts, orient="index")
-    wordcounts.sort_index(inplace=True)
-    with open("wordcounts.csv", "w", encoding="utf8") as csvfile: 
-        wordcounts.to_csv(csvfile, sep=";")
+def save_counts(tokencounts, wordcounts): 
+    tokencounts = pd.DataFrame.from_dict(tokencounts, orient="index", columns=["tokens"])
+    print(tokencounts.head())
+    wordcounts = pd.DataFrame.from_dict(wordcounts, orient="index", columns=["words"])
+    print(wordcounts.head())
+    counts = tokencounts.merge(wordcounts, left_index=True, right_index=True)
+    print(counts.head())    
+    with open("counts.csv", "w", encoding="utf8") as csvfile: 
+        counts.to_csv(csvfile, sep=";")
 
         
 
@@ -139,6 +149,7 @@ def save_wordcounts(wordcounts):
 
 def main(paths, params): 
     helper(paths, params)
+    tokencounts = {}
     wordcounts = {}
     for teifile in glob.glob(paths["teipath"]):
         filename = get_filename(teifile)
@@ -148,11 +159,12 @@ def main(paths, params):
             text = modernize_text(text, paths)
         else: 
             pass
-        if params["wordcount"] == True: 
-            wordcounts[filename] = get_wordcount(text)
-        save_text(text, paths, filename)
-    if params["wordcount"] == True: 
-        save_wordcounts(wordcounts)
+        if params["counts"] == True: 
+            tokencounts[filename], wordcounts[filename] = get_counts(text)
+        if params["plaintext"] == True: 
+            save_text(text, paths, filename)
+    if params["counts"] == True: 
+        save_counts(tokencounts, wordcounts)
     
     
 

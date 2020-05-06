@@ -30,8 +30,9 @@ quote = True # Include words marked as quote?
 front = False # Include front matter?
 back = True # Include back matter (other than notes)?
 
+plaintext = False # Extract and save plain text?
 modernize = False # Perform spelling modifications?
-wordcount = True # Establish and save wordcounts?
+counts = True # Establish and save wordcounts?
 
 
 # ======================
@@ -39,7 +40,7 @@ wordcount = True # Establish and save wordcounts?
 # ======================
 
 paths = {"teipath":teipath, "txtpath":txtpath, "modsfile":modsfile}
-params = {"note":note, "head":head, "pb":pb, "foreign":foreign, "trailer":trailer, "front":front, "back":back, "quote":quote, "modernize":modernize, "wordcount":wordcount}
+params = {"note":note, "head":head, "pb":pb, "foreign":foreign, "trailer":trailer, "front":front, "back":back, "quote":quote, "modernize":modernize, "counts":counts, "plaintext":plaintext}
 
 
 #=======================
