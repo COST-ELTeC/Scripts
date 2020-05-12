@@ -57,16 +57,21 @@ xpaths = {"xmlid" : "//tei:TEI/@xml:id",
           "title-ids" : "//tei:titleStmt/tei:title/@ref",
           "au-ids" : "//tei:titleStmt/tei:author/@ref",
           "numwords" : "//tei:extent/tei:measure[@unit='words']/text()",
+          "narr-per" : "//tei:textClass/tei:keywords/tei:term[@type='narrative-perspective']/text()",
+          "subgenre" : "//tei:textClass/tei:keywords/tei:term[@type='subgenre']/text()",
           "au-gender" : "//tei:textDesc/eltec:authorGender/@key",
           "sizeCat" : "//tei:textDesc/eltec:size/@key",
-          "canonicity" : "//tei:textDesc/eltec:canonicity/@key",
+          "reprintCount" : "//tei:textDesc/eltec:reprintCount/@key",
           "time-slot" : "//tei:textDesc/eltec:timeSlot/@key",
           "firsted-yr" : "//tei:bibl[@type='firstEdition']/tei:date/text()",
+          "digitalSource" : "//tei:bibl[@type='digitalSource']/tei:publisher/text()",
           "language" : "//tei:langUsage/tei:language/@ident"}
 
 ordering = ["filename", "xmlid", "au-name", "title", "au-birth", "au-death",
-            "au-gender", "au-ids", "firsted-yr", "title-ids",
-            "sizeCat", "canonicity", "time-slot", "numwords", "language"]
+            "au-ids", "digitalSource", "firsted-yr", "title-ids", "language", "numwords", "subgenre",
+            "narr-per", "au-gender", "sizeCat", "reprintCount", "time-slot"]
+
+sorting = ["firsted-yr", True] # column, ascending?
 
 
 # === Functions ===
@@ -97,6 +102,7 @@ def get_metadatum(xml, xpath):
     except: 
         metadatum = "NA"
     metadatum = re.sub(" : ELTeC edition", "", metadatum)
+    metadatum = re.sub(" : édition ELTeC", "", metadatum)
     return metadatum
 
 
@@ -124,14 +130,14 @@ def get_authordata(xml):
 
 
 
-def save_metadata(metadata, metadatafile, ordering): 
+def save_metadata(metadata, metadatafile, ordering, sorting): 
     """
     Save all metadata to a CSV file. 
     The ordering of the columns follows the list defined above.
     """
     metadata = pd.DataFrame(metadata)
     metadata = metadata[ordering]
-    metadata = metadata.sort_values(by="firsted-yr", ascending=True)
+    metadata = metadata.sort_values(by=sorting[0], ascending=sorting[1])
     print(metadatafile)
     with open(join(metadatafile), "w", encoding="utf8") as outfile: 
         metadata.to_csv(outfile, sep="\t", index=None)
@@ -139,7 +145,7 @@ def save_metadata(metadata, metadatafile, ordering):
 
 # === Coordinating function ===
 
-def main(collection, level, xpaths, ordering):
+def main(collection, level, xpaths, ordering, sorting):
     """
     From a collection of ELTeC XML-TEI files,
     create a CSV file with some metadata about each file.
@@ -148,23 +154,29 @@ def main(collection, level, xpaths, ordering):
     teiFolder = join(workingDir, level, "*.xml")
     metadatafile = join("..", "..", collection, collection+"_metadata.tsv")
     allmetadata = []
+    counter = 0
     for teiFile in glob.glob(teiFolder): 
         filename,ext = basename(teiFile).split(".")
         #print(filename)
-        if "schemas" not in filename:
-            keys = []
-            metadata = []
-            keys.append("filename")
-            metadata.append(filename)
-            xml = open_file(teiFile)
-            name,birth,death = get_authordata(xml)
-            keys.extend(["au-name", "au-birth", "au-death"])
-            metadata.extend([name, birth, death])
-            for key,xpath in xpaths.items(): 
-                metadatum = get_metadatum(xml, xpath)
-                keys.append(key)
-                metadata.append(metadatum)
-            allmetadata.append(dict(zip(keys, metadata)))
-    save_metadata(allmetadata, metadatafile, ordering)
+        try: 
+            if "schemas" not in filename:
+                counter +=1
+                keys = []
+                metadata = []
+                keys.append("filename")
+                metadata.append(filename)
+                xml = open_file(teiFile)
+                name,birth,death = get_authordata(xml)
+                keys.extend(["au-name", "au-birth", "au-death"])
+                metadata.extend([name, birth, death])
+                for key,xpath in xpaths.items(): 
+                    metadatum = get_metadatum(xml, xpath)
+                    keys.append(key)
+                    metadata.append(metadatum)
+                allmetadata.append(dict(zip(keys, metadata)))
+        except: 
+            print("ERROR!!!", filename)
+    print("FILES:", counter)
+    save_metadata(allmetadata, metadatafile, ordering, sorting)
     
-main(collection, level, xpaths, ordering)
+main(collection, level, xpaths, ordering, sorting)
