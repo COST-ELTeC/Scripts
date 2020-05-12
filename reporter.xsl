@@ -4,9 +4,13 @@
     xmlns:e="http://distantreading.net/eltec/ns" exclude-result-prefixes="xs t e " version="2.0">
     <xsl:output method="html"/>
 
-    <xsl:param name="corpus">XXX</xsl:param>
+<xsl:param name="corpus">XXX</xsl:param>
+    
+<xsl:param name="webRoot">https://distantreading.github.io/ELTeC/</xsl:param>
+   
 
     <xsl:template match="/">
+        <xsl:text disable-output-escaping="yes">&lt;!DOCTYPE html></xsl:text>       
         <html>
             <head>
                 <meta http-equiv="Content-Type" content="text/html"/>
@@ -31,9 +35,9 @@
                 <xsl:variable name="status">
                     <xsl:text>On </xsl:text>
                     <xsl:value-of select="$today"/>
-                    <xsl:text> </xsl:text>
+                    <xsl:text> ELTeC-</xsl:text>
                     <xsl:value-of select="$corpus"/>
-                    <xsl:text> has </xsl:text>
+                    <xsl:text> contains </xsl:text>
                     <xsl:value-of select="$textCount"/>
                     <xsl:text> texts containing </xsl:text>
                     <xsl:value-of select="$wordCount"/>
@@ -51,7 +55,11 @@
                     <xsl:text>id,year,year-cat,canon-cat,gender-cat,length,length-cat,counter
 </xsl:text>
                     <xsl:for-each select="t:teiCorpus/t:TEI/t:teiHeader">
+                        
                         <xsl:sort select="ancestor::t:TEI/@xml:id"/>
+                        
+                        
+                        
                         <xsl:variable name="wc">
                             <xsl:choose>
                                 <xsl:when test="t:fileDesc/t:extent/t:measure[@unit = 'words']">
@@ -164,7 +172,10 @@
                 </xsl:result-document>
 
 
-                <h4>
+
+<!-- now display mosaic and text details -->
+                
+                       <h4>
                     <xsl:value-of select="$status"/>
                 </h4>
 
@@ -195,6 +206,17 @@
                     </tr>
                     <xsl:for-each select="t:teiCorpus/t:TEI/t:teiHeader">
                         <xsl:sort select="ancestor::t:TEI/@xml:id"/>
+                      
+                        <xsl:variable name="targetFileName">
+                            
+                            <xsl:value-of
+                                select="concat($webRoot, $corpus, '/', ancestor::t:TEI/@xml:id, '.html')"/>
+                        </xsl:variable>
+                          <xsl:variable name="sourceFileURL">
+                            <xsl:value-of select="doc($targetFileName)//link[@rel='alternate']/@href"/>
+                        </xsl:variable>
+                          
+                        
                         <tr>
                             <xsl:variable name="wc">
                                 <xsl:choose>
@@ -245,6 +267,9 @@
                                     </xsl:attribute>
                                     <xsl:value-of select="ancestor::t:TEI/@xml:id"/>
                                 </a>
+
+                                    <a href="{$sourceFileURL}"><img src="../../media/teiLogo.jpg"></img></a>
+                          
                             </td>
                             <td>
                                 <xsl:value-of select="t:encodingDesc/@n"/>

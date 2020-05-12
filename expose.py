@@ -10,12 +10,12 @@ folderRoot='https://raw.githubusercontent.com/COST-ELTeC/ELTeC-'
 
 string1='''<!DOCTYPE html>
  <html><head>
- <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">     
-  <link rel="stylesheet" href="../../css/cetei.css" media="all" title="no title" charset="utf-8"/>
-  <link type="application/tei+xml" rel="alternative" href="'''
+ <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>     
+  <link rel="stylesheet" href="../../css/cetei.css" media="all" title="no title" />
+  <link type="application/tei+xml" rel="alternate" href="'''
 
 string2='''"/>
-<script src="../../js/CETEI.js" charset="utf-8"></script>
+<script src="../../js/CETEI.js" ></script>
  <script type="text/javascript">
     var ceteicean = new CETEI();
     ceteicean.shadowCSS = "../../css/cetei.css";
@@ -24,7 +24,7 @@ string2='''"/>
 string3='''",function(data) {
   document.getElementsByTagName("body")[0].appendChild(data);});
   </script>
-   <title><xsl:value-of select="Generated dummy"/></title>
+   <title>Generated dummy</title>
     </head>
     <body>
         <a href="https://www.distant-reading.net/">
