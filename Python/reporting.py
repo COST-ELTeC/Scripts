@@ -46,9 +46,9 @@ from collections import Counter
 
 # === Parameters ===
 
-workingDir = join("..", "..", "ELTeC-deu")
+workingDir = join("..", "..", "ELTeC-fra")
 
-teiFolder = join(workingDir, "level0", "*.xml")
+teiFolder = join(workingDir, "level1", "*.xml")
 metadataFolder = join(workingDir, "")
 reportFile = join(workingDir, "report.md")
 
@@ -59,7 +59,7 @@ xpaths = {"xmlid" : "//tei:TEI/@xml:id",
           "numwords" : "//tei:extent/tei:measure[@unit='words']/text()",
           "au-gender" : "//tei:textDesc/eltec:authorGender/@key",
           "sizeCat" : "//tei:textDesc/eltec:size/@key",
-          "canonicity" : "//tei:textDesc/eltec:canonicity/@key",
+          "reprints" : "//tei:textDesc/eltec:reprintCount/@key",
           "time-slot" : "//tei:textDesc/eltec:timeSlot/@key",
           "copytext-yr" : "//tei:bibl[@type='copyText']/tei:date/text()",
           "firsted-yr" : "//tei:bibl[@type='firstEdition']/tei:date/text()",
@@ -67,7 +67,7 @@ xpaths = {"xmlid" : "//tei:TEI/@xml:id",
 
 ordering = ["filename", "xmlid", "au-name", "title", "au-birth", "au-death",
             "au-gender", "au-ids", "copytext-yr", "firsted-yr", "title-ids",
-            "sizeCat", "canonicity", "time-slot", "numwords", "language"]
+            "sizeCat", "reprints", "time-slot", "numwords", "language"]
 
 
 # === Functions ===
@@ -149,14 +149,18 @@ def build_balancereport(allmetadata):
     # Number of texts per size category
     size_cats = dict(Counter(list(allmetadata.loc[:,"sizeCat"])))
     # Number of texts per canon level
-    canon_levels = dict(Counter(list(allmetadata.loc[:,"canonicity"])))
+    canon_levels = dict(Counter(list(allmetadata.loc[:,"reprints"])))
     # Number of texts per author gender
     author_genders = dict(Counter(list(allmetadata.loc[:,"au-gender"])))
+    # Number of authors per text-count 
+    texts_per_author = dict(Counter(list(allmetadata.loc[:,"au-name"])))
+    authors_per_textcount = Counter(list(texts_per_author.values()))
     report = {"num_novels" : num_novels, 
               "timeSlots" : time_slots,
               "sizeCats" : size_cats,
-              "canonicity" : canon_levels,
-              "au-gender" : author_genders}
+              "reprints" : canon_levels,
+              "au-gender" : author_genders,
+              "aus-per-textcount" : authors_per_textcount}
     import pprint
     pp = pprint.PrettyPrinter(indent=0, width=30, compact=True) 
     pp.pprint(report)
@@ -185,7 +189,7 @@ def build_fullreport(allmetadata):
     # Number of texts per size category
     size_cats = dict(Counter(list(allmetadata.loc[:,"sizeCat"])))
     # Number of texts per size category
-    canon_levels = dict(Counter(list(allmetadata.loc[:,"canonicity"])))
+    canon_levels = dict(Counter(list(allmetadata.loc[:,"reprints"])))
     # Number of texts per author gender
     author_genders = dict(Counter(list(allmetadata.loc[:,"au-gender"])))
     # Number of texts per author
@@ -198,7 +202,7 @@ def build_fullreport(allmetadata):
               "num_authors": num_authors, 
               "timeSlots" : time_slots,
               "sizeCats" : size_cats,
-              "canonicity" : canon_levels,
+              "reprints" : canon_levels,
               "au-gender" : author_genders,
               "texts-per-au" : texts_per_author,
               "aus-per-textcount" : authors_per_textcount,
@@ -287,9 +291,9 @@ def main(teiFolder, metadataFolder, xpaths, ordering, reportFile):
             allmetadata.append(dict(zip(keys, metadata)))
         save_metadata(allmetadata, metadataFolder, ordering)
     balancereport = build_balancereport(allmetadata)
-    save_report(balancereport, join(metadataFolder, "report_composition.txt"))
-    fullreport = build_fullreport(allmetadata)
-    save_report(fullreport, join(metadataFolder, "report_full.txt"))
-    make_buildmd(allmetadata, fullreport, reportFile, metadataFolder)
+    save_report(balancereport, join(metadataFolder, "corpus-composition.txt"))
+    #fullreport = build_fullreport(allmetadata)
+    #save_report(fullreport, join(metadataFolder, "report_full.txt"))
+    #make_buildmd(allmetadata, fullreport, reportFile, metadataFolder)
     
 main(teiFolder, metadataFolder, xpaths, ordering, reportFile)
