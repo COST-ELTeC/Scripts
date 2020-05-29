@@ -30,7 +30,7 @@ quote = True # Include words marked as quote?
 front = False # Include front matter?
 back = True # Include back matter (other than notes)?
 
-plaintext = False # Extract and save plain text?
+plaintext = True # Extract and save plain text?
 modernize = False # Perform spelling modifications?
 counts = True # Establish and save wordcounts?
 

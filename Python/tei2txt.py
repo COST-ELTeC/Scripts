@@ -114,11 +114,9 @@ def modernize_text(text, paths):
 def get_counts(text): 
     # tokens
     tokens = re.split("\W+", text)
-    num_tokens = len(tokens)
-    stopwords = [",", ".", ";", ":", "!", "?", " ", "«", "»", "—"]
-    words = [word for word in tokens if word not in stopwords]
-    num_words = len(words)
-    print(num_tokens, num_words)
+    num_words = len(tokens)
+    num_tokens = num_words
+    #print(num_tokens, num_words)
     return num_tokens, num_words
 
 

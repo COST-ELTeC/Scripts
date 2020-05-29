@@ -103,6 +103,7 @@ def get_metadatum(xml, xpath):
         metadatum = "NA"
     metadatum = re.sub(" : ELTeC edition", "", metadatum)
     metadatum = re.sub(" : édition ELTeC", "", metadatum)
+    metadatum = re.sub(" : edition ELTeC", "", metadatum)
     return metadatum
 
 
