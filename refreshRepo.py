@@ -41,6 +41,8 @@ string3='''",function(data) {
     </body>
 </html>'''
 
+from datetime import date
+today = str(date.today())
 
 if (len(sys.argv) <= 1) :
 	print("And which language repository would sir like to refresh?")
@@ -52,9 +54,11 @@ else :
     os.chdir(repoName)
     f=open("driver.tei","w")
     f2=open("fileNames.xml","w")
-    print("Rewriting driver files")
-    f.write('<teiCorpus xmlns="http://www.tei-c.org/ns/1.0" xmlns:xi="http://www.w3.org/2001/XInclude"><teiHeader><fileDesc> <titleStmt> <title>ELTeC '+LANG+' repository</title></titleStmt> <publicationStmt><p>Unpublished test file</p></publicationStmt><sourceDesc><p>Automatically generated source driver file</p> </sourceDesc> </fileDesc> </teiHeader>')
     FILES=sorted(glob.glob('level[01]/*.xml'))
+    print(str(len(FILES))+' files found in repo')
+    print("Rewriting driver files")
+    f.write('<teiCorpus xmlns="http://www.tei-c.org/ns/1.0" xmlns:xi="http://www.w3.org/2001/XInclude"><teiHeader><fileDesc> <titleStmt> <title>ELTeC '+LANG+' repository</title></titleStmt><extent><measure unit="files">'+str(len(FILES))+'</measure></extent> <publicationStmt><p>Unpublished test file</p></publicationStmt><sourceDesc><p>Automatically generated source driver file</p> </sourceDesc> </fileDesc> <encodingDesc n="eltec-1"><p>fake</p></encodingDesc> <revisionDesc><change when="'+today+'">refreshRepo script run</change></revisionDesc></teiHeader>')
+   
     f2.write('<fileNames>')
     for FILE in FILES:
         f.write("<xi:include href='"+FILE+"'/>")
