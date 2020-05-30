@@ -1,10 +1,10 @@
 LANGS="cze deu eng fra hun ita lit nor por rom slv spa srp"
-cd /home/lou/Public/
+cd /home/lou/Public/Scripts
 for lang in $LANGS; do
 echo "================="
 echo $lang
 echo "================="
-python ../Scripts/refreshRepo $lang
+python refreshRepo.py $lang
 done
 
 
