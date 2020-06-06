@@ -57,7 +57,7 @@ else :
     FILES=sorted(glob.glob('level[01]/*.xml'))
     print(str(len(FILES))+' files found in repo')
     print("Rewriting driver files")
-    f.write('<teiCorpus xmlns="http://www.tei-c.org/ns/1.0" xmlns:xi="http://www.w3.org/2001/XInclude"><teiHeader><fileDesc> <titleStmt> <title>ELTeC '+LANG+' repository</title></titleStmt><extent><measure unit="files">'+str(len(FILES))+'</measure></extent> <publicationStmt><p>Unpublished test file</p></publicationStmt><sourceDesc><p>Automatically generated source driver file</p> </sourceDesc> </fileDesc> <encodingDesc n="eltec-1"><p>fake</p></encodingDesc> <revisionDesc><change when="'+today+'">refreshRepo script run</change></revisionDesc></teiHeader>')
+    f.write('<teiCorpus xmlns="http://www.tei-c.org/ns/1.0" xmlns:xi="http://www.w3.org/2001/XInclude"><teiHeader><fileDesc> <titleStmt> <title>ELTeC '+LANG+' repository</title></titleStmt><extent><measure unit="files">'+str(len(FILES))+'</measure></extent> <publicationStmt><p>Unpublished test file</p></publicationStmt><sourceDesc><p>Automatically generated source driver file</p> </sourceDesc> </fileDesc>  <xi:include href="encodingDesc.xml"/> <revisionDesc><change when="'+today+'">refreshRepo script run</change></revisionDesc></teiHeader>')
    
     f2.write('<fileNames>')
     for FILE in FILES:
