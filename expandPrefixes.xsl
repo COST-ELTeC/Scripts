@@ -62,12 +62,13 @@
     <xsl:variable name="prefix" select="regex-group(1)"/>
     <xsl:variable name="value" select="regex-group(2)"/>
     <xsl:choose>
-     <xsl:when test="document('../encodingDesc.xml')//t:prefixDef[@ident = $prefix]">
-      <xsl:for-each select="document('../encodingDesc.xml')//t:prefixDef[@ident = $prefix]">
+     <xsl:when test="document('encodingDesc.xml')//t:prefixDef[@ident = $prefix]">
+      <xsl:for-each select="document('encodingDesc.xml')//t:prefixDef[@ident = $prefix]">
        <xsl:sequence select="replace($value, @matchPattern, @replacementPattern)"/>
       </xsl:for-each>
      </xsl:when>
      <xsl:otherwise>
+      <xsl:message><xsl:value-of select="$prefix"/> not found in encodingDesc.xml</xsl:message>
       <xsl:sequence select="regex-group(0)"/>
      </xsl:otherwise>
     </xsl:choose>

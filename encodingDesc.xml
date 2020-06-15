@@ -1,0 +1,17 @@
+<encodingDesc n="eltec-1" xmlns="http://www.tei-c.org/ns/1.0">
+ <listPrefixDef>
+  <prefixDef ident="ark" matchPattern="(\S+)"
+   replacementPattern="http://gallica.bnf.fr/ark:/$1"/>
+  <prefixDef ident="bod" matchPattern="([a-z0-9\.]+)"
+   replacementPattern="http://dbooks.bodleian.ox.ac.uk/books/PDFs/$1"/>
+  <prefixDef ident="gut" matchPattern="([a-z0-9]+)"
+   replacementPattern="http://www.gutenberg.org/files/$1/$1-h/$1-h.htm"/>
+  <prefixDef ident="ia" matchPattern="([a-z0-9_]+)"
+   replacementPattern="http://archive.org/details/$1"/>
+  <prefixDef ident="textgrid" matchPattern="(\S+)"
+   replacementPattern="https://textgridrep.org/browse/$1"/>
+  <prefixDef ident="viaf" matchPattern="([a-z0-9]+)" replacementPattern="https://viaf.org/viaf/$1/"/>
+  <prefixDef ident="vwwp" matchPattern="(VAB[0-9]+)"
+   replacementPattern="http://purl.dlib.indiana.edu/iudl/vwwp/$1"/>
+ </listPrefixDef>
+</encodingDesc>
