@@ -226,10 +226,19 @@
     <xsl:value-of select="$lastUpdate"/>
    </td>
    <td>
-    <xsl:value-of select="$textCount"/>
-    <xsl:text> [</xsl:text>
-    <xsl:value-of select="$textScore"/>
-    <xsl:text>]</xsl:text>
+    <xsl:choose>
+     <xsl:when test="$textCount &lt; 50">
+      <span style="color:red" title="{$textScore}">
+       <xsl:value-of select="$textCount"/>
+      </span>
+     </xsl:when>
+     <xsl:otherwise>
+      <span title="{$textScore}">
+       <xsl:value-of select="$textCount"/>
+      </span>   
+     </xsl:otherwise>
+    </xsl:choose>
+    
    </td>
    <td>
     <xsl:value-of select="$wordCount"/>
@@ -238,40 +247,47 @@
     <xsl:value-of select="count(//e:authorGender[@key = 'M'])"/>
    </td>
    <td>
-
-    <xsl:value-of select="count(//e:authorGender[@key = 'F'])"/>
-    <xsl:text> [</xsl:text>
-    <xsl:value-of select="$textScore"/>
-    <xsl:text>]</xsl:text>
-
+    <xsl:call-template  name="showScore">
+     <xsl:with-param name="count"><xsl:value-of select="count(//e:authorGender[@key = 'F'])"/></xsl:with-param>
+     <xsl:with-param name="score"><xsl:value-of select="$femaleScore"/></xsl:with-param>
+     <xsl:with-param name="target">5</xsl:with-param>
+    </xsl:call-template>
+     </td>
+   <td>
+    <xsl:call-template  name="showScore">
+     <xsl:with-param name="count"><xsl:value-of select="$singleCount"/></xsl:with-param>
+     <xsl:with-param name="score">  <xsl:value-of select="$singleScore"/></xsl:with-param>
+     <xsl:with-param name="target">5</xsl:with-param>
+    </xsl:call-template>
    </td>
    <td>
-    <xsl:value-of select="$singleCount"/>
-    <xsl:text> [</xsl:text>
-    <xsl:value-of select="$singleScore"/>
-    <xsl:text>]</xsl:text>
-   </td>
-   <td>
-    <xsl:value-of select="$tripleCount"/>
-    <xsl:text> [</xsl:text>
-    <xsl:value-of select="$tripleScore"/>
-    <xsl:text>]</xsl:text>
+    <xsl:call-template  name="showScore">
+     <xsl:with-param name="count"><xsl:value-of select="$tripleCount"/></xsl:with-param>
+     <xsl:with-param name="score">  <xsl:value-of select="$tripleScore"/></xsl:with-param>
+     <xsl:with-param name="target">5</xsl:with-param>
+    </xsl:call-template>
    </td>
 
    <td class="sep">
-    <xsl:value-of select="count(//e:size[@key = 'short'])"/>
-    <xsl:text> [</xsl:text>
-    <xsl:value-of select="$shortScore"/>
-    <xsl:text>]</xsl:text>
+    <xsl:call-template  name="showScore">
+     <xsl:with-param name="count"><xsl:value-of select="count(//e:size[@key = 'short'])"/></xsl:with-param>
+     <xsl:with-param name="score"><xsl:value-of select="$shortScore"/></xsl:with-param>
+     <xsl:with-param name="target">5</xsl:with-param>
+    </xsl:call-template>
    </td>
    <td>
     <xsl:value-of select="count(//e:size[@key = 'medium'])"/>
    </td>
    <td>
-    <xsl:value-of select="count(//e:size[@key = 'long'])"/>
-    <xsl:text> [</xsl:text>
+    
+    <xsl:call-template  name="showScore">
+     <xsl:with-param name="count"><xsl:value-of select="count(//e:size[@key = 'long'])"/></xsl:with-param>
+     <xsl:with-param name="score"><xsl:value-of select="$longScore"/></xsl:with-param>
+     <xsl:with-param name="target">5</xsl:with-param>
+    </xsl:call-template>
+   <!-- <xsl:text> [</xsl:text>
     <xsl:value-of select="$longScore"/>
-    <xsl:text>]</xsl:text>
+    <xsl:text>]</xsl:text>-->
    </td>
 
    <td class="sep">
@@ -294,15 +310,18 @@
      select="count(//e:canonicity[@key = 'high']) + count(//e:reprintCount[@key = 'high'])"/>
    </td>
    <td>
+    <span title="{$reprintScore}">
     <xsl:value-of select="$reprintCount"/>
-    <xsl:text> [</xsl:text>
+   </span>
+    <!-- <xsl:text> [</xsl:text>
     <xsl:value-of select="$reprintScore"/>
-    <xsl:text>]</xsl:text>
+    <xsl:text>]</xsl:text>-->
+    
    </td>
    <td class="sep">
       <xsl:choose>
      <xsl:when test="$e5cScore &gt; 74">
-      <seg style="color:green"><xsl:value-of select="format-number($e5cScore,'#.00')"/></seg>
+      <span style="color:green"><xsl:value-of select="format-number($e5cScore,'#.00')"/></span>
      </xsl:when>
      <xsl:otherwise>
       <xsl:value-of select="format-number($e5cScore,'#.00')"/>
@@ -310,6 +329,25 @@
     </xsl:choose>
    </td>
   </tr>
+ </xsl:template>
+ 
+ <xsl:template name="showScore">
+  <xsl:param name="count" />
+  <xsl:param name="score" as="xs:float"/>
+  <xsl:param name="target" as="xs:float"/> 
+  <xsl:choose>
+   <xsl:when test="$score &lt; $target">
+    <span style="color:red" title="{$score}">
+     <xsl:value-of select="$count"/>
+    </span>
+   </xsl:when>
+   <xsl:otherwise>
+    <span title="{$score}">
+     <xsl:value-of select="$count"/>
+    </span>   
+   </xsl:otherwise>
+  </xsl:choose>
+  
  </xsl:template>
 
 </xsl:stylesheet>
