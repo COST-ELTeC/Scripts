@@ -17,13 +17,20 @@
 
   <xsl:variable name="textScore">
    <xsl:choose>
+    <xsl:when test="$textCount &lt; 10">0</xsl:when>
     <xsl:when test="$textCount &lt; 20">1</xsl:when>
+    <xsl:when test="$textCount &lt; 30">2</xsl:when>   
     <xsl:when test="$textCount &lt; 40">3</xsl:when>
+    <xsl:when test="$textCount &lt; 50">4</xsl:when>   
     <xsl:when test="$textCount &lt; 60">5</xsl:when>
+    <xsl:when test="$textCount &lt; 70">6</xsl:when>
+    
     <xsl:when test="$textCount &lt; 80">7</xsl:when>
-    <xsl:when test="$textCount &lt; 96">9</xsl:when>
-    <xsl:when test="$textCount &gt; 95">10</xsl:when>
+    <xsl:when test="$textCount &lt; 90">8</xsl:when>
+    <xsl:when test="$textCount &lt; 100">9</xsl:when>
+    <xsl:when test="$textCount = 100">10</xsl:when>
    </xsl:choose>
+   <!-- $textcount div 10 -->
   </xsl:variable>
 
   <xsl:variable name="femaleCount">
@@ -32,7 +39,7 @@
   <xsl:variable name="femalePerc">
    <xsl:value-of select="$femaleCount div $textCount * 100"/>
   </xsl:variable>
-
+ 
   <xsl:variable name="femaleScore">
    <xsl:choose>
     <xsl:when test="$femalePerc &lt; 10">
@@ -40,9 +47,8 @@
     </xsl:when>
     <xsl:when test="$femalePerc &lt; 40">10</xsl:when>
     <xsl:when test="$femalePerc &lt; 60">11</xsl:when>
-    <xsl:when test="$femalePerc &lt; 71">8</xsl:when>
-    <xsl:when test="$femalePerc &lt; 85">5</xsl:when>
-    <xsl:when test="$femalePerc &lt; 100">2</xsl:when>
+    <xsl:when test="$femalePerc &lt; 80">6</xsl:when>
+    <xsl:when test="$femalePerc &lt; 90">3</xsl:when>
     <xsl:otherwise>0</xsl:otherwise>
    </xsl:choose>
   </xsl:variable>
@@ -64,15 +70,23 @@
   
   <xsl:variable name="reprintScore">
    <xsl:choose>
-    <xsl:when test="$reprintPerc &lt; 5">0</xsl:when>
-    <xsl:when test="$reprintPerc &lt; 10">1</xsl:when>
-    <xsl:when test="$reprintPerc &lt; 20">4</xsl:when>
-    <xsl:when test="$reprintPerc &lt; 30">6</xsl:when>
+    <xsl:when test="$reprintPerc = 0">0</xsl:when>    
+    <xsl:when test="$reprintPerc &lt; 5">1</xsl:when>
+    <xsl:when test="$reprintPerc &lt; 9">2</xsl:when>
+    <xsl:when test="$reprintPerc &lt; 12">3</xsl:when>
+    <xsl:when test="$reprintPerc &lt; 15">4</xsl:when>
+    <xsl:when test="$reprintPerc &lt; 18">5</xsl:when>
+    <xsl:when test="$reprintPerc &lt; 21">6</xsl:when>
+    <xsl:when test="$reprintPerc &lt; 24">7</xsl:when>
+    <xsl:when test="$reprintPerc &lt; 27">8</xsl:when>
+    <xsl:when test="$reprintPerc &lt; 30">9</xsl:when>
     <xsl:when test="$reprintPerc &lt; 40">10</xsl:when>
     <xsl:when test="$reprintPerc &lt; 60">11</xsl:when>
-    <xsl:when test="$reprintPerc &lt; 70">10</xsl:when>
-    <xsl:when test="$reprintPerc &lt; 100">5</xsl:when>
-    <xsl:otherwise>0</xsl:otherwise>
+    <xsl:when test="$reprintPerc &lt; 71">10</xsl:when>
+    
+    <xsl:when test="$reprintPerc &lt; 81">6</xsl:when>
+    <xsl:when test="$reprintPerc &lt; 91">3</xsl:when>
+     <xsl:otherwise>0</xsl:otherwise>
    </xsl:choose>
   </xsl:variable>
 
@@ -82,18 +96,23 @@
 
   <xsl:variable name="shortScore">
    <xsl:choose>
+    <xsl:when test="$shortPerc = 0">0</xsl:when>    
+    <xsl:when test="$shortPerc &lt; 4">1</xsl:when>    
     <xsl:when test="$shortPerc &lt; 6">2</xsl:when>
-    <xsl:when test="$shortPerc &lt; 11">5</xsl:when>
-    <xsl:when test="$shortPerc &lt; 20">8</xsl:when>
-    <xsl:when test="$shortPerc &lt; 25">10</xsl:when>
-    <xsl:when test="$shortPerc &lt; 36">11</xsl:when>
-    <xsl:when test="$shortPerc &lt; 41">10</xsl:when>
-    <xsl:when test="$shortPerc &lt; 50">9</xsl:when>
-    <xsl:when test="$shortPerc &lt; 60">8</xsl:when>
-    <xsl:when test="$shortPerc &lt; 80">6</xsl:when>
-    <xsl:when test="$shortPerc &lt; 90">4</xsl:when>
-    <xsl:when test="$shortPerc &lt; 101">2</xsl:when>
-    <xsl:otherwise>0</xsl:otherwise>
+    <xsl:when test="$shortPerc &lt; 8">3</xsl:when>
+    <xsl:when test="$shortPerc &lt; 10">4</xsl:when>
+    <xsl:when test="$shortPerc &lt; 12">5</xsl:when>
+    <xsl:when test="$shortPerc &lt; 14">6</xsl:when>
+    <xsl:when test="$shortPerc &lt; 16">7</xsl:when>
+    <xsl:when test="$shortPerc &lt; 18">8</xsl:when>
+    <xsl:when test="$shortPerc &lt; 20">9</xsl:when>
+    <xsl:when test="$shortPerc &lt; 30">10</xsl:when>
+    <xsl:when test="$shortPerc &lt; 37">11</xsl:when>
+    <xsl:when test="$shortPerc &lt; 61">10</xsl:when>
+    <xsl:when test="$shortPerc &lt; 71">9</xsl:when>
+    <xsl:when test="$shortPerc &lt; 81">8</xsl:when>
+    <xsl:when test="$shortPerc &lt; 91">5</xsl:when>  
+    <xsl:otherwise>2</xsl:otherwise>
    </xsl:choose>
   </xsl:variable>
 
@@ -103,18 +122,23 @@
 
   <xsl:variable name="longScore">
    <xsl:choose>
+    <xsl:when test="$longPerc = 0">0</xsl:when>    
+    <xsl:when test="$longPerc &lt; 4">1</xsl:when>    
     <xsl:when test="$longPerc &lt; 6">2</xsl:when>
-    <xsl:when test="$longPerc &lt; 11">5</xsl:when>
-    <xsl:when test="$longPerc &lt; 20">8</xsl:when>
-    <xsl:when test="$longPerc &lt; 25">10</xsl:when>
-    <xsl:when test="$longPerc &lt; 36">11</xsl:when>
-    <xsl:when test="$longPerc &lt; 41">10</xsl:when>
-    <xsl:when test="$longPerc &lt; 50">9</xsl:when>
-    <xsl:when test="$longPerc &lt; 60">8</xsl:when>
-    <xsl:when test="$longPerc &lt; 80">6</xsl:when>
-    <xsl:when test="$longPerc &lt; 90">4</xsl:when>
-    <xsl:when test="$longPerc &lt; 101">2</xsl:when>
-    <xsl:otherwise>0</xsl:otherwise>
+    <xsl:when test="$longPerc &lt; 8">3</xsl:when>
+    <xsl:when test="$longPerc &lt; 10">4</xsl:when>
+    <xsl:when test="$longPerc &lt; 12">5</xsl:when>
+    <xsl:when test="$longPerc &lt; 14">6</xsl:when>
+    <xsl:when test="$longPerc &lt; 16">7</xsl:when>
+    <xsl:when test="$longPerc &lt; 18">8</xsl:when>
+    <xsl:when test="$longPerc &lt; 20">9</xsl:when>
+    <xsl:when test="$longPerc &lt; 30">10</xsl:when>
+    <xsl:when test="$longPerc &lt; 37">11</xsl:when>
+    <xsl:when test="$longPerc &lt; 61">10</xsl:when>
+    <xsl:when test="$longPerc &lt; 71">9</xsl:when>
+    <xsl:when test="$longPerc &lt; 81">8</xsl:when>
+    <xsl:when test="$longPerc &lt; 91">5</xsl:when>  
+    <xsl:otherwise>2</xsl:otherwise>
    </xsl:choose>
   </xsl:variable>
 
@@ -132,32 +156,57 @@
   <xsl:variable name="tripleCount">
    <xsl:value-of select="count(tokenize($authCounts, '3')) - 1"/>
   </xsl:variable>
+  <xsl:variable name="triplePerc">
+   <xsl:value-of select="$tripleCount div $textCount * 100"/>
+  </xsl:variable>
+  
   <xsl:variable name="tripleScore">
    <xsl:choose>
-    <xsl:when test="$tripleCount &lt; 4">2</xsl:when>
-    <xsl:when test="$tripleCount &lt; 6">4</xsl:when>
-    <xsl:when test="$tripleCount &lt; 9">8</xsl:when>
-    <xsl:when test="$tripleCount &lt; 12">10</xsl:when>
-    <xsl:when test="$tripleCount &lt; 15">8</xsl:when>
-    <xsl:when test="$tripleCount &lt; 20">4</xsl:when>
-    <xsl:when test="$tripleCount &lt; 34">2</xsl:when>
-    <xsl:otherwise>0</xsl:otherwise>
+    <xsl:when test="$triplePerc &lt; 3">0</xsl:when>    
+    <xsl:when test="$triplePerc &lt; 6">2</xsl:when> 
+    <xsl:when test="$triplePerc &lt; 9">3</xsl:when> 
+    <xsl:when test="$triplePerc &lt; 12">4</xsl:when> 
+    <xsl:when test="$triplePerc &lt; 15">5</xsl:when> 
+    <xsl:when test="$triplePerc &lt; 18">6</xsl:when> 
+    <xsl:when test="$triplePerc &lt; 21">7</xsl:when>
+    <xsl:when test="$triplePerc &lt; 24">8</xsl:when>
+    <xsl:when test="$triplePerc &lt; 27">9</xsl:when>
+    <xsl:when test="$triplePerc &lt; 34">10</xsl:when>
+    <xsl:when test="$triplePerc &lt; 37">9</xsl:when>
+    <xsl:when test="$triplePerc &lt; 40">8</xsl:when>
+    <xsl:when test="$triplePerc &lt; 55">7</xsl:when>
+    <xsl:when test="$triplePerc &lt; 70">6</xsl:when>
+    <xsl:when test="$triplePerc &lt; 85">3</xsl:when>  
+       <xsl:otherwise>0</xsl:otherwise>
    </xsl:choose>
   </xsl:variable>
 
   <xsl:variable name="singleCount">
    <xsl:value-of select="count(tokenize($authCounts, '1')) - 1"/>
   </xsl:variable>
+  <xsl:variable name="singlePerc">
+   <xsl:value-of select="$singleCount div $textCount * 100"/>
+  </xsl:variable>
+  
   <xsl:variable name="singleScore">
    <xsl:choose>
-    <xsl:when test="$singleCount &lt; 10">1</xsl:when>
-    <xsl:when test="$singleCount &lt; 21">2</xsl:when>
-    <xsl:when test="$singleCount &lt; 41">5</xsl:when>
-    <xsl:when test="$singleCount &lt; 67">8</xsl:when>
-    <xsl:when test="$singleCount &lt; 74">10</xsl:when>
-    <xsl:when test="$singleCount &lt; 81">5</xsl:when>
-    <xsl:when test="$singleCount &lt; 101">2</xsl:when>
-    <xsl:otherwise>0</xsl:otherwise>
+    <xsl:when test="$singlePerc &lt; 10">0</xsl:when>
+    <xsl:when test="$singlePerc &lt; 20">1</xsl:when>
+    <xsl:when test="$singlePerc &lt; 30">2</xsl:when>
+    <xsl:when test="$singlePerc &lt; 35">3</xsl:when>
+    <xsl:when test="$singlePerc &lt; 40">4</xsl:when>
+    <xsl:when test="$singlePerc &lt; 45">5</xsl:when>
+    <xsl:when test="$singlePerc &lt; 50">6</xsl:when>
+    <xsl:when test="$singlePerc &lt; 55">7</xsl:when>
+    <xsl:when test="$singlePerc &lt; 60">8</xsl:when>
+    <xsl:when test="$singlePerc &lt; 67">9</xsl:when>
+    <xsl:when test="$singlePerc &lt; 74">10</xsl:when>
+    <xsl:when test="$singlePerc &lt; 77">9</xsl:when>
+    <xsl:when test="$singlePerc &lt; 80">8</xsl:when>
+    <xsl:when test="$singlePerc &lt; 85">7</xsl:when>   
+    <xsl:when test="$singlePerc &lt; 90">6</xsl:when>
+    <xsl:when test="$singlePerc &lt; 95">3</xsl:when>   
+     <xsl:otherwise>0</xsl:otherwise>
    </xsl:choose>
   </xsl:variable>
   
@@ -188,17 +237,18 @@
  <xsl:text>min: </xsl:text><xsl:value-of select="min($rangeSeq)"/>
  <xsl:text>range: </xsl:text><xsl:value-of select="$rangeCount"/></xsl:message>
  </xsl:if>
-  <!-- (D9>80,2,D9>50,4,D9>40,6,D9>30,8,D9>10,9,D9>5,10,D9>0,10,D9=0,10)-->
-
-  <xsl:variable name="rangeScore">
+   <xsl:variable name="rangeScore">
    <xsl:choose>
-    <xsl:when test="$rangeCount &gt; 80">2</xsl:when>
-    <xsl:when test="$rangeCount &gt; 50">4</xsl:when>
-    <xsl:when test="$rangeCount &gt; 40">6</xsl:when>
-    <xsl:when test="$rangeCount &gt; 30">8</xsl:when>
-    <xsl:when test="$rangeCount &gt; 10">9</xsl:when>
-    <xsl:when test="$rangeCount &gt; 5">10</xsl:when>
-    <xsl:when test="$rangeCount &gt; 0">10</xsl:when>
+    <xsl:when test="$rangeCount &lt; 10">10</xsl:when>
+    <xsl:when test="$rangeCount &lt; 15">9</xsl:when>  
+    <xsl:when test="$rangeCount &lt; 20">8</xsl:when> 
+    <xsl:when test="$rangeCount &lt; 25">7</xsl:when>
+    <xsl:when test="$rangeCount &lt; 30">6</xsl:when>
+    <xsl:when test="$rangeCount &lt; 40">5</xsl:when>
+    <xsl:when test="$rangeCount &lt; 50">4</xsl:when>
+    <xsl:when test="$rangeCount &lt; 60">3</xsl:when>
+    <xsl:when test="$rangeCount &lt; 70">2</xsl:when>
+    <xsl:when test="$rangeCount &lt; 80">1</xsl:when>    
     <xsl:otherwise>0</xsl:otherwise>
    </xsl:choose>
   </xsl:variable>
