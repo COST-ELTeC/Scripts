@@ -313,7 +313,7 @@
    <td>
     <xsl:call-template  name="showScore">
      <xsl:with-param name="count"><xsl:value-of select="$tripleCount"/></xsl:with-param>
-     <xsl:with-param name="score">  <xsl:value-of select="$tripleScore"/></xsl:with-param>
+     <xsl:with-param name="score"><xsl:value-of select="$tripleScore"/></xsl:with-param>
      <xsl:with-param name="target">5</xsl:with-param>
     </xsl:call-template>
    </td>
