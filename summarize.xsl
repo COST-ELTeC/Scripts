@@ -157,7 +157,7 @@
    <xsl:value-of select="count(tokenize($authCounts, '3')) - 1"/>
   </xsl:variable>
   <xsl:variable name="triplePerc">
-   <xsl:value-of select="$tripleCount div $textCount * 100"/>
+   <xsl:value-of select="($tripleCount*3) div $textCount * 100"/>
   </xsl:variable>
   
   <xsl:variable name="tripleScore">
@@ -211,44 +211,49 @@
   </xsl:variable>
   
   <xsl:variable name="rangeString">
-   <xsl:value-of select="count(//e:timeSlot[@key = 'T1']) div $textCount * 100"/>
+   <xsl:value-of select="count(//e:timeSlot[@key = 'T1'])"/>
    <xsl:text>,</xsl:text>
-   <xsl:value-of select="count(//e:timeSlot[@key = 'T2']) div $textCount * 100"/>
+   <xsl:value-of select="count(//e:timeSlot[@key = 'T2'])"/>
    <xsl:text>,</xsl:text>
-   <xsl:value-of select="count(//e:timeSlot[@key = 'T3']) div $textCount * 100"/>
+   <xsl:value-of select="count(//e:timeSlot[@key = 'T3'])"/>
    <xsl:text>,</xsl:text>
-   <xsl:value-of select="count(//e:timeSlot[@key = 'T4']) div $textCount * 100"/>
+   <xsl:value-of select="count(//e:timeSlot[@key = 'T4'])"/>
   </xsl:variable>
 
   <xsl:variable name="rangeSeq" select="tokenize($rangeString, ',')"/>
+ <xsl:variable name="rangeMin"><xsl:value-of select="e:myMin($rangeSeq)"/></xsl:variable>
+  <xsl:variable name="rangeMax"><xsl:value-of select="e:myMax($rangeSeq)"/></xsl:variable>
+  
+ <xsl:variable name="rangeCount">
+  <xsl:value-of select="$rangeMax - $rangeMin"/>
+ </xsl:variable>
+ <xsl:variable name="rangePerc">
+  <xsl:value-of select="$rangeCount div $textCount * 100"/>
+ </xsl:variable>
 
-  <xsl:variable name="rangeMax">
-   <xsl:value-of select="max($rangeSeq)"/>
-  </xsl:variable>
-  <xsl:variable name="rangeMin">
-   <xsl:value-of select="min($rangeSeq)"/>
-  </xsl:variable>
-  <xsl:variable name="rangeCount">
-   <xsl:value-of select="$rangeMax - $rangeMin"/>
-  </xsl:variable>
+  
  <xsl:if test="$verbose">
 <xsl:message>Vals:<xsl:value-of select="$rangeString"/>
- <xsl:text>max: </xsl:text><xsl:value-of select="max($rangeSeq)"/>
- <xsl:text>min: </xsl:text><xsl:value-of select="min($rangeSeq)"/>
- <xsl:text>range: </xsl:text><xsl:value-of select="$rangeCount"/></xsl:message>
+ <xsl:text>max: </xsl:text><xsl:value-of select="$rangeMax"/>
+ <xsl:text>min: </xsl:text><xsl:value-of select="$rangeMin"/>
+ <xsl:text>range: </xsl:text><xsl:value-of select="$rangeCount"/>
+ <xsl:text>range%: </xsl:text><xsl:value-of select="$rangePerc"/></xsl:message>
  </xsl:if>
+  
+  
+  
    <xsl:variable name="rangeScore">
    <xsl:choose>
-    <xsl:when test="$rangeCount &lt; 10">10</xsl:when>
-    <xsl:when test="$rangeCount &lt; 15">9</xsl:when>  
-    <xsl:when test="$rangeCount &lt; 20">8</xsl:when> 
-    <xsl:when test="$rangeCount &lt; 25">7</xsl:when>
-    <xsl:when test="$rangeCount &lt; 30">6</xsl:when>
-    <xsl:when test="$rangeCount &lt; 40">5</xsl:when>
-    <xsl:when test="$rangeCount &lt; 50">4</xsl:when>
-    <xsl:when test="$rangeCount &lt; 60">3</xsl:when>
-    <xsl:when test="$rangeCount &lt; 70">2</xsl:when>
-    <xsl:when test="$rangeCount &lt; 80">1</xsl:when>    
+    <xsl:when test="$rangePerc &lt; 10">10</xsl:when>
+    <xsl:when test="$rangePerc &lt; 15">9</xsl:when>  
+    <xsl:when test="$rangePerc &lt; 20">8</xsl:when> 
+    <xsl:when test="$rangePerc &lt; 25">7</xsl:when>
+    <xsl:when test="$rangePerc &lt; 30">6</xsl:when>
+    <xsl:when test="$rangePerc &lt; 40">5</xsl:when>
+    <xsl:when test="$rangePerc &lt; 50">4</xsl:when>
+    <xsl:when test="$rangePerc &lt; 60">3</xsl:when>
+    <xsl:when test="$rangePerc &lt; 70">2</xsl:when>
+    <xsl:when test="$rangePerc &lt; 80">1</xsl:when>    
     <xsl:otherwise>0</xsl:otherwise>
    </xsl:choose>
   </xsl:variable>
@@ -351,22 +356,23 @@
    </td>
    <td>
     <xsl:value-of select="count(//e:timeSlot[@key = 'T4'])"/>
-    <xsl:text> [</xsl:text>
-    <xsl:value-of select="$rangeScore"/>
-    <xsl:text>]</xsl:text>
+  </td><td> 
+   <xsl:call-template  name="showScore">
+    <xsl:with-param name="count"><xsl:value-of select="$rangeCount"/></xsl:with-param>
+    <xsl:with-param name="score"><xsl:value-of select="$rangeScore"/></xsl:with-param>
+    <xsl:with-param name="target">5</xsl:with-param>
+   </xsl:call-template>
    </td>
    <td class="sep">
     <xsl:value-of
      select="count(//e:canonicity[@key = 'high']) + count(//e:reprintCount[@key = 'high'])"/>
    </td>
    <td>
-    <span title="{$reprintScore}">
-    <xsl:value-of select="$reprintCount"/>
-   </span>
-    <!-- <xsl:text> [</xsl:text>
-    <xsl:value-of select="$reprintScore"/>
-    <xsl:text>]</xsl:text>-->
-    
+    <xsl:call-template  name="showScore">
+     <xsl:with-param name="count"><xsl:value-of select="$reprintCount"/></xsl:with-param>
+     <xsl:with-param name="score"><xsl:value-of select="$reprintScore"/></xsl:with-param>
+     <xsl:with-param name="target">5</xsl:with-param>
+    </xsl:call-template>
    </td>
    <td class="sep">
       <xsl:choose>
@@ -399,5 +405,20 @@
   </xsl:choose>
   
  </xsl:template>
-
+ <xsl:function name="e:myMin">
+  <xsl:param name="sequence"/>
+  <xsl:for-each select="$sequence">
+   <xsl:sort data-type="number" order="ascending"/>    
+   <xsl:if test="position() = 1">
+    <xsl:value-of select="."/>
+   </xsl:if></xsl:for-each>
+ </xsl:function>
+ <xsl:function name="e:myMax">
+  <xsl:param name="sequence"/>
+  <xsl:for-each select="$sequence">
+   <xsl:sort data-type="number" order="ascending"/>    
+   <xsl:if test="position() = last()">
+    <xsl:value-of select="."/>
+   </xsl:if></xsl:for-each>
+ </xsl:function>
 </xsl:stylesheet>
