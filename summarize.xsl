@@ -147,15 +147,23 @@
   </xsl:variable>
 
   <xsl:variable name="authCounts">
-   <xsl:for-each-group select="//t:titleStmt/t:author" group-by="normalize-space(.)">
+   <xsl:for-each-group select="//t:titleStmt/t:author[1]" group-by="normalize-space(.)">
     <xsl:sort select="count(current-group())"/>
     <xsl:value-of select="count(current-group())"/>
+    <xsl:if test="count(current-group()) &gt; 1">
+     <xsl:message><xsl:value-of select="current-grouping-key()"/> has <xsl:value-of select="count(current-group())" /> titles</xsl:message>
+    </xsl:if>
    </xsl:for-each-group>
   </xsl:variable>
-
+<xsl:if test="$verbose">
+ <xsl:message>authcounts string: <xsl:value-of select="$authCounts"/></xsl:message>
+</xsl:if>
   <xsl:variable name="tripleCount">
    <xsl:value-of select="count(tokenize($authCounts, '3')) - 1"/>
   </xsl:variable>
+  <xsl:if test="$verbose">
+   <xsl:message>triples: <xsl:value-of select="$tripleCount"/></xsl:message>
+  </xsl:if>
   <xsl:variable name="triplePerc">
    <xsl:value-of select="($tripleCount*3) div $textCount * 100"/>
   </xsl:variable>
@@ -184,6 +192,11 @@
   <xsl:variable name="singleCount">
    <xsl:value-of select="count(tokenize($authCounts, '1')) - 1"/>
   </xsl:variable>
+  
+  <xsl:if test="$verbose">
+   <xsl:message>singles: <xsl:value-of select="$singleCount"/></xsl:message>
+  </xsl:if>
+  
   <xsl:variable name="singlePerc">
    <xsl:value-of select="$singleCount div $textCount * 100"/>
   </xsl:variable>
