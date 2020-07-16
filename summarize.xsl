@@ -150,9 +150,9 @@
    <xsl:for-each-group select="//t:titleStmt/t:author[1]" group-by="normalize-space(.)">
     <xsl:sort select="count(current-group())"/>
     <xsl:value-of select="count(current-group())"/>
-    <xsl:if test="count(current-group()) &gt; 1">
+    <xsl:if test="$verbose"><xsl:if test="count(current-group()) &gt; 1" >
      <xsl:message><xsl:value-of select="current-grouping-key()"/> has <xsl:value-of select="count(current-group())" /> titles</xsl:message>
-    </xsl:if>
+    </xsl:if></xsl:if>
    </xsl:for-each-group>
   </xsl:variable>
 <xsl:if test="$verbose">
