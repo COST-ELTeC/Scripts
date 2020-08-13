@@ -13,9 +13,9 @@ library(vcd)
 
 args = commandArgs(trailingOnly=TRUE)
 print(args)
-oFile=paste(args[2], "/mosaic.png", sep="")
+oFile=paste(args[2], "/mosaic.svg", sep="")
 print(oFile)
-jpeg(oFile)
+svg(oFile)
 mosaic(~ length.cat + year.cat + gender.cat, data=md,
        highlighting = "gender.cat",
        highlighting_fill=c("pink","lightblue"),

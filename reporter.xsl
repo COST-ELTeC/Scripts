@@ -195,7 +195,7 @@
                     <xsl:value-of select="$status"/>
                 </h4>
                 <p class="graphic">
-                    <img src="mosaic.png"/>
+                    <img src="mosaic.svg"/>
                     <input type="button" value="Explainer"
                         onclick="window.open('../explainer.html','popUpWindow',
         'height=600,width=500,left=100,top=100,resizable=yes,
