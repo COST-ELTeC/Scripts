@@ -28,7 +28,7 @@
     <xsl:when test="$textCount &lt; 80">7</xsl:when>
     <xsl:when test="$textCount &lt; 90">8</xsl:when>
     <xsl:when test="$textCount &lt; 100">9</xsl:when>
-    <xsl:when test="$textCount = 100">10</xsl:when>
+    <xsl:otherwise>10</xsl:otherwise><!-- cant have too many texts-->
    </xsl:choose>
    <!-- $textcount div 10 -->
   </xsl:variable>
