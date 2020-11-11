@@ -201,10 +201,10 @@
         </xsl:if>
         <xsl:apply-templates/>
     </xsl:template>
-    <xsl:template match="bibl/note">
+   <!-- <xsl:template match="bibl/note">
         <xsl:message>WARNING note tag in bibl removed</xsl:message>
         <xsl:apply-templates/>
-    </xsl:template>
+    </xsl:template>-->
     <xsl:template match="respStmt[not(resp)]">
         <xsl:message>ERROR : respStmt missing resp : de-tagged</xsl:message>
              <xsl:apply-templates/>
