@@ -11,11 +11,11 @@
        - remove any note elements not in div type note
        and  a few more things...
 -->
- 
+
  <xsl:param name="fileName">UnknownFile</xsl:param>
  <xsl:param name="publish">https://doi.org/10.5281/zenodo.3462435</xsl:param>
  <xsl:param name="ERNfile">../ELTeC/listERN.xml</xsl:param>
- 
+
  <xsl:param name="verbose"/>
  <!-- iff true, witter on -->
  <xsl:variable name="today">
@@ -90,7 +90,7 @@
             schematypens="http://purl.oclc.org/dsdl/schematron"</xsl:processing-instruction>
   <xsl:text>
 </xsl:text>
-  <xsl:message>
+ <!-- <xsl:message>
    <xsl:text>*** File </xsl:text>
    <xsl:value-of select="$fileName"/>
    <xsl:text> on </xsl:text>
@@ -100,15 +100,15 @@
    <xsl:text>) *** 
 </xsl:text>
   </xsl:message>
-
+-->
   <!-- test the xml:id -->
 
   <xsl:if test="not(matches($textId, '[A-Z]+[0-9]+'))">
    <xsl:message>Weird xml_id : <xsl:value-of select="$textId"/></xsl:message>
   </xsl:if>
 
-  <xsl:if test="not(starts-with($fileName, $textId))">
-   <xsl:message>xml_id <xsl:value-of select="$textId"/> disagrees with filename <xsl:value-of select="$fileName"/></xsl:message>
+  <xsl:if test="not(starts-with(substring-after($fileName, '/'), $textId))">
+   <xsl:message>ERROR : xml_id <xsl:value-of select="$textId"/> disagrees with filename <xsl:value-of select="$fileName"/></xsl:message>
   </xsl:if>
 
   <xsl:copy>
@@ -141,24 +141,26 @@
     <xsl:attribute name="n">
      <xsl:value-of select="@xml:id"/>
     </xsl:attribute>
-    <xsl:message>WARNING: @xml:id on author changed to @n</xsl:message>
+    <xsl:message>WARNING: <xsl:value-of select="$textId"/> @xml:id on author changed to @n</xsl:message>
    </xsl:if>
    <xsl:variable select="normalize-space(.)" name="theString"/>
    <xsl:variable select="substring-before($theString, '(')" name="theAuthor"/>
    <xsl:variable select="substring-before(substring-after($theString, '('), ')')" name="theDates"/>
    <xsl:choose>
     <xsl:when test="string-length($theAuthor) &lt; 1">
-     <xsl:message>WARNING: <xsl:value-of select="$theString"/>
-      <xsl:text> has no dates</xsl:text></xsl:message>
+     <xsl:message>WARNING: <xsl:value-of select="$textId"/> 
+      <xsl:text> : </xsl:text>
+      <xsl:value-of select="$theString"/>
+      <xsl:text>  has no dates</xsl:text></xsl:message>
     </xsl:when>
     <xsl:otherwise>
      <xsl:if test="not(matches($theAuthor, '\[?[\p{L} \-]+,'))">
-      <xsl:message>ERROR: <xsl:value-of select="$theAuthor"/>
+      <xsl:message>ERROR: <xsl:value-of select="$textId"/> <xsl:value-of select="$theAuthor"/>
        <xsl:text> has no comma </xsl:text></xsl:message>
      </xsl:if>
      <xsl:if test="not(matches($theDates, '(1[789]\d\d)|\?\s*\-\s*(1[89]\d\d)|\?'))">
-      <xsl:message>ERROR <xsl:value-of select="$theString"/>
-       <xsl:text>implausible author dates (</xsl:text><xsl:value-of select="$theDates"/>)! </xsl:message>
+      <xsl:message>ERROR: <xsl:value-of select="$textId"/> <xsl:value-of select="$theString"/>
+       <xsl:text> implausible author dates (</xsl:text><xsl:value-of select="$theDates"/>)! </xsl:message>
      </xsl:if>
     </xsl:otherwise>
    </xsl:choose>
@@ -172,16 +174,16 @@
  <xsl:template match="sourceDesc">
   <xsl:copy>
    <xsl:apply-templates select="bibl"/>
-   </xsl:copy>
+  </xsl:copy>
  </xsl:template>
- 
-  <xsl:template match="respStmt[not(resp)]">
-  <xsl:message>ERROR : respStmt missing resp : de-tagged</xsl:message>
+
+ <xsl:template match="respStmt[not(resp)]">
+  <xsl:message>ERROR : <xsl:value-of select="$textId"/> respStmt missing resp : de-tagged</xsl:message>
   <xsl:apply-templates/>
  </xsl:template>
- 
+
  <xsl:template match="bibl//editor">
-  <xsl:message>ERROR: Editor tag not allowed: converting to respStmt</xsl:message>
+  <xsl:message>ERROR: <xsl:value-of select="$textId"/> Editor tag not allowed: converting to respStmt</xsl:message>
   <respStmt xmlns="http://www.tei-c.org/ns/1.0">
    <resp>editor</resp>
    <name>
@@ -191,12 +193,12 @@
  </xsl:template>
 
  <xsl:template match="div//bibl">
-  <xsl:message>Misplaced bibl changed to label</xsl:message>
+  <xsl:message>WARNING: <xsl:value-of select="$textId"/> Misplaced bibl changed to label</xsl:message>
   <label xmlns="http://www.tei-c.org/ns/1.0">
    <xsl:apply-templates/>
   </label>
  </xsl:template>
- 
+
  <!-- deal with publicationStmt 
  <publicationStmt>
   <publisher ref="https://distant-reading.net">COST Action
@@ -214,14 +216,14 @@
    ELTeC-$lang release listERN/ern[@xml:id=$lang]/@n}
   </ref>
  </publicationStmt>-->
- 
+
  <xsl:template match="publicationStmt">
   <xsl:variable name="zPrefix">https://doi.org/10.5281/zenodo.</xsl:variable>
   <xsl:variable name="zLink" select="concat($zPrefix, document($ERNfile)//e:listERN/@zid)"/>
 
-  <xsl:variable name="cZidLink" select="concat($zPrefix,document($ERNfile)//e:listERN/e:ern[@xml:id=$textLang]/@cZid)"/>
-  <xsl:variable name="rZidLink" select="concat($zPrefix,document($ERNfile)//e:listERN/e:ern[@xml:id=$textLang]/@rZid)"/>
-  <xsl:variable name="release" select="document($ERNfile)//e:listERN/e:ern[@xml:id=$textLang]/@n"/>
+  <xsl:variable name="cZidLink" select="concat($zPrefix, document($ERNfile)//e:listERN/e:ern[@xml:id = $textLang]/@cZid)"/>
+  <xsl:variable name="rZidLink" select="concat($zPrefix, document($ERNfile)//e:listERN/e:ern[@xml:id = $textLang]/@rZid)"/>
+  <xsl:variable name="release" select="document($ERNfile)//e:listERN/e:ern[@xml:id = $textLang]/@n"/>
   <publicationStmt xmlns="http://www.tei-c.org/ns/1.0">
    <publisher ref="https://distant-reading.net">COST Action "Distant Reading for European Literary History" (CA16204)</publisher>
    <distributor ref="https://zenodo.org/communities/eltec/">Zenodo.org</distributor>
@@ -230,8 +232,12 @@
     <licence target="https://creativecommons.org/licenses/by/4.0/"/>
    </availability>
    <ref type="doi" target="{$zLink}">ELTeC</ref>
-   <ref type="doi" target="{$cZidLink}"><xsl:value-of select="concat('ELTeC-',$textLang)"/></ref>
-   <ref type="doi" target="{$rZidLink}"><xsl:value-of select="concat('ELTeC-',$textLang, ' release ', $release)"/></ref> 
+   <ref type="doi" target="{$cZidLink}">
+    <xsl:value-of select="concat('ELTeC-', $textLang)"/>
+   </ref>
+   <ref type="doi" target="{$rZidLink}">
+    <xsl:value-of select="concat('ELTeC-', $textLang, ' release ', $release)"/>
+   </ref>
    <xsl:if test="p">
     <xsl:comment>
 <xsl:value-of select="p"/>
@@ -253,14 +259,14 @@
    </xsl:attribute>
   </reprintCount>
  </xsl:template>
- 
+
  <xsl:template match="revisionDesc">
   <xsl:copy>
    <change xmlns="http://www.tei-c.org/ns/1.0" when="{$today}">Checked by checkup script</change>
    <xsl:apply-templates/>
   </xsl:copy>
  </xsl:template>
- 
+
  <xsl:template match="name">
   <xsl:choose>
    <xsl:when test="parent::change">
@@ -272,29 +278,29 @@
     </xsl:copy>
    </xsl:when>
    <xsl:otherwise>
-    <xsl:message>Unexpected name tag found: suppressed </xsl:message>
+    <xsl:message> WARNING: <xsl:value-of select="$textId"/> Unexpected name tag found: suppressed </xsl:message>
     <xsl:value-of select="."/>
    </xsl:otherwise>
   </xsl:choose>
  </xsl:template>
 
  <xsl:template match="milestone[not(@unit)]">
-  <xsl:message>WARNING: Milestone unit unspecified</xsl:message>
+  <xsl:message>WARNING: <xsl:value-of select="$textId"/> Milestone unit unspecified</xsl:message>
   <milestone xmlns="http://www.tei-c.org/ns/1.0" unit="unspecified"/>
  </xsl:template>
 
  <!-- look at untyped divs (which are still permitted by schema) -->
- 
+
  <xsl:template match="body//div[not(@type)]">
   <xsl:choose>
    <xsl:when test="parent::div[@type = 'chapter']">
-    <xsl:message>ERROR : div not permitted within chapter: replaced with milestone</xsl:message>
+    <xsl:message>ERROR : <xsl:value-of select="$textId"/> div not permitted within chapter: replaced with milestone</xsl:message>
     <milestone xmlns="http://www.tei-c.org/ns/1.0" unit="unspecified"/>
     <xsl:apply-templates/>
    </xsl:when>
    <xsl:when test="p and not(child::div)">
     <xsl:if test="$verbose">
-     <xsl:message>WARNING: untyped div containing p but not div: marking as chapter</xsl:message>
+     <xsl:message>WARNING: <xsl:value-of select="$textId"/> untyped div containing p but not div: marking as chapter</xsl:message>
     </xsl:if>
     <div type="chapter" xmlns="http://www.tei-c.org/ns/1.0">
      <xsl:apply-templates select="@*"/>
@@ -303,7 +309,7 @@
    </xsl:when>
    <xsl:when test="div">
     <xsl:if test="$verbose">
-     <xsl:message>WARNING: untyped div containing div : marking as group</xsl:message>
+     <xsl:message>WARNING: <xsl:value-of select="$textId"/> untyped div containing div : marking as group</xsl:message>
     </xsl:if>
     <div type="group" xmlns="http://www.tei-c.org/ns/1.0">
      <xsl:apply-templates/>
@@ -315,32 +321,32 @@
  <!-- check typed divs -->
 
  <xsl:template match="body//div[@type]">
-<xsl:choose>
-  <xsl:when test="parent::div[@type = 'chapter']">
-    <xsl:message>ERROR : div not permitted within chapter: replaced with milestone</xsl:message>
+  <xsl:choose>
+   <xsl:when test="parent::div[@type = 'chapter']">
+    <xsl:message>ERROR : <xsl:value-of select="$textId"/> div not permitted within chapter: replaced with milestone</xsl:message>
     <milestone xmlns="http://www.tei-c.org/ns/1.0" unit="{@type}"/>
     <xsl:apply-templates/>
    </xsl:when>
- <xsl:otherwise>
- <xsl:copy> 
-  <xsl:apply-templates select="@*"/>
-  <xsl:apply-templates/>
-</xsl:copy> </xsl:otherwise>
-</xsl:choose>
+   <xsl:when test="@type = 'titlepage'">
+    <xsl:message>WARNING: <xsl:value-of select="$textId"/> title page found in body : shouldn't it be in front or back?</xsl:message>
+    <xsl:copy>
+     <xsl:apply-templates select="@*"/>
+     <xsl:apply-templates/>
+    </xsl:copy>
+   </xsl:when>
+   <xsl:otherwise>
+    <xsl:copy>
+     <xsl:apply-templates select="@*"/>
+     <xsl:apply-templates/>
+    </xsl:copy>
+   </xsl:otherwise>
+  </xsl:choose>
  </xsl:template>
 
- <!-- check titlepage div is in front -->
- <xsl:template match="//div[@type='titlepage']">
-  <xsl:if test="ancestor::body">
-   <xsl:message>WARNING: title page found in body : shouldnt it be in front or back?</xsl:message>
-  </xsl:if>
-  <xsl:copy>   <xsl:apply-templates select="@*"/>
-   <xsl:apply-templates/>
-</xsl:copy>   </xsl:template>
- 
+
  <xsl:template match="front/div[not(@type)]">
   <xsl:if test="$verbose">
-   <xsl:message>Untyped div found in front ... assuming liminal</xsl:message>
+   <xsl:message>WARNING: <xsl:value-of select="$textId"/> Untyped div found in front ... assuming liminal</xsl:message>
   </xsl:if>
   <div type="liminal" xmlns="http://www.tei-c.org/ns/1.0">
    <xsl:apply-templates/>
@@ -349,11 +355,12 @@
 
  <xsl:template match="back/div[not(@type)]">
   <xsl:if test="$verbose">
-   <xsl:message>Untyped div found in front ... assuming liminal</xsl:message>
+   <xsl:message>Warning <xsl:value-of select="$textId"/> Untyped div found in back ... assuming liminal</xsl:message>
   </xsl:if>
   <div type="liminal" xmlns="http://www.tei-c.org/ns/1.0">
    <xsl:apply-templates/>
-  </div></xsl:template>
+  </div>
+ </xsl:template>
 
  <xsl:template match="back/div[@type]">
   <xsl:choose>
@@ -363,9 +370,11 @@
      <xsl:apply-templates/>
     </div>
    </xsl:when>
-     <xsl:otherwise>
+   <xsl:otherwise>
     <xsl:message>
-     <xsl:text>WARNING : unanticipated div/@type (</xsl:text>
+     <xsl:text>WARNING: </xsl:text>
+     <xsl:value-of select="$textId"/>
+     <xsl:text> unanticipated div/@type (</xsl:text>
      <xsl:value-of select="@type"/>
      <xsl:text>) in back : changed to liminal</xsl:text>
     </xsl:message>
@@ -378,17 +387,17 @@
 
  <!-- remove <note> elements inside the body-->
  <xsl:template match="body//note">
-  <xsl:message>ERROR : note inside body removed</xsl:message>
+  <xsl:message>ERROR : <xsl:value-of select="$textId"/> note inside body removed</xsl:message>
  </xsl:template>
 
  <!-- remove empty front or back and vacuous ref -->
 
  <xsl:template match="front[not(div)]">
-  <xsl:message>Empty front removed</xsl:message>
+  <xsl:message>WARNING: <xsl:value-of select="$textId"/> Empty front removed</xsl:message>
  </xsl:template>
 
  <xsl:template match="back[not(div)]">
-  <xsl:message>Empty back removed</xsl:message>
+  <xsl:message>WARNING: <xsl:value-of select="$textId"/> Empty back removed</xsl:message>
  </xsl:template>
 
  <!-- special tweaks for romanian -->
@@ -415,12 +424,12 @@
   <xsl:choose>
    <xsl:when test="parent::head">
     <xsl:apply-templates/>
-    <xsl:message>WARNING: ref in head removed</xsl:message>
+    <xsl:message>WARNING: <xsl:value-of select="$textId"/> ref in head removed</xsl:message>
    </xsl:when>
    <xsl:when test="starts-with(@target, 'http')">
     <xsl:copy-of select="."/>
    </xsl:when>
-  <!-- <xsl:when test="starts-with(@target, 'gut:')">
+   <!-- <xsl:when test="starts-with(@target, 'gut:')">
     <xsl:copy-of select="."/>
    </xsl:when>
    <xsl:when test="starts-with(@target, 'ia:')">
@@ -433,37 +442,37 @@
     <xsl:copy-of select="."/>
    </xsl:when>
 -->
-   
+
    <xsl:when test="starts-with(@target, '#')">
     <xsl:variable name="noteId">
      <xsl:value-of select="substring-after(@target, '#')"/>
-    </xsl:variable>  
+    </xsl:variable>
     <xsl:choose>
      <xsl:when test="//note[@xml:id = $noteId]">
       <xsl:copy-of select="."/>
      </xsl:when>
      <xsl:otherwise>
-      <xsl:message>ERROR: ref to nonexistent note with id <xsl:value-of select="$noteId"/> removed</xsl:message>
+      <xsl:message>ERROR: <xsl:value-of select="$textId"/> ref to nonexistent note with id <xsl:value-of select="$noteId"/> removed</xsl:message>
      </xsl:otherwise>
     </xsl:choose>
     <xsl:copy-of select="."/>
    </xsl:when>
    <xsl:otherwise>
-    <xsl:message>WARNING: invalid ref targetting <xsl:value-of select="@target"/> removed</xsl:message>
+    <xsl:message>WARNING: <xsl:value-of select="$textId"/> invalid ref targetting <xsl:value-of select="@target"/> removed</xsl:message>
    </xsl:otherwise>
   </xsl:choose>
  </xsl:template>
 
  <xsl:template match="ref[@target = '#']">
-  <xsl:message>Suppressed vapid ref</xsl:message>
+  <xsl:message>WARNING: <xsl:value-of select="$textId"/> Suppressed vapid ref</xsl:message>
  </xsl:template>
 
  <xsl:template match="measure[@unit = 'pages' and . = '0']">
-  <xsl:message>Suppressed zero page count</xsl:message>
+  <xsl:message>WARNING: <xsl:value-of select="$textId"/> Suppressed zero page count</xsl:message>
  </xsl:template>
 
  <xsl:template match="bibl[not(matches(., '[\w]+'))]">
-  <xsl:message>Suppressed vapid bibl</xsl:message>
+  <xsl:message>WARNING: <xsl:value-of select="$textId"/> Suppressed vapid bibl</xsl:message>
  </xsl:template>
 
  <xsl:function name="e:warning">
@@ -472,6 +481,8 @@
   <xsl:if test="$count > 0">
    <xsl:message>
     <xsl:text>WARNING : </xsl:text>
+    <xsl:value-of select="$textId"/>
+    <xsl:text> </xsl:text>
     <xsl:value-of select="$count"/>
     <xsl:text> </xsl:text>
     <xsl:value-of select="$msg"/>
