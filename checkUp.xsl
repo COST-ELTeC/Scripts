@@ -25,7 +25,13 @@
   <xsl:value-of select="TEI/@xml:id"/>
  </xsl:variable>
  <xsl:variable name="textLang">
-  <xsl:value-of select="TEI/@xml:lang"/>
+  <xsl:choose>
+   <xsl:when test="contains(TEI/@xml:lang,'-')">
+    <xsl:value-of select="substring-before(TEI/@xml:lang,'-')"/>
+   </xsl:when>
+   <xsl:otherwise><xsl:value-of select="TEI/@xml:lang"/>
+   </xsl:otherwise>
+  </xsl:choose>
  </xsl:variable>
  <xsl:variable name="editionWord">
   <xsl:choose>
@@ -155,9 +161,10 @@
     </xsl:when>
     <xsl:otherwise>
      <xsl:if test="not(matches($theAuthor, '\[?[\p{L} \-]+,'))">
-      <xsl:message>ERROR: <xsl:value-of select="$textId"/> <xsl:value-of select="$theAuthor"/>
+      <xsl:if test="not($textLang eq 'hu')">
+       <xsl:message>ERROR: <xsl:value-of select="$textLang"/>  text <xsl:value-of select="$textId"/> <xsl:value-of select="$theAuthor"/>
        <xsl:text> has no comma </xsl:text></xsl:message>
-     </xsl:if>
+     </xsl:if></xsl:if>
      <xsl:if test="not(matches($theDates, '(1[789]\d\d)|\?\s*\-\s*(1[89]\d\d)|\?'))">
       <xsl:message>ERROR: <xsl:value-of select="$textId"/> <xsl:value-of select="$theString"/>
        <xsl:text> implausible author dates (</xsl:text><xsl:value-of select="$theDates"/>)! </xsl:message>
@@ -220,7 +227,8 @@
  <xsl:template match="publicationStmt">
   <xsl:variable name="zPrefix">https://doi.org/10.5281/zenodo.</xsl:variable>
   <xsl:variable name="zLink" select="concat($zPrefix, document($ERNfile)//e:listERN/@zid)"/>
-
+  <xsl:variable name="zRelease" select="concat($zPrefix, document($ERNfile)//e:listERN/@n)"/>
+  
   <xsl:variable name="cZidLink" select="concat($zPrefix, document($ERNfile)//e:listERN/e:ern[@xml:id = $textLang]/@cZid)"/>
   <xsl:variable name="rZidLink" select="concat($zPrefix, document($ERNfile)//e:listERN/e:ern[@xml:id = $textLang]/@rZid)"/>
   <xsl:variable name="release" select="document($ERNfile)//e:listERN/e:ern[@xml:id = $textLang]/@n"/>
@@ -231,7 +239,10 @@
    <availability>
     <licence target="https://creativecommons.org/licenses/by/4.0/"/>
    </availability>
-   <ref type="doi" target="{$zLink}">ELTeC</ref>
+   <ref type="doi" target="https://doi.org/10.5281/zenodo.3462435">ELTeC</ref> 
+   <ref type="doi" target="{$zLink}">
+    <xsl:value-of select="concat('ELTeC release ', $zRelease)"/>
+   </ref>
    <ref type="doi" target="{$cZidLink}">
     <xsl:value-of select="concat('ELTeC-', $textLang)"/>
    </ref>
