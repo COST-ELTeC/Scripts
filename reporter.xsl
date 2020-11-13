@@ -78,7 +78,7 @@
                             <xsl:choose>
                                 <xsl:when test="t:fileDesc/t:extent/t:measure[@unit = 'words']">
                                     <xsl:value-of
-                                        select="t:fileDesc/t:extent/t:measure[@unit = 'words']"/>
+                                        select="normalize-space(t:fileDesc/t:extent/t:measure[@unit = 'words'])"/>
                                 </xsl:when>
                                 <xsl:otherwise>0</xsl:otherwise>
                             </xsl:choose>
