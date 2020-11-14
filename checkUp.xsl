@@ -231,23 +231,49 @@
   <xsl:variable name="cZidLink" select="concat($zPrefix, document($ERNfile)//e:listERN/e:ern[@xml:id = $textLang]/@cZid)"/>
   <xsl:variable name="rZidLink" select="concat($zPrefix, document($ERNfile)//e:listERN/e:ern[@xml:id = $textLang]/@rZid)"/>
   <xsl:variable name="release" select="document($ERNfile)//e:listERN/e:ern[@xml:id = $textLang]/@n"/>
+  <xsl:variable name="repoName">
+   <xsl:choose>
+    <xsl:when test="$textLang eq 'de'">deu</xsl:when>
+    <xsl:when test="$textLang eq 'en'">eng</xsl:when>
+    <xsl:when test="$textLang eq 'fr'">fra</xsl:when>
+    <xsl:when test="$textLang eq 'hu'">hun</xsl:when>
+    <xsl:when test="$textLang eq 'no'">nor</xsl:when>
+    <xsl:when test="$textLang eq 'pt'">por</xsl:when>
+    <xsl:when test="$textLang eq 'ro'">rom</xsl:when>
+    <xsl:when test="$textLang eq 'sl'">slv</xsl:when>
+    <xsl:when test="$textLang eq 'sp'">spa</xsl:when>
+    <xsl:when test="$textLang eq 'sr'">srp</xsl:when>
+    <xsl:when test="$textLang eq 'sw'">swe</xsl:when>
+ <xsl:otherwise>$textLang</xsl:otherwise>   
+   </xsl:choose>
+  </xsl:variable>
+  
+  
   <publicationStmt xmlns="http://www.tei-c.org/ns/1.0">
-   <publisher ref="https://distant-reading.net">COST Action "Distant Reading for European Literary History" (CA16204)</publisher>
-   <distributor ref="https://zenodo.org/communities/eltec/">Zenodo.org</distributor>
+   <xsl:text>
+</xsl:text><publisher ref="https://distant-reading.net">COST Action "Distant Reading for European Literary History" (CA16204)</publisher>
+   <xsl:text>
+</xsl:text><distributor ref="https://zenodo.org/communities/eltec/">Zenodo.org</distributor>
    <date when="{$today}"/>
-   <availability>
+   <xsl:text>
+</xsl:text><availability>
     <licence target="https://creativecommons.org/licenses/by/4.0/"/>
    </availability>
-   <ref type="doi" target="https://doi.org/10.5281/zenodo.3462435">ELTeC</ref> 
+   <xsl:text>
+</xsl:text><ref type="doi" target="https://doi.org/10.5281/zenodo.3462435">ELTeC</ref><xsl:text>
+</xsl:text>
    <ref type="doi" target="{$zLink}">
     <xsl:value-of select="concat('ELTeC release ', $zRelease)"/>
-   </ref>
+   </ref><xsl:text>
+</xsl:text>
    <ref type="doi" target="{$cZidLink}">
-    <xsl:value-of select="concat('ELTeC-', $textLang)"/>
-   </ref>
+    <xsl:value-of select="concat('ELTeC-', $repoName)"/>
+   </ref><xsl:text>
+</xsl:text>
    <ref type="doi" target="{$rZidLink}">
-    <xsl:value-of select="concat('ELTeC-', $textLang, ' release ', $release)"/>
-   </ref>
+    <xsl:value-of select="concat('ELTeC-', $repoName, ' release ', $release)"/>
+   </ref><xsl:text>
+</xsl:text>
    <xsl:if test="p">
     <xsl:comment>
 <xsl:value-of select="p"/>
@@ -272,7 +298,9 @@
 
  <xsl:template match="revisionDesc">
   <xsl:copy>
-   <change xmlns="http://www.tei-c.org/ns/1.0" when="{$today}">Checked by checkup script</change>
+   <xsl:text>
+</xsl:text>
+   <change xmlns="http://www.tei-c.org/ns/1.0" when="{$today}">Converted by checkUp script for new release</change>
    <xsl:apply-templates/>
   </xsl:copy>
  </xsl:template>
