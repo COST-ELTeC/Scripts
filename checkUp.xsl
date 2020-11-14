@@ -225,10 +225,9 @@
  </publicationStmt>-->
 
  <xsl:template match="publicationStmt">
-  <xsl:variable name="zPrefix">https://doi.org/10.5281/zenodo.</xsl:variable>
-  <xsl:variable name="zLink" select="concat($zPrefix, document($ERNfile)//e:listERN/@zid)"/>
-  <xsl:variable name="zRelease" select="concat($zPrefix, document($ERNfile)//e:listERN/@n)"/>
-  
+  <xsl:variable name="zPrefix" select="document($ERNfile)//e:listERN/@zPrefix"/>
+  <xsl:variable name="zLink" select="concat($zPrefix, document($ERNfile)//e:listERN/@zId )"/>
+  <xsl:variable name="zRelease" select="document($ERNfile)//e:listERN/@n"/> 
   <xsl:variable name="cZidLink" select="concat($zPrefix, document($ERNfile)//e:listERN/e:ern[@xml:id = $textLang]/@cZid)"/>
   <xsl:variable name="rZidLink" select="concat($zPrefix, document($ERNfile)//e:listERN/e:ern[@xml:id = $textLang]/@rZid)"/>
   <xsl:variable name="release" select="document($ERNfile)//e:listERN/e:ern[@xml:id = $textLang]/@n"/>
@@ -403,11 +402,11 @@
 
  <!-- remove empty front or back and vacuous ref -->
 
- <xsl:template match="front[not(div)]">
+ <xsl:template match="front[not(*)]">
   <xsl:message>WARNING: <xsl:value-of select="$textId"/> Empty front removed</xsl:message>
  </xsl:template>
 
- <xsl:template match="back[not(div)]">
+ <xsl:template match="back[not(*)]">
   <xsl:message>WARNING: <xsl:value-of select="$textId"/> Empty back removed</xsl:message>
  </xsl:template>
 
