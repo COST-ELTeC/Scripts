@@ -480,7 +480,6 @@
     <xsl:copy-of select="."/>
    </xsl:when>
 -->
-
    <xsl:when test="starts-with(@target, '#')">
     <xsl:variable name="noteId">
      <xsl:value-of select="substring-after(@target, '#')"/>
@@ -493,8 +492,8 @@
       <xsl:message>ERROR: <xsl:value-of select="$textId"/> ref to nonexistent note with id <xsl:value-of select="$noteId"/> removed</xsl:message>
      </xsl:otherwise>
     </xsl:choose>
-    <xsl:copy-of select="."/>
-   </xsl:when>
+  <!--  <xsl:copy-of select="."/>
+  --> </xsl:when>
    <xsl:otherwise>
     <xsl:message>WARNING: <xsl:value-of select="$textId"/> invalid ref targetting <xsl:value-of select="@target"/> removed</xsl:message>
    </xsl:otherwise>
