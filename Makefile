@@ -1,8 +1,8 @@
 ECHO=
 LOCAL=/home/lou/Public
-LANG=xxx
+LANG=cze
 REPO=ELTeC-$(LANG)
-PREFIX=xxx
+PREFIX=cze
 SCHEMA1=$(LOCAL)/WG1/distantreading.github.io/Schema/eltec-1.rng
 CORPUS=$(LOCAL)/$(REPO)
 CORPUS1=$(LOCAL)/$(REPO)/level1

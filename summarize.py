@@ -13,7 +13,9 @@ dateLine='<p>Summary produced: '+time.strftime("%Y-%m-%d")+'</p>'
 
 summaryTail="</table>"+dateLine+"</body></html>"
 
-LANGS=('cze', 'deu', 'eng', 'fra', 'gre', 'hun', 'ita', 'lav', 'lit', 'nor', 'pol', 'por', 'rom', 'slv', 'spa', 'srp', 'swe', 'ukr')
+#LANGS=('cze', 'deu', 'eng', 'fra', 'gre', 'hun', 'ita', 'lav', 'lit', 'nor', 'pol', 'por', 'rom', 'slv', 'spa', 'srp', 'swe', 'ukr')
+
+LANGS=('cze', 'deu', 'eng', 'fra', 'hun', 'ita', 'lav', 'lit', 'nor', 'pol', 'por', 'rom', 'slv', 'spa', 'srp', 'swe', 'ukr')
 
 shutil.copyfile(scriptRoot+'summary-head.html', webRoot+'index.html')
 
