@@ -19,12 +19,8 @@ collections repositories, you go one level up ("..") and then down
 to the appropriate language collection folder (e.g. "ELTec-por"). 
 Advanced users may want to change the XPath expressions to match their TEI encoding.
 
-Output: The script writes three files to the output folder "Metadata":
-- A CSV file called "metadata.csv" with some basic metadata about the texts included in the collection
-- A file called "report_corpus.txt" with a simple JSON-style string with information
-about the corpus composition criteria for ELTeC collections.
-- A file called "report_full.txt" with a simple JSON-style string that has some more,
-maybe less universally useful information about the files.
+Output: The script writes one file:
+- A TSV file called "[collection]_metadata.tsv" with some basic metadata about the texts included in the collection
 
 Please send feedback to Christof at "schoech@uni-trier.de". 
 """

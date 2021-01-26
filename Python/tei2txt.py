@@ -113,11 +113,17 @@ def modernize_text(text, paths):
 
 def get_counts(text): 
     # tokens
-    tokens = re.split("\W+", text)
-    num_words = len(tokens)
-    num_tokens = num_words
-    #print(num_tokens, num_words)
-    return num_tokens, num_words
+    words = re.split("\W+", text)
+    num_words = len(words)
+    if num_words > 99999: 
+        len_category = "long"
+    elif num_words > 49999: 
+        len_category = "medium"
+    elif num_words > 9999: 
+        len_category = "short"
+    else: 
+        len_category = "too short!"
+    return num_words, len_category
 
 
 
@@ -129,12 +135,12 @@ def save_text(text, paths, filename):
         outfile.write(text)
 
 
-def save_counts(tokencounts, wordcounts): 
-    tokencounts = pd.DataFrame.from_dict(tokencounts, orient="index", columns=["tokens"])
-    print(tokencounts.head())
-    wordcounts = pd.DataFrame.from_dict(wordcounts, orient="index", columns=["words"])
-    print(wordcounts.head())
-    counts = tokencounts.merge(wordcounts, left_index=True, right_index=True)
+def save_counts(len_words, len_category): 
+    len_category = pd.DataFrame.from_dict(len_category, orient="index", columns=["category"])
+    print(len_category.head())
+    len_words = pd.DataFrame.from_dict(len_words, orient="index", columns=["words"])
+    print(len_words.head())
+    counts = len_category.merge(len_words, left_index=True, right_index=True).sort_index()
     print(counts.head())    
     with open("counts.csv", "w", encoding="utf8") as csvfile: 
         counts.to_csv(csvfile, sep=";")
@@ -147,8 +153,8 @@ def save_counts(tokencounts, wordcounts):
 
 def main(paths, params): 
     helper(paths, params)
-    tokencounts = {}
-    wordcounts = {}
+    len_category = {}
+    len_words = {}
     for teifile in glob.glob(paths["teipath"]):
         filename = get_filename(teifile)
         tei = read_tei(teifile)
@@ -158,11 +164,11 @@ def main(paths, params):
         else: 
             pass
         if params["counts"] == True: 
-            tokencounts[filename], wordcounts[filename] = get_counts(text)
+            len_words[filename], len_category[filename] = get_counts(text)
         if params["plaintext"] == True: 
             save_text(text, paths, filename)
     if params["counts"] == True: 
-        save_counts(tokencounts, wordcounts)
+        save_counts(len_words, len_category)
     
     
 

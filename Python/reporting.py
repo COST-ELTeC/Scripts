@@ -47,10 +47,10 @@ from collections import Counter
 # === Parameters ===
 
 workingDir = join("..", "..", "ELTeC-fra")
-
 teiFolder = join(workingDir, "level1", "*.xml")
 metadataFolder = join(workingDir, "")
-reportFile = join(workingDir, "report.md")
+reportFile = join(workingDir, "composition.md")
+
 
 xpaths = {"xmlid" : "//tei:TEI/@xml:id", 
           "title" : "//tei:titleStmt/tei:title/text()",
@@ -64,6 +64,7 @@ xpaths = {"xmlid" : "//tei:TEI/@xml:id",
           "copytext-yr" : "//tei:bibl[@type='copyText']/tei:date/text()",
           "firsted-yr" : "//tei:bibl[@type='firstEdition']/tei:date/text()",
           "language" : "//tei:langUsage/tei:language/@ident"}
+          
 
 ordering = ["filename", "xmlid", "au-name", "title", "au-birth", "au-death",
             "au-gender", "au-ids", "copytext-yr", "firsted-yr", "title-ids",
@@ -144,6 +145,8 @@ def build_balancereport(allmetadata):
     allmetadata = allmetadata[ordering]
     # Number of novels
     num_novels = len(set(list(allmetadata.loc[:,"xmlid"])))
+    # Number of authors
+    num_authors = len(set(list(allmetadata.loc[:,"au-name"])))
     # Number of texts per time period
     time_slots = dict(Counter(list(allmetadata.loc[:,"time-slot"])))
     # Number of texts per size category
@@ -154,13 +157,14 @@ def build_balancereport(allmetadata):
     author_genders = dict(Counter(list(allmetadata.loc[:,"au-gender"])))
     # Number of authors per text-count 
     texts_per_author = dict(Counter(list(allmetadata.loc[:,"au-name"])))
-    authors_per_textcount = Counter(list(texts_per_author.values()))
+    authors_per_textcount = dict(Counter(list(texts_per_author.values())))
     report = {"num_novels" : num_novels, 
+              "num_authors" : num_authors, 
               "timeSlots" : time_slots,
               "sizeCats" : size_cats,
               "reprints" : canon_levels,
               "au-gender" : author_genders,
-              "aus-per-textcount" : authors_per_textcount}
+              "novels-per-au" : authors_per_textcount}
     import pprint
     pp = pprint.PrettyPrinter(indent=0, width=30, compact=True) 
     pp.pprint(report)
@@ -168,6 +172,17 @@ def build_balancereport(allmetadata):
 
 
 def save_report(report, filename): 
+    report = "\n## Corpus composition criteria report\n" + str(report)
+    report = re.sub("'", "", str(report))
+    report = re.sub("{", "", report)
+    report = re.sub("}", "", report)
+    report = re.sub("num_novels", "\n- num_novels", report)
+    report = re.sub("num_authors", "\n- num_authors", report)
+    report = re.sub("timeSlots", "\n- timeSlots", report)
+    report = re.sub("sizeCats", "\n- sizeCats", report)
+    report = re.sub("reprints", "\n- reprints", report)
+    report = re.sub("au-gender", "\n- au-gender", report)
+    report = re.sub("novels-per-au", "\n- novels-per-au", report)
     with open(filename, "w", encoding="utf8") as outfile:
         outfile.write(str(report))
     
@@ -289,9 +304,9 @@ def main(teiFolder, metadataFolder, xpaths, ordering, reportFile):
                 keys.append(key)
                 metadata.append(metadatum)
             allmetadata.append(dict(zip(keys, metadata)))
-        save_metadata(allmetadata, metadataFolder, ordering)
+        #save_metadata(allmetadata, metadataFolder, ordering)
     balancereport = build_balancereport(allmetadata)
-    save_report(balancereport, join(metadataFolder, "corpus-composition.txt"))
+    save_report(balancereport, join(metadataFolder, "composition.md"))
     #fullreport = build_fullreport(allmetadata)
     #save_report(fullreport, join(metadataFolder, "report_full.txt"))
     #make_buildmd(allmetadata, fullreport, reportFile, metadataFolder)

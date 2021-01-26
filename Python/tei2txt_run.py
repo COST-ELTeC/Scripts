@@ -11,7 +11,7 @@ from os.path import join
 # File paths (DO ADJUST)
 #=======================
 
-wdir = join("..", "..", "ELTeC-fra", "")
+wdir = join("..", "..", "ELTeC-rom", "")
 teipath = join(wdir, "level1", "*.xml")
 txtpath = join(wdir, "plain1", "")
 modsfile = join(wdir, "tei2txt_mods.csv")
@@ -23,12 +23,12 @@ modsfile = join(wdir, "tei2txt_mods.csv")
 
 head = True # Include chapter headings?
 foreign = True # Include words marked as foreign?
-note = False # Include text from footnotes?
+note = True # Include text from footnotes?
 pb = False # Include page breaks?
-trailer = False # Include words marked as trailer?
+trailer = True # Include words marked as trailer?
 quote = True # Include words marked as quote?
 front = False # Include front matter?
-back = True # Include back matter (other than notes)?
+back = False # Include back matter (other than notes)?
 
 plaintext = True # Extract and save plain text?
 modernize = False # Perform spelling modifications?
