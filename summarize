@@ -1,6 +1,6 @@
 #do not run this command around midnight!
 #LANGS="cze deu eng fra gre hun ita lav lit nor pol por rom slv spa srp ukr"
-LANGS="cze deu eng fra gre hun ita lit nor pol por rom slv spa srp ukr"
+LANGS="cze deu eng fra hrv hun ita lit nor pol por rom slv spa srp ukr"
 
 cp summary-head.html ../distantreading.github.io/ELTeC/index.html
 for lang in $LANGS; do

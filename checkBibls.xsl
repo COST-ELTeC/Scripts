@@ -20,8 +20,9 @@
   </xsl:message>
   
   
-<xsl:text>id, digital, print, first, firstDate</xsl:text>  
-  <xsl:for-each select="//t:TEI/t:fileDesc/t:sourceDesc">
+<xsl:text>id, digital, print, first, firstDate
+</xsl:text>  
+  <xsl:for-each select="//t:TEI/t:teiHeader/t:fileDesc/t:sourceDesc">
    <xsl:value-of select="ancestor::t:TEI/@xml:id"/>
    <xsl:text>,</xsl:text>
    <xsl:value-of select="count(t:bibl[@type='digitalSource'])"/>
