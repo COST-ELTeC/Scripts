@@ -14,7 +14,7 @@
 
  <xsl:param name="fileName">UnknownFile</xsl:param>
  <xsl:param name="publish">https://doi.org/10.5281/zenodo.3462435</xsl:param>
- <xsl:param name="ERNfile">../ELTeC/listERN.xml</xsl:param>
+ <xsl:param name="ERNfile">../ELTeC/listERN.1.1.xml</xsl:param>
 
  <xsl:param name="verbose"/>
  <!-- iff true, witter on -->
@@ -33,6 +33,29 @@
    </xsl:otherwise>
   </xsl:choose>
  </xsl:variable>
+ 
+ <xsl:variable name="repoName">
+  <xsl:choose>
+   <xsl:when test="$textLang eq 'cz'">cze</xsl:when>
+   <xsl:when test="$textLang eq 'de'">deu</xsl:when>
+   <xsl:when test="$textLang eq 'en'">eng</xsl:when>
+   <xsl:when test="$textLang eq 'fr'">fra</xsl:when>
+   <xsl:when test="$textLang eq 'hu'">hun</xsl:when>
+   <xsl:when test="$textLang eq 'no'">nor</xsl:when>
+   <xsl:when test="$textLang eq 'nb'">nor</xsl:when>
+   <xsl:when test="$textLang eq 'pl'">pol</xsl:when>   
+   <xsl:when test="$textLang eq 'pt'">por</xsl:when>
+   <xsl:when test="$textLang eq 'ro'">rom</xsl:when>
+   <xsl:when test="$textLang eq 'sl'">slv</xsl:when>
+   <xsl:when test="$textLang eq 'sp'">spa</xsl:when>
+   <xsl:when test="$textLang eq 'sr'">srp</xsl:when>
+   <xsl:when test="$textLang eq 'sw'">swe</xsl:when>
+   <xsl:when test="$textLang eq 'uk'">ukr</xsl:when>   
+   <xsl:otherwise> <xsl:message>ERROR : Unanticipated text language <xsl:value-of select="$textLang"/> </xsl:message>
+   </xsl:otherwise>   
+  </xsl:choose>
+ </xsl:variable>
+ 
  <xsl:variable name="editionWord">
   <xsl:choose>
    <xsl:when test="$textLang eq 'cs'">vydání ELTeC</xsl:when>
@@ -460,10 +483,10 @@
  <!-- remove invalidly targetted refs from body-->
  <xsl:template match="text//ref[@target[string-length(.) gt 1]]">
   <xsl:choose>
-   <xsl:when test="parent::head">
+  <!-- <xsl:when test="parent::head">
     <xsl:apply-templates/>
     <xsl:message>WARNING: <xsl:value-of select="$textId"/> ref in head removed</xsl:message>
-   </xsl:when>
+   </xsl:when>-->
    <xsl:when test="starts-with(@target, 'http')">
     <xsl:copy-of select="."/>
    </xsl:when>

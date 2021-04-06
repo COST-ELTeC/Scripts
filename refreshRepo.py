@@ -93,4 +93,4 @@ else :
     subprocess.check_output(command,shell=True)
     command="Rscript "+reportBalance+" --args "+webRoot+LANG
     subprocess.check_output(command,shell=True)
-
+# could run summarize.py here

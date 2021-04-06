@@ -7,5 +7,10 @@ echo $lang
 echo "================="
 python refreshRepo.py $lang
 done
+python summarize.py
+cd /home/lou/Public/distantreading.github.io/ELTeC/
+git add '???/*.html'
+git commit -m "Updating all repositories"
+echo "now do a git push"
 
 
