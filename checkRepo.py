@@ -18,7 +18,7 @@ else :
 	repoName=repoRoot+LANG
 	print("Checking repo "+repoName)
 	os.chdir(repoName)
-	if not os.path.exists('Out'): os.makedirs('Out')
+	if not os.path.exists('Release'): os.makedirs('Release')
 	FILES=sorted(glob.glob('level[01]/*.xml'))
 	for FILE in FILES: 
 		bf=os.path.splitext(FILE)[0] 
@@ -27,9 +27,9 @@ else :
 #		print("File="+FILE+" id="+id)
 		command="saxon -s:" + repoName + "/" + FILE + \
          " -xsl:" + release + ' lang='+LANG + ' fileName=' + FILE + \
-         ' -o:Out/'+FILE
+         ' -o:Release/'+FILE
 		subprocess.check_output(command,shell=True)
-		command="jing "+schemaFile+" Out/"+FILE
+		command="jing "+schemaFile+" Release/"+FILE
 #                print(command)
 		subprocess.check_output(command,shell=True)
 
