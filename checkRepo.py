@@ -3,20 +3,22 @@ import subprocess
 import os
 import sys
 
+# should be split to just do release mod?
+
 repoRoot='/home/lou/Public/ELTeC-'
 release='/home/lou/Public/Scripts/checkUp.xsl'
 schemaFile='/home/lou/Public/Schemas/eltec-1.rng'
 
 # writes tidied up version of each .xml file in nominated repo 
-#   to a directory called Out in same repo 
+#   to a directory called Release in same repo 
 # validates the result against `schemaFile` using jing
 
 if (len(sys.argv) <= 1) :
-	print("And which language repository would sir like to check?")
+	print("And which language repository would sir like to release?")
 else :
 	LANG=sys.argv[1]
 	repoName=repoRoot+LANG
-	print("Checking repo "+repoName)
+	print("Releasing "+repoName)
 	os.chdir(repoName)
 	if not os.path.exists('Release'): os.makedirs('Release')
 	FILES=sorted(glob.glob('level[01]/*.xml'))

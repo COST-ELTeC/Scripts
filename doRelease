@@ -1,0 +1,9 @@
+LANGS="cze deu eng fra hun nor pol por rom slv spa srp swe ukr"
+for lang in $LANGS; do
+echo "================="
+echo $lang
+cd /home/lou/Public/ELTeC-$lang
+cp -r Release/* .
+git commit -am "ELTeC 2021-04 Release"
+echo "============="
+done
