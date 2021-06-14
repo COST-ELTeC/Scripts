@@ -15,7 +15,7 @@ summaryTail="</table>"+dateLine+"</body></html>"
 
 #LANGS=('cze', 'deu', 'eng', 'fra', 'gre', 'hun', 'ita', 'lav', 'lit', 'nor', 'pol', 'por', 'rom', 'slv', 'spa', 'srp', 'swe', 'ukr')
 
-LANGS=('cze', 'deu', 'eng', 'fra', 'hrv', 'hun', 'ita', 'lav', 'lit', 'nor', 'pol', 'por', 'rom', 'slv', 'spa', 'srp', 'swe', 'ukr')
+LANGS=('cze', 'deu', 'eng', 'fra', 'gsw', 'hrv', 'hun', 'ita', 'nor', 'pol', 'por', 'rom', 'slv', 'spa', 'srp', 'swe', 'ukr')
 
 shutil.copyfile(scriptRoot+'summary-head.html', webRoot+'index.html')
 
