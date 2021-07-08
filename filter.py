@@ -11,11 +11,11 @@ script='/home/lou/Public/Scripts/filter.xsl'
 # Script to produce data for word embedding experiment (LB 2021-06-30)
  
 
-if (len(sys.argv) <= 2) :
+if (len(sys.argv) <= 3) :
     print("Usage: python filter.py [lang] [pos] [wot]")
-    print("  [lang] identifies input repository, which should be located at repoRoot/[lang]/level-2")
+    print("  [lang] identifies input repository, which should be located at [repoRoot][lang]/level-2")
     print("  [pos] identifies filter and is either a single pos value e.g. 'NOUN' or 'CONTENT' which means 'NOUN|ADV|ADJ|VERB" ) 
-    print("  [wot] indicates the output required and is either 'lemma' (default) or 'form'") 
+    print("  [wot] indicates the output required and is either 'lemma' or 'form'") 
 else :
     LANG=sys.argv[1]
     POS=sys.argv[2]
