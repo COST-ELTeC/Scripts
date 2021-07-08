@@ -40,7 +40,7 @@ def UDPfromC5 (str):
    "PUQ": "PUNCT",
    "PUR": "PUNCT",
    "SENT": "PUNCT",
-   "TO0": "ADP",
+   "TO0": "PART",
    "VBB": "VERB",
    "VBD": "VERB",
    "VBG": "VERB",

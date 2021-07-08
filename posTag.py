@@ -48,7 +48,7 @@ for tup in tags:
        ql="'"+l+"'" 
 # treat punctuation differently
     if (pu == "PUNCT") :
-      print("<pc type='"+p+"'>"+w+"</pc>")
+      print("<pc pos='"+pu+"' lemma='"+p+"'>"+w+"</pc>")
     else:
       print ("<w pos='"+pu+"' lemma="+ql+">"+w+"</w>")
   else : #it's not a pos tag
