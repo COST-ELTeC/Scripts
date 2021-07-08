@@ -13,7 +13,7 @@ import saxonc
 import udpMap
 # module providing functions to UDPify pos codes
 
-FILE='tei-test.xml'
+FILE='/home/lou/Public/ELTeC-eng/level1/ENG18920_Grossmith.xml'
 SCRIPT='getTxt.xsl'
 TEMP="tei-test.tmp.xml"
 
@@ -52,4 +52,6 @@ for tup in tags:
     else:
       print ("<w pos='"+pu+"' lemma="+ql+">"+w+"</w>")
   else : #it's not a pos tag
-    print(str(tup[0]))
+    t=tup[0]
+    print(t)
+    
