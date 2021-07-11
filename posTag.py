@@ -14,7 +14,9 @@ import udpMap
 # module providing functions to UDPify pos codes
 
 FILE='/home/lou/Public/ELTeC-eng/level1/ENG18920_Grossmith.xml'
-SCRIPT='getTxt.xsl'
+OUTFILE='/home/lou/Public/ELTeC-eng/level2/ENG18920_Grossmith.xml'
+SCRIPT1='getHdr.xsl'
+SCRIPT2='getTxt.xsl'
 TEMP="tei-test.tmp.xml"
 
 
@@ -24,12 +26,15 @@ with saxonc.PySaxonProcessor(license=False) as proc:
     xsltproc = proc.new_xslt30_processor()
     xsltproc.set_result_as_raw_value(True)
     xsltproc.set_initial_match_selection(file_name=FILE)
-    # apply first stylesheet to extract just the text 
-    content = xsltproc.apply_templates_returning_string(stylesheet_file=SCRIPT)
+    # apply stylesheet to extract just the header 
+    result = xsltproc.apply_templates_returning_file(stylesheet_file=SCRIPT1, output_file=OUTFILE)
 #    print(content)
+  # apply stylesheet to extract just the test
+
+    content = xsltproc.apply_templates_returning_string(stylesheet_file=SCRIPT2)
     # do POS tagging appending results to a temp file              
 
-    output=open(TEMP,'a')
+    output=open(OUTFILE,'a')
     
 result=tagger.tag_text(content)
 tags=treetaggerwrapper.make_tags(result)
