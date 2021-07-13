@@ -5,7 +5,10 @@
     xpath-default-namespace="http://www.tei-c.org/ns/1.0"
     xmlns:e="http://distantreading.net/eltec/ns" exclude-result-prefixes="xs t e" version="2.0">
 <xsl:output omit-xml-declaration="yes"/>
-    
+ 
+ <!-- extracts just the teiHeader, prefixing it with a TEI start-tag only
+      To be used with care!  -->
+ 
     <xsl:template match="t:teiHeader | @* | node()">
         <xsl:copy>
             <xsl:apply-templates select="@* | node()"/>
@@ -13,9 +16,13 @@
     </xsl:template>
 
    <xsl:template match="/">
-       <teiHeader xmlns="http://www.tei-c.org/ns/1.0">
-       <xsl:apply-templates select="t:TEI/t:teiHeader"/>
-       </teiHeader>
+    <xsl:text disable-output-escaping="yes">&lt;TEI xmlns="http://www.tei-c.org/ns/1.0" xml:lang='</xsl:text>
+    <xsl:value-of select="t:TEI/@xml:lang"/>
+    <xsl:text disable-output-escaping="yes">' xml:id="</xsl:text>
+    <xsl:value-of select="t:TEI/@xml:id"/>
+    <xsl:text disable-output-escaping="yes">">
+</xsl:text>
+    <xsl:apply-templates select="t:TEI/t:teiHeader"/>
    </xsl:template>
     
     <xsl:template match="t:revisionDesc">
@@ -25,4 +32,11 @@
         </revisionDesc>
     </xsl:template>
 
+<xsl:template match="t:encodingDesc">
+ <encodingDesc xmlns="http://www.tei-c.org/ns/1.0">
+  <xsl:attribute name="n">
+   <xsl:text>eltec-2</xsl:text>
+  </xsl:attribute><p/>
+ </encodingDesc>
+</xsl:template>
 </xsl:stylesheet>

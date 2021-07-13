@@ -4,13 +4,12 @@
     xmlns:t="http://www.tei-c.org/ns/1.0"
     xpath-default-namespace="http://www.tei-c.org/ns/1.0"
     xmlns:e="http://distantreading.net/eltec/ns" exclude-result-prefixes="xs e" version="2.0">
-
+<xsl:output omit-xml-declaration="yes"/>
+ 
   <!-- just output text content in xml with no whitespace -->  
 
     <xsl:template match="/">
- <!--    <text xmlns="http://www.tei-c.org/ns/1.0">
- -->     <xsl:apply-templates select="//t:text"/>
-     <!--</text>-->
+    <xsl:apply-templates select="//t:text"/>
     </xsl:template>
 
  <xsl:template match=" @* | node()">
