@@ -6,7 +6,8 @@
     xmlns:e="http://distantreading.net/eltec/ns" exclude-result-prefixes="xs e" version="2.0">
 <xsl:output omit-xml-declaration="yes"/>
  
-  <!-- just output text content in xml with no whitespace -->  
+  <!-- just output text content in xml with no whitespace 
+        dirtyhack: replace ampersand by plus sign so as not to confuse tt -->  
 
     <xsl:template match="/">
     <xsl:apply-templates select="//t:text"/>
@@ -19,6 +20,6 @@
  </xsl:template>
  
  <xsl:template match="text()" priority="1">
-  <xsl:value-of select="normalize-space(.)"/>
- </xsl:template>
+   <xsl:value-of select="normalize-space(replace(.,'&amp;','+'))"/>  
+  </xsl:template>
 </xsl:stylesheet>
