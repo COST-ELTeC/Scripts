@@ -7,7 +7,9 @@
 <xsl:output omit-xml-declaration="yes"/>
  
   <!-- just output text content in xml with no whitespace 
-        dirtyhack: replace ampersand by plus sign so as not to confuse tt -->  
+        dirtyhack: replace ampersand by plus sign so as not to confuse tt 
+        suppress xml comments
+  -->  
 
     <xsl:template match="/">
     <xsl:apply-templates select="//t:text"/>
@@ -18,6 +20,8 @@
    <xsl:apply-templates select="@* | node()"/>
   </xsl:copy>
  </xsl:template>
+ 
+ <xsl:template match="comment()" priority="1"/>
  
  <xsl:template match="text()" priority="1">
    <xsl:value-of select="normalize-space(replace(.,'&amp;','+'))"/>  
