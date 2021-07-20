@@ -4,8 +4,45 @@
 #
 
 
-def UDPfromC5 (str):
+def UDPfromFR (str) :
+   posTab = {
+"ABR":"X",
+"ADJ":"ADJ",
+"ADV":"ADV",
+"DET:ART":"DET",
+"DET:POS":"DET",
+"INT":"INTJ",
+"KON":"CCON",
+"NAM":"PROPN",
+"NOM":"NOUN",
+"NUM":"NUM",
+"PRO":"PRON",
+"PRO:DEM":"PRON",
+"PRO:IND":"PRON",
+"PRO:PER":"PRON",
+"PRO:POS":"PRON",
+"PRO:REL":"PRON",
+"PRP":"ADP",
+"PRP:det":"ADP",
+"PUN":"PUNCT",
+"PUN:cit":"PUNCT",
+"SENT":"PUNCT",
+"SYM":"SYM",
+"VER:cond":"VERB",
+"VER:futu":"VERB",
+"VER:impe":"VERB",
+"VER:impf":"VERB ",
+"VER:infi":"VERB ",
+"VER:pper":"VERB ",
+"VER:ppre":"VERB ",
+"VER:pres":"VERB ",
+"VER:simp":"VERB ",
+"VER:subi":"VERB ",
+"VER:subp":"VERB "          
+   }
+   return posTab.get(str,"?")   
 
+def UDPfromC5 (str):
    posTab = {
    "AJ0": "ADJ",
    "AJC": "ADJ",

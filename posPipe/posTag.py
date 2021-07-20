@@ -10,18 +10,36 @@ import udpMap
 # module providing functions to UDPify pos codes
 
 HOME='/home/lou/Public/'
-REPOROOT=HOME+'ELTeC-eng/'
-DRIVERFILE=REPOROOT+"driver.tei"
-SCRIPT0=HOME+'Scripts/getFileNames.xsl'
-SCRIPT1=HOME+'Scripts/getHdr.xsl'
-SCRIPT2=HOME+'Scripts/getTxt.xsl'
 
-LEXFILE=HOME+'Scripts/extraLex.txt'
+if (len(sys.argv) <= 1) :
+    print("Usage: python filter.py [repo]")
+    print("  [repo] identifies input repository, which should be located at [HOME]ELTEC-[repo]")
+    exit()
+
+REPO=sys.argv[1]
+print("Looking for repo "+REPO)
+REPOROOT=HOME+'ELTeC-'+REPO+"/"
+DRIVERFILE=REPOROOT+"driver.tei"
+SCRIPT0=HOME+'Scripts/posPipe/getFileNames.xsl'
+SCRIPT1=HOME+'Scripts/posPipe/getHdr.xsl'
+SCRIPT2=HOME+'Scripts/posPipe/getTxt.xsl'
+
+LEXFILE=HOME+'Scripts/posPipe/extraLex.txt'
+
+if (REPO == 'eng') :
+  LANG='en'
+  tagger=treetaggerwrapper.TreeTagger(TAGLANG='en', TAGOPT='-lex '+LEXFILE+' -token -lemma -sgml -quiet')
+elif (REPO == 'fra') :
+  LANG='fr'
+  tagger=treetaggerwrapper.TreeTagger(TAGLANG='fr', TAGOPT=' -token -lemma -sgml -quiet')
+else :
+  print("repo should be eng or fra")
+  exit()
+
 # create tagger
 #tagger=treetaggerwrapper.TreeTagger(TAGLANG='en')
 # or    
 #  if text has extra lexical items e.g. smart quotes, include lexicon file 
-tagger=treetaggerwrapper.TreeTagger(TAGLANG='en', TAGOPT='-lex '+LEXFILE+' -token -lemma -sgml -quiet')
 
 with saxonc.PySaxonProcessor(license=False) as proc:
     print(proc.version)
@@ -56,7 +74,13 @@ with saxonc.PySaxonProcessor(license=False) as proc:
              p=tup[1]
              l=tup[2]
 # map the pos code (from whatever tt produces to UDP)   
-             pu= udpMap.UDPfromC5(p) 
+             if (LANG == 'en'):
+               pu= udpMap.UDPfromC5(p) 
+             elif (LANG is 'fr'):
+               pu= udpMap.UDPfromFR(p)
+             else:
+               print("No UDPmap available for language "+LANG)
+               exit()
 # check for "<unknown>" lemma
              if "<" in l:
                 l= w.lower()
