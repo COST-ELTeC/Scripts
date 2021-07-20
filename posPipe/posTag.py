@@ -36,10 +36,6 @@ else :
   print("repo should be eng or fra")
   exit()
 
-# create tagger
-#tagger=treetaggerwrapper.TreeTagger(TAGLANG='en')
-# or    
-#  if text has extra lexical items e.g. smart quotes, include lexicon file 
 
 with saxonc.PySaxonProcessor(license=False) as proc:
     print(proc.version)
@@ -50,6 +46,8 @@ with saxonc.PySaxonProcessor(license=False) as proc:
     fileList= xsltproc.apply_templates_returning_string(stylesheet_file=SCRIPT0)
 #    pprint.pprint(fileList)
     for FILE in fileList.split(','):
+      if len(FILE) <= 1 :
+         exit()
       print("Processing "+FILE)
       if (FILE.startswith('level1')) :
          OUTFILE=FILE.replace('level1','level2')
