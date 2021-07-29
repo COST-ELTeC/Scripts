@@ -74,7 +74,7 @@ with saxonc.PySaxonProcessor(license=False) as proc:
 # map the pos code (from whatever tt produces to UDP)   
              if (LANG == 'en'):
                pu= udpMap.UDPfromC5(p) 
-             elif (LANG is 'fr'):
+             elif (LANG == 'fr'):
                pu= udpMap.UDPfromFR(p)
              else:
                print("No UDPmap available for language "+LANG)
