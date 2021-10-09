@@ -1,5 +1,5 @@
 #LANGS="cze deu eng fra gre hrv hun ita lav lit nor pol por rom slv spa srp ukr"
-LANGS="cze deu eng fra hrv hun ita lit nor pol por rom slv spa srp swe ukr"
+LANGS="cze deu eng fra gsw hrv hun ita nor pol por rom slv spa srp swe ukr"
 cd /home/lou/Public/Scripts
 for lang in $LANGS; do
 echo "================="
