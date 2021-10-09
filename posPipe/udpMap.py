@@ -31,14 +31,14 @@ def UDPfromFR (str) :
 "VER:cond":"VERB",
 "VER:futu":"VERB",
 "VER:impe":"VERB",
-"VER:impf":"VERB ",
-"VER:infi":"VERB ",
-"VER:pper":"VERB ",
-"VER:ppre":"VERB ",
-"VER:pres":"VERB ",
-"VER:simp":"VERB ",
-"VER:subi":"VERB ",
-"VER:subp":"VERB "          
+"VER:impf":"VERB",
+"VER:infi":"VERB",
+"VER:pper":"VERB",
+"VER:ppre":"VERB",
+"VER:pres":"VERB",
+"VER:simp":"VERB",
+"VER:subi":"VERB",
+"VER:subp":"VERB"          
    }
    return posTab.get(str,"?")   
 
