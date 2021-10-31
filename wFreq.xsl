@@ -5,6 +5,12 @@
  exclude-result-prefixes="xs t"
  version="2.0">
  
+ <!-- produces frequency lists for Pieter's  word embedding experiment (LB 2021-10-28) -->
+ 
+ <!-- to run against corpus xxx
+       saxon ELTeC-xxx/driver2.tei wFreq.xsl 
+ -->
+ 
  <xsl:output omit-xml-declaration="yes"/>
  
   <xsl:template match="/">
@@ -15,8 +21,17 @@
      <xsl:sort select="count(current-group())" order="descending"/>
      <xsl:variable name="freq" select="count(current-group())"/>
 <xsl:if test="$freq &gt; 100">
-    <lemma form="{current-grouping-key()}"
+    <xsl:variable name="form" select="current-grouping-key()"/>
+ <xsl:choose>
+  <xsl:when test="contains($form,'/')">
+
+    <lemma form="{substring-before($form,'/')}"
       freq="{$freq}"/>
+  </xsl:when>
+  <xsl:otherwise>
+   <lemma form="{$form}" freq="{$freq}"/>
+  </xsl:otherwise>
+ </xsl:choose>
      <xsl:text>
      </xsl:text>
  </xsl:if>
