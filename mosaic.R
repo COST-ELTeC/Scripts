@@ -18,7 +18,7 @@ print(oFile)
 svg(oFile)
 mosaic(~ length.cat + year.cat + gender.cat, data=md,
        highlighting = "gender.cat",
-       highlighting_fill=c("pink","lightblue"),
+       highlighting_fill=c("pink","lightblue","lightgray"),
        direction=c("v","h","h"),
        labeling = labeling_values,
        main="Title counts for each balance criterion"
