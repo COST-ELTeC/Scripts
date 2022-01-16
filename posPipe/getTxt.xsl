@@ -30,11 +30,9 @@
    <xsl:value-of select="normalize-space(replace(.,'&amp;','+'))"/>  
   </xsl:template>
  
- <xsl:template match="t:head|t:p">
+ <!--<xsl:template match="t:head|t:p">
   <xsl:copy>
-   <s xmlns="http://www.tei-c.org/ns/1.0">
-    <xsl:apply-templates/>
-   </s>
+   <xsl:apply-templates/>
   </xsl:copy>
- </xsl:template>
+ </xsl:template>-->
 </xsl:stylesheet>

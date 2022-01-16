@@ -12,7 +12,7 @@ import udpMap
 HOME='/home/lou/Public/'
 
 if (len(sys.argv) <= 1) :
-    print("Usage: python filter.py [repo]")
+    print("Usage: python posTag.py [repo]")
     print("  [repo] identifies input repository, which should be located at [HOME]ELTEC-[repo]")
     exit()
 
@@ -58,7 +58,7 @@ with saxonc.PySaxonProcessor(license=False) as proc:
       xsltproc.set_initial_match_selection(file_name=REPOROOT+FILE)
 # apply stylesheet to copy header and TEI start-tag to outputfile
       result = xsltproc.apply_templates_returning_file(stylesheet_file=SCRIPT1, output_file=OUTFILE)
-# apply stylesheet to extract just the test
+# apply stylesheet to extract just the text
       content = xsltproc.apply_templates_returning_string(stylesheet_file=SCRIPT2)
 # reopen the output file in append mode    
       output=open(OUTFILE,'a')
@@ -87,11 +87,15 @@ with saxonc.PySaxonProcessor(license=False) as proc:
                 ql='"'+l+'"'
              else:
                 ql="'"+l+"'" 
+             if (w.startswith("'")):
+                 join=' join="left" '
+             else:
+                  join='' 
 # retain TT punctuation tag using @n until we agree on @xpos
              if (pu == "PUNCT") :
-                output.write("<w pos='"+pu+"' lemma="+ql+" n='"+p+"'>"+w+"</w>\n")
+                output.write("<pc pos='"+pu+"' lemma="+ql+" n='"+p+"'>"+w+"</pc>\n")
              else:
-                output.write ("<w pos='"+pu+"' lemma="+ql+">"+w+"</w>\n")
+                output.write ("<w pos='"+pu+"' lemma="+ql+join+">"+w+"</w>\n")
           else : #it's not a pos tag
              t=tup[0]
              output.write(t)

@@ -8,7 +8,9 @@
  
  <!-- extracts just the teiHeader, prefixing it with a TEI start-tag only
       To be used with care!  -->
- 
+ <xsl:variable name="today">
+  <xsl:value-of select="format-date(current-date(), '[Y0001]-[M01]-[D01]')"/>
+ </xsl:variable>
     <xsl:template match="t:teiHeader | @* | node()">
         <xsl:copy>
             <xsl:apply-templates select="@* | node()"/>
@@ -27,7 +29,7 @@
     
     <xsl:template match="t:revisionDesc">
         <revisionDesc xmlns="http://www.tei-c.org/ns/1.0">
-            <change when="2021-07-17">Generated level2 tagging  </change>
+        <change when="{$today}">Re-apply POS tagging</change>
         <xsl:apply-templates/>
         </revisionDesc>
     </xsl:template>
