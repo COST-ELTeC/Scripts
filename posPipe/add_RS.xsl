@@ -5,7 +5,6 @@
  xmlns:e="http://distantreading.net/eltec/ns" xmlns="http://www.tei-c.org/ns/1.0" version="2.0">
 
  <!-- add rs element for each sequence of PROPN found within a p head or l -->
- <!-- NB this must run before addS -->
  
 <xsl:template match="t:p | t:head | t:l">
   <xsl:variable name="nodeNum">
@@ -22,7 +21,7 @@
     <xsl:for-each select="current-group()">
      <xsl:copy>
       <xsl:apply-templates select="@* | node()"/>
-     </xsl:copy>
+     </xsl:copy><xsl:text> </xsl:text>
     </xsl:for-each>
    </rs>
    </xsl:when>
