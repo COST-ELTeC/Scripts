@@ -7,8 +7,8 @@ webRoot='/home/lou/Public/WG1/distantreading.github.io/ELTeC/'
 counter='/home/lou/Public/Scripts/counter.xsl'
 counter2='/home/lou/Public/Scripts/counter2.xsl'
 
-LANGS=('cze', 'deu', 'eng', 'fra', 'gre', 'hun', 'ita', 'nor', 'por', 'rom', 'slv', 'spa', 'srp')
-
+LANGS=('cze', 'deu', 'eng', 'fra', 'gre', 'gsw','hrv','hun', 'ita', 'lav','lit','nor', 'por', 'rom', 'slv', 'spa', 'srp','swe','ukr')
+'pol',
 f=open("tagCounts.xml","w")
 f.write('<tagCounts>')
 f.close()
