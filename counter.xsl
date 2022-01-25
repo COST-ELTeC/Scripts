@@ -16,6 +16,9 @@
             <xsl:attribute name="words">
                 <xsl:value-of select="xs:integer(sum(//t:measure[@unit = 'words']))"/>
             </xsl:attribute>
+         <xsl:attribute name="texts">
+          <xsl:value-of select="count(//t:text)"/>
+         </xsl:attribute>
             
             <xsl:for-each-group select="//t:text//*" group-by="name()">
                 <xsl:element name="node">

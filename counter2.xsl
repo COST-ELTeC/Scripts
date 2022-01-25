@@ -9,10 +9,11 @@
 
     <xsl:template match="/">
      
-          <xsl:variable name="ROOT" select="document('tagCounts.xml')"/>
-         
-     <xsl:variable name="corpora">cze,deu,eng,fra,hun,ita,nor,por,rom,slv,spa,srp</xsl:variable>
-     <xsl:variable name="tags">body,front,back,div,p,l,quote,head,trailer,title,foreign,gap,hi,emph,label,pb,ref,milestone,corr,note</xsl:variable>
+   <!-- <xsl:variable name="ROOT" select="document('tagCounts.xml')"/>
+ -->  
+     <xsl:variable name="ROOT" select="."/>
+     <xsl:variable name="corpora">cze,deu,eng,fra,gre,gsw,hrv,hun,ita,lav,nor,pol,por,rom,slv,spa,srp,swe,ukr</xsl:variable>
+     <xsl:variable name="tags">back,body,corr,div,emph,foreign,front,gap,head,hi,l,label,milestone,note,p,pb,quote,ref,trailer</xsl:variable>
         
         <html>
             <link rel="stylesheet" type="text/css" href="../css/summary.css"/>
@@ -26,7 +27,8 @@
     <xsl:for-each select="tokenize($corpora,',')">
         <xsl:variable name="corpus"><xsl:value-of select="."/></xsl:variable>       
         <td><xsl:value-of select="$corpus"/><br/>
-        <xsl:value-of select="$ROOT//tagcount[@corpus=$corpus]/@words"/></td>
+        <xsl:value-of select="$ROOT//tagcount[@corpus=$corpus]/@words"/><br/>
+         <xsl:value-of select="$ROOT//tagcount[@corpus=$corpus]/@texts"/></td>
         
     </xsl:for-each>
 </tr>

@@ -6,7 +6,7 @@ repoRoot='/home/lou/Public/ELTeC-'
 webRoot='/home/lou/Public/WG1/distantreading.github.io/ELTeC/'
 schemaFile='/home/lou/Public/Schemas/eltec-repo.rng'
 
-LANGS=('cze', 'deu', 'eng', 'fra', 'gre', 'gsw','hrv','hun', 'ita', 'lav','lit','nor', 'pol', 'por', 'rom', 'slv', 'spa', 'srp','swe','ukr')
+LANGS=('cze', 'deu', 'eng', 'fra', 'gre', 'gsw','hrv','hun', 'ita', 'lav','nor', 'pol', 'por', 'rom', 'slv', 'spa', 'srp','swe','ukr')
 
 
 for LANG in LANGS:

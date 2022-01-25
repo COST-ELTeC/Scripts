@@ -8,20 +8,22 @@
      also generates identifier for same
       run this after addRS -->
  
-<xsl:template match="t:p | t:head | t:l">
-  <xsl:variable name="nodeNum">
+<xsl:template match="t:p | t:head | t:l | t:quote">
+  <xsl:variable name="textNum">
    <xsl:value-of
-    select="concat(ancestor::t:TEI/@xml:id, format-number(count(preceding::node()[name() eq 'p' or name() eq 'head' or name() eq 'l']), '0000'))"
+    select="ancestor::t:TEI/@xml:id"
    />
   </xsl:variable>
   <xsl:copy>
 <xsl:for-each-group select="*" group-ending-with="t:pc[@n = 'SENT']">
     <s xmlns="http://www.tei-c.org/ns/1.0">
-     <xsl:attribute name="xml:id">
-      <xsl:value-of select="concat($nodeNum, '_', format-number(position(), '000'))"/>
-     </xsl:attribute>
-     <xsl:for-each select="current-group()">
-      <xsl:copy>
+   <xsl:attribute name="xml:id">
+ <!--   <xsl:value-of select="concat($textNum, '_', format-number(count(preceding::*),'000000'))"/>   
+--><xsl:value-of select="concat($textNum, '_', generate-id())"/>   
+  <!-- generate_id() runs about 10 tems as fast as count() -->  
+     </xsl:attribute>   
+   <xsl:for-each select="current-group()">
+       <xsl:copy>
        <xsl:apply-templates select="@* | node()"/>
       </xsl:copy><xsl:text>
 </xsl:text>
