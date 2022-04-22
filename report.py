@@ -10,7 +10,10 @@ reporter='/home/lou/Public/Scripts/reporter.xsl'
 reportBalance='/home/lou/Public/Scripts/mosaic.R'
 outputFile='index.html'
 
-LANGS=('cze', 'deu', 'eng', 'fra', 'gre', 'hun', 'ita', 'lit', 'nor', 'por', 'rom', 'slv', 'spa', 'srp')
+# potential exts are lav lit
+
+LANGS=('cze', 'deu', 'eng', 'fra', 'gre', 'gsw', 'hrv', 'hun', 'ita',  'lit-ext', 'nor', 'pol', 'por', 'rom', 'slv', 'spa', 'srp', 'swe', 'ukr')
+
 
 for LANG in LANGS:
     repoName=repoRoot+LANG

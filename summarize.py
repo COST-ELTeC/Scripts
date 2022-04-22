@@ -13,9 +13,11 @@ dateLine='<p>Summary produced: '+time.strftime("%Y-%m-%d")+'</p>'
 
 summaryTail="</table>"+dateLine+"</body></html>"
 
-#LANGS=('cze', 'deu', 'eng', 'fra', 'gre', 'hun', 'ita', 'lav', 'lit', 'nor', 'pol', 'por', 'rom', 'slv', 'spa', 'srp', 'swe', 'ukr')
+# potential exts are lav lit
 
-LANGS=('cze', 'deu', 'eng', 'fra', 'gsw', 'hrv', 'hun', 'ita', 'nor', 'pol', 'por', 'rom', 'slv', 'spa', 'srp', 'swe', 'ukr')
+LANGS=('cze', 'deu', 'eng', 'fra', 'gre', 'gsw', 'hrv', 'hun', 'ita',  'nor', 'pol', 'por', 'rom', 'slv', 'spa', 'srp', 'swe', 'ukr')
+
+X-LANGS=('eng-ext','lit-ext')
 
 shutil.copyfile(scriptRoot+'summary-head.html', webRoot+'index.html')
 
@@ -25,7 +27,7 @@ for LANG in LANGS:
     lastUpdate = str(subprocess.check_output(['git', 'log', '-1', '--date=short', '--format=format:%cd']),encoding='UTF8')
 
     print("Summarizing repo "+repoName+ " on "+lastUpdate)
-    command="saxon -xi -s:" + repoName + "/driver.tei -xsl:" + summarizer + ' corpus='+LANG + ' lastUpdate='+ lastUpdate + '>>'+webRoot+'/index.html'
+    command="saxon -xi -s:" + repoName + "/driver.tei -xsl:" + summarizer + ' corpus='+LANG + ' lastUpdate='+ lastUpdate + '>>'+webRoot+'index.html'
     subprocess.check_output(command,shell=True)
 
 with open(webRoot+'index.html', 'a') as file:

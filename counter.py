@@ -1,3 +1,5 @@
+# prepare HTML table of tag usage per language corpus
+
 import glob
 import subprocess
 import os

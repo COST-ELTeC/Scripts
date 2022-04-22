@@ -6,7 +6,7 @@
     xmlns:e="http://distantreading.net/eltec/ns" exclude-result-prefixes="xs t e" version="2.0">
 <xsl:output omit-xml-declaration="yes"/>
  
- <!-- extracts just the teiHeader, prefixing it with a TEI start-tag only
+ <!-- extracts just the teiHeader, prefixing it with a TEI start-tag only (yik)
       To be used with care!  -->
  <xsl:variable name="today">
   <xsl:value-of select="format-date(current-date(), '[Y0001]-[M01]-[D01]')"/>

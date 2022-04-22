@@ -9,7 +9,7 @@
  <!-- produces frequency lists for Pieter's  word embedding experiment (LB 2021-10-28) -->
  
  <!-- to run against corpus xxx
-       saxon ELTeC-xxx/driver2.tei verbFreq.xsl 
+       saxon -xi ELTeC-xxx/driver-2.tei verbFreq.xsl  
  -->
  
  
