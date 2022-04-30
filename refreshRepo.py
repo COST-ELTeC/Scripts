@@ -34,7 +34,7 @@ string1='''<!DOCTYPE html>
      "distributor":[[ "[ref]",[ "<a href='$rw@ref' target='_blank'>", "</a>"]]],
      "author":[[ "[ref]",[ "<a href='$rw@ref' target='_blank'>", "</a>"]]],
      "pb":[ "<p class='break'>[page $@n]</p>"],
-     "ref": ["<a href='$rw@target'> online "," </a>"],
+     "ref": ["<a href='$rw@target'> ↠ </a>"],
     },
   };
   c.addBehaviors(behaviors);

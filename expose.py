@@ -1,3 +1,4 @@
+# NO LONGER IN USE: refreshRepo does it all
 import glob
 import subprocess
 import os

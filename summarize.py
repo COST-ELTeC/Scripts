@@ -13,11 +13,9 @@ dateLine='<p>Summary produced: '+time.strftime("%Y-%m-%d")+'</p>'
 
 summaryTail="</table>"+dateLine+"</body></html>"
 
-# potential exts are lav lit
 
-LANGS=('cze', 'deu', 'eng', 'fra', 'gre', 'gsw', 'hrv', 'hun', 'ita',  'nor', 'pol', 'por', 'rom', 'slv', 'spa', 'srp', 'swe', 'ukr')
+LANGS=('cze', 'deu', 'eng', 'fra', 'gre', 'gsw', 'hrv', 'hun', 'ita', 'lav', 'nor', 'pol', 'por', 'rom', 'slv', 'spa', 'srp', 'swe', 'ukr')
 
-X-LANGS=('eng-ext','lit-ext')
 
 shutil.copyfile(scriptRoot+'summary-head.html', webRoot+'index.html')
 
