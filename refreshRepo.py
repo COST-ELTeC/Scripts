@@ -59,8 +59,10 @@ if (len(sys.argv) <= 1) :
 else :
     LANG=sys.argv[1]
     repoName=repoRoot+LANG
-    print("Refreshing repo "+repoName)
+    webRepoName=webRoot+LANG
+    print("Refreshing repos "+repoName+" and "+webRepoName)
     gitPull(repoName)
+    gitPull(webRepoName)
     os.chdir(repoName)
     f=open("driver.tei","w")
     f2=open("fileNames.xml","w")

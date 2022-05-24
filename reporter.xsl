@@ -69,7 +69,10 @@
                 </xsl:variable>
 
                 <!-- First we create metadata.csv file which Rscript will use to generate mosaic graphic -->
-                <xsl:result-document href="metadata.csv">
+
+<xsl:result-document href="{resolve-uri('metadata.csv', static-base-uri())}">               
+
+ <!--xsl:result-document href="metadata.csv"-->
                     <xsl:text>id,year,year-cat,canon-cat,gender-cat,length,length-cat,counter
 </xsl:text>
                     <xsl:for-each select="t:teiCorpus/t:TEI/t:teiHeader">
@@ -332,7 +335,7 @@
 
                             </td>
                             <td>
-                                <xsl:value-of select="t:fileDesc/t:titleStmt/t:author[1]/text()"/>
+                                <xsl:value-of select="normalize-space(t:fileDesc/t:titleStmt/t:author[1])"/>
                             </td>
                             <td>
                                 <xsl:value-of select="t:profileDesc/t:textDesc/e:authorGender/@key"

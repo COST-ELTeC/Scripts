@@ -11,9 +11,9 @@
   Invoked from python script filter.py; see documentation there
  
 --> 
- 
  <xsl:output media-type="text"  omit-xml-declaration="yes" />
- 
+
+  
  <xsl:param name="wot">lemma</xsl:param>
  <xsl:param name="pos">CONTENT</xsl:param>
  
@@ -47,13 +47,14 @@
 
 <xsl:variable name="date">
  <xsl:choose>
-  <xsl:when test="contains($dateStr,'-')"><xsl:value-of select="substring-before($dateStr,'-')"/></xsl:when>
+  <xsl:when test="contains($dateStr,'-')">
+   <xsl:value-of select="normalize-space(substring-before($dateStr,'-'))"/></xsl:when>
   <xsl:otherwise><xsl:value-of select="$dateStr"/></xsl:otherwise>
  </xsl:choose>
 </xsl:variable>
   
-<!--<xsl:message>Datestr is <xsl:value-of select="$dateStr"/></xsl:message>
--->
+<xsl:message>Datestr is <xsl:value-of select="$dateStr"/></xsl:message>
+
    <xsl:variable name="fName"> 
    <xsl:value-of select="concat(/t:TEI/@xml:id,'_',$date,//t:textDesc/e:timeSlot/@key,
    //t:textDesc/e:authorGender/@key,
@@ -64,8 +65,10 @@
   </xsl:variable>
   <xsl:message><xsl:value-of select="$fName"/></xsl:message>
 <!--  <xsl:message>Filtering <xsl:value-of select="$wot"/> on   <xsl:value-of select="$pos"/></xsl:message>
---> <xsl:result-document href="{$fName}">
-  <xsl:choose>
+-->
+  
+  <xsl:result-document href="{resolve-uri($fName, static-base-uri())}">               
+ <xsl:choose>
    <xsl:when test="$pos='CONTENT'">
     <xsl:apply-templates select="//t:div[@type='chapter']//t:w[matches(@pos,'NOUN|ADJ|ADV|VERB')]"/>
    </xsl:when>

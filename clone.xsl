@@ -11,22 +11,10 @@
         </xsl:copy>
     </xsl:template>
 
-   <xsl:template match="choice">
-    <sic><xsl:value-of select="orig"/></sic>
+   <xsl:template match="@rend">
+       <xsl:choose>
+           <xsl:when test=". eq 'sc'">smallcaps</xsl:when>
+           <xsl:otherwise><xsl:value-of select="."/></xsl:otherwise>
+       </xsl:choose>
    </xsl:template>
- 
-<xsl:template match="div1">
- <div>
-  <xsl:apply-templates select="@*"/>
-  <xsl:apply-templates/>
- </div>
-</xsl:template>
- 
- <xsl:template match="figure">
-  <figure style="{@rend}" n="{@xml:id}">
-   <graphic url="concat('pix:',@xml:id)"/>
-   <xsl:apply-templates/>
-  </figure>
- </xsl:template>
-
 </xsl:stylesheet>
