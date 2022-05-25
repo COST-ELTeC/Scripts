@@ -1,4 +1,4 @@
-LANGS="cze deu eng eng-ext fra fra-ext1 fra-ext2 fra-ext3 gle gre gsw hrv hun ita lav lit-ext nor nor-ext pol por por-ext rom slv spa srp srp-ext swe ukr"
+LANGS="cze deu eng eng-ext fra fra-ext1 fra-ext2 fra-ext3 gle gre gsw hrv hun ita lav lit nor nor-ext pol por por-ext rom slv spa srp srp-ext swe ukr"
 
 
 cd /home/lou/Public/Scripts

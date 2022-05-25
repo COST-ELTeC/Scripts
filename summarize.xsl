@@ -286,7 +286,7 @@
  <xsl:variable name="tableNumber">
   <xsl:choose>
    <xsl:when test="contains($corpus,'-ext')">extended</xsl:when>
-   <xsl:when test="$e5cScore &gt; 74">core</xsl:when>
+   <xsl:when test="$textCount &gt; 99">core</xsl:when>
    <xsl:when test="$e5cScore &gt; 1">plus</xsl:when>
    <xsl:otherwise>extended</xsl:otherwise>
   </xsl:choose>
