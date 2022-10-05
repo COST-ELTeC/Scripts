@@ -5,16 +5,20 @@
  exclude-result-prefixes="xs t e" version="2.0">
  <xsl:output method="html"/>
 
- <xsl:param name="corpus">XXX</xsl:param>
- <xsl:param name="verbose"></xsl:param>
+ <xsl:param name="corpus">eng</xsl:param>
+ <xsl:param name="verbose"/>
  <xsl:param name="lastUpdate">[unknown]</xsl:param>
-
+ <xsl:param name="scoreMin">75</xsl:param>
+ <xsl:param name="scoreMax">140</xsl:param>
+ 
  <xsl:template match="/">
   
   <xsl:variable name="textCount">
    <xsl:value-of select="count(//t:text)"/>
   </xsl:variable>
-
+  
+  <xsl:if test="$verbose"><xsl:message><xsl:value-of select="concat($textCount,' texts')"/></xsl:message></xsl:if>
+  
   <xsl:variable name="textScore">
    <xsl:choose>
     <xsl:when test="$textCount &lt; 10">0</xsl:when>
@@ -279,9 +283,19 @@
     $shortScore + $longScore + $rangeScore * 2 + $reprintScore * 2) div 13 * 10"/>
   </xsl:variable>
   
-  <!-- now output the table row -->
-  
-  <tr>
+ <xsl:variable name="tableNumber">
+  <xsl:choose>
+   <xsl:when test="contains($corpus,'-ext')">extended</xsl:when>
+   <xsl:when test="$textCount &gt; 99">core</xsl:when>
+   <xsl:when test="$e5cScore &gt; 1">plus</xsl:when>
+   <xsl:otherwise>extended</xsl:otherwise>
+  </xsl:choose>
+ </xsl:variable>
+ 
+  <xsl:message>Score is:<xsl:value-of select="$e5cScore"/> class is <xsl:value-of select="$tableNumber"/></xsl:message>
+    
+ 
+  <tr class="{$tableNumber}">
    <td class="lang">
     <a>
      <xsl:attribute name="href">
@@ -398,6 +412,7 @@
     </xsl:choose>
    </td>
   </tr>
+ 
  </xsl:template>
  
  <xsl:template name="showScore">
