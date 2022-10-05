@@ -69,16 +69,19 @@
                 </xsl:variable>
 
                 <!-- First we create metadata.csv file which Rscript will use to generate mosaic graphic -->
-                <xsl:result-document href="metadata.csv">
-                    <xsl:text>id,year,year-cat,canon-cat,gender-cat,length,length-cat,counter
+
+<xsl:message>Writing metadata.csv</xsl:message>
+
+ <xsl:result-document href="metadata.csv">
+     <xsl:text>id,year,year-cat,canon-cat,gender-cat,length,length-cat,counter
 </xsl:text>
-                    <xsl:for-each select="t:teiCorpus/t:TEI/t:teiHeader">
+    <!--<xsl:message><xsl:value-of select="count(t:teiCorpus/t:TEI/t:teiHeader)"/> headers</xsl:message>-->
+     <xsl:for-each select="t:teiCorpus/t:TEI/t:teiHeader">
                         <xsl:sort select="ancestor::t:TEI/@xml:id"/>
                         <xsl:variable name="wc">
                             <xsl:choose>
                                 <xsl:when test="t:fileDesc/t:extent/t:measure[@unit = 'words']">
-                                    <xsl:value-of
-                                        select="normalize-space(t:fileDesc/t:extent/t:measure[@unit = 'words'])"/>
+                                    <xsl:value-of                                      select="normalize-space(t:fileDesc/t:extent/t:measure[@unit = 'words'])"/>
                                 </xsl:when>
                                 <xsl:otherwise>0</xsl:otherwise>
                             </xsl:choose>
@@ -87,10 +90,7 @@
                             <xsl:value-of
                                 select="normalize-space(t:fileDesc/t:titleStmt/t:author[1])"/>
                         </xsl:variable>
-                        <!--   
-            <xsl:analyze-string select="normalize-space(t:fileDesc/t:titleStmt/t:author[1])"
-                regex="([^(]+)\((\d+)[\-\s]+(\d+)"/>
-      -->
+                        
                         <xsl:variable name="authorName">
                             <xsl:choose>
                                 <xsl:when test="contains($authorText, ',')">
@@ -149,26 +149,17 @@
                                 </xsl:otherwise>
                             </xsl:choose>
                         </xsl:variable>
-
                         <xsl:variable name="dateYear">
                             <xsl:analyze-string select="$date" regex="(1[89]\d\d)">
                                 <xsl:matching-substring>
                                     <xsl:value-of select="regex-group(1)"/>
                                 </xsl:matching-substring>
-                                <xsl:non-matching-substring>?</xsl:non-matching-substring>
+                       <xsl:non-matching-substring>?</xsl:non-matching-substring>
                             </xsl:analyze-string>
                         </xsl:variable>
-
                         <xsl:value-of select="ancestor::t:TEI/@xml:id"/>
                         <xsl:text>,</xsl:text>
-
-                        <!--                  <xsl:value-of select='replace($authorName, "&apos;", "")'/>
-                        <xsl:text>,</xsl:text>
-                        <xsl:value-of select='replace($titleName, "&apos;", "")'/>
-                        <xsl:text>,</xsl:text>-->
-
                         <xsl:value-of select="$dateYear"/>
-
                         <xsl:text>,</xsl:text>
                         <xsl:value-of select="t:profileDesc/t:textDesc/e:timeSlot/@key"/>
                         <xsl:text>,</xsl:text>
@@ -332,7 +323,7 @@
 
                             </td>
                             <td>
-                                <xsl:value-of select="t:fileDesc/t:titleStmt/t:author[1]/text()"/>
+                                <xsl:value-of select="normalize-space(t:fileDesc/t:titleStmt/t:author[1])"/>
                             </td>
                             <td>
                                 <xsl:value-of select="t:profileDesc/t:textDesc/e:authorGender/@key"
