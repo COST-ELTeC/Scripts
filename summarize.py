@@ -45,9 +45,9 @@ tabTail="</table>"
 LANGS=('cze', 'deu', 'eng', 'fra', 'gle', 'gre', 'gsw', 'hrv', 'hun', 'ita', 'lit', 'lav', 'nor', 'pol', 'por', 'rom', 'slv', 'spa', 'srp', 'swe', 'ukr', 'nor-ext','fra-ext1','fra-ext2','fra-ext3','eng-ext','srp-ext','por-ext')
 
 shutil.copyfile(scriptRoot+'summary-head.html', webRoot+'index.html')
-coreTab='<table><thead><tr><th colspan="4" style="text-align:left; text-color:purple; font-family:fantasy">ELTeC-core</th>' + tabHead
-plusTab='<table><thead><tr><th colspan="4" style="text-align:left; text-color:purple; font-family:fantasy">ELTeC-plus</th>' + tabHead
-extendedTab='<table><thead><tr><th colspan="4" style="text-align:left; text-color:purple; font-family:fantasy">ELTeC-extension</th>' + tabHead
+coreTab='<table><thead><tr><th colspan="4" style="text-align:left; color:red; font-style:italic">ELTeC-core</th>' + tabHead
+plusTab='<table><thead><tr><th colspan="4" style="text-align:left; color:red; font-style:italic">ELTeC-plus</th>' + tabHead
+extendedTab='<table><thead><tr><th colspan="4" style="text-align:left; color:red; font-style:italic">ELTeC-extension</th>' + tabHead
 
 import sys
 sys.path.append("/usr/lib/Saxon.C.API/python-saxon")
