@@ -42,7 +42,7 @@ from collections import Counter
 
 # === Files and folders ===
 
-collection = "ELTeC-fra"
+collection = "ELTeC-pol"
 level = "level1"
 
 
@@ -60,12 +60,11 @@ xpaths = {"xmlid" : "//tei:TEI/@xml:id",
           "reprintCount" : "//tei:textDesc/eltec:reprintCount/@key",
           "time-slot" : "//tei:textDesc/eltec:timeSlot/@key",
           "firsted-yr" : "//tei:bibl[@type='firstEdition']/tei:date/text()",
+          "printSource" : "//tei:bibl[@type='printSource']/tei:date/text()",
           "digitalSource" : "//tei:bibl[@type='digitalSource']/tei:publisher/text()",
           "language" : "//tei:langUsage/tei:language/@ident"}
 
-ordering = ["filename", "xmlid", "au-name", "title", "au-birth", "au-death",
-            "au-ids", "digitalSource", "firsted-yr", "title-ids", "language", "numwords", "subgenre",
-            "narr-per", "au-gender", "sizeCat", "reprintCount", "time-slot"]
+ordering = ["filename", "xmlid", "au-name", "title", "au-birth", "au-death", "au-ids", "digitalSource", "printSource", "firsted-yr", "title-ids", "language", "numwords", "subgenre", "narr-per", "au-gender", "sizeCat", "reprintCount", "time-slot"]
 
 sorting = ["firsted-yr", True] # column, ascending?
 
@@ -97,6 +96,7 @@ def get_metadatum(xml, xpath):
         metadatum = xml.xpath(xpath, namespaces=namespaces)[0]
     except: 
         metadatum = "NA"
+    metadatum = re.sub(": ELTeC edition", "", metadatum)
     metadatum = re.sub(" : ELTeC edition", "", metadatum)
     metadatum = re.sub(" : édition ELTeC", "", metadatum)
     metadatum = re.sub(" : edition ELTeC", "", metadatum)
@@ -147,9 +147,10 @@ def main(collection, level, xpaths, ordering, sorting):
     From a collection of ELTeC XML-TEI files,
     create a CSV file with some metadata about each file.
     """
-    workingDir = join("..", "..", collection)
+    current_dir = join(os.path.realpath(os.path.dirname(__file__)))
+    workingDir = join(current_dir, "..", "..", collection)
     teiFolder = join(workingDir, level, "*.xml")
-    metadatafile = join("..", "..", collection, collection+"_metadata.tsv")
+    metadatafile = join(current_dir, "..", "..", collection, collection+"_metadata.tsv")
     allmetadata = []
     counter = 0
     for teiFile in glob.glob(teiFolder): 
