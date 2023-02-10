@@ -75,7 +75,7 @@ corpora = [
 
 corpora = [
     "ELTeC-fra",
-    "ELTeC-fra-ext1",
+    "ELTeC-pol",
 ]
 
 

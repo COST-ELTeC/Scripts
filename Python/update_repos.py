@@ -45,7 +45,7 @@ repos = [
 
 repos = [
     "ELTeC-fra",
-    "ELTeC-fra-ext1",
+    "ELTeC-pol",
 ]
 
 def execute_command(fullpath):
