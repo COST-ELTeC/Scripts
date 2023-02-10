@@ -42,31 +42,91 @@ from collections import Counter
 
 # === Files and folders ===
 
-collection = "ELTeC-pol"
+corpora = [
+"ELTeC-cze",
+"ELTeC-deu",
+"ELTeC-eng",
+"ELTeC-eng-ext",
+"ELTeC-fra",
+"ELTeC-fra-ext1",
+"ELTeC-fra-ext2",
+"ELTeC-fra-ext3",
+"ELTeC-gsw",
+"ELTeC-hrv",
+"ELTeC-hun",
+"ELTeC-ita",
+"ELTeC-lav",
+"ELTeC-lit",
+"ELTeC-nld",
+"ELTeC-nor",
+"ELTeC-nor-ext",
+"ELTeC-pol",
+"ELTeC-por",
+"ELTeC-por-ext",
+"ELTeC-rom",
+"ELTeC-rus",
+"ELTeC-slv",
+"ELTeC-spa",
+"ELTeC-srp",
+"ELTeC-srp-ext",
+"ELTeC-swe",
+"ELTeC-ukr",
+    ]
+
+corpora = [
+    "ELTeC-fra",
+    "ELTeC-fra-ext1",
+]
+
+
 level = "level1"
 
 
 # === Parameters === 
 
-xpaths = {"xmlid" : "//tei:TEI/@xml:id", 
-          "title" : "//tei:titleStmt/tei:title/text()",
-          "title-ids" : "//tei:titleStmt/tei:title/@ref",
-          "au-ids" : "//tei:titleStmt/tei:author/@ref",
-          "numwords" : "//tei:extent/tei:measure[@unit='words']/text()",
-          "narr-per" : "//tei:textClass/tei:keywords/tei:term[@type='narrative-perspective']/text()",
-          "subgenre" : "//tei:textClass/tei:keywords/tei:term[@type='subgenre']/text()",
-          "au-gender" : "//tei:textDesc/eltec:authorGender/@key",
-          "sizeCat" : "//tei:textDesc/eltec:size/@key",
-          "reprintCount" : "//tei:textDesc/eltec:reprintCount/@key",
-          "time-slot" : "//tei:textDesc/eltec:timeSlot/@key",
-          "firsted-yr" : "//tei:bibl[@type='firstEdition']/tei:date/text()",
-          "printSource" : "//tei:bibl[@type='printSource']/tei:date/text()",
-          "digitalSource" : "//tei:bibl[@type='digitalSource']/tei:publisher/text()",
-          "language" : "//tei:langUsage/tei:language/@ident"}
+xpaths = {
+    "xmlid" : "//tei:TEI/@xml:id", 
+    "title" : "//tei:titleStmt/tei:title/text()",
+    "title-ids" : "//tei:titleStmt/tei:title/@ref",
+    "author-ids" : "//tei:titleStmt/tei:author/@ref",
+    "numwords" : "//tei:extent/tei:measure[@unit='words']/text()",
+    "narrative-perspective" : "//tei:textClass/tei:keywords/tei:term[@type='narrative-perspective']/text()",
+    "subgenre" : "//tei:textClass/tei:keywords/tei:term[@type='subgenre']/text()",
+    "author-gender" : "//tei:textDesc/eltec:authorGender/@key",
+    "size-category" : "//tei:textDesc/eltec:size/@key",
+    "reprint-count" : "//tei:textDesc/eltec:reprintCount/@key",
+    "time-slot" : "//tei:textDesc/eltec:timeSlot/@key",
+    "first-edition" : "//tei:bibl[@type='firstEdition']/tei:date/text()",
+    "print-edition" : "//tei:bibl[@type='printSource']/tei:date/text()",
+    "digital-edition" : "//tei:bibl[@type='digitalSource']/tei:date/text()",
+    "provenance" : "//tei:bibl[@type='digitalSource']/tei:publisher/text()",
+    "language" : "//tei:langUsage/tei:language/@ident"}
 
-ordering = ["filename", "xmlid", "au-name", "title", "au-birth", "au-death", "au-ids", "digitalSource", "printSource", "firsted-yr", "title-ids", "language", "numwords", "subgenre", "narr-per", "au-gender", "sizeCat", "reprintCount", "time-slot"]
+ordering = [
+    "corpus-id",
+    "filename", 
+    "xmlid", 
+    "author-name", 
+    "title", 
+    "author-birth", 
+    "author-death", 
+    "author-gender",
+    "author-ids", 
+    "reference-year",
+    "first-edition",
+    "digital-edition",
+    "print-edition", 
+    "provenance", 
+    "title-ids", 
+    "language", 
+    "numwords", 
+    "subgenre", 
+    "narrative-perspective",
+    "size-category", 
+    "reprint-count", 
+    "time-slot"]
 
-sorting = ["firsted-yr", True] # column, ascending?
+sorting = ["first-edition", True] # column, ascending?
 
 
 # === Functions ===
@@ -100,6 +160,8 @@ def get_metadatum(xml, xpath):
     metadatum = re.sub(" : ELTeC edition", "", metadatum)
     metadatum = re.sub(" : édition ELTeC", "", metadatum)
     metadatum = re.sub(" : edition ELTeC", "", metadatum)
+    metadatum = metadatum.strip()
+    metadatum = re.sub("\n", "", metadatum)
     return metadatum
 
 
@@ -116,6 +178,7 @@ def get_authordata(xml):
         namespaces = {'tei':'http://www.tei-c.org/ns/1.0'}       
         authordata = xml.xpath("//tei:titleStmt/tei:author/text()",
                                namespaces=namespaces)[0]
+        authordata = authordata.strip()
         name = re.search("(.*?) \(", authordata).group(1)
         birth = re.search("\((\d\d\d\d)", authordata).group(1)
         death = re.search("(\d\d\d\d)\)", authordata).group(1)
@@ -126,6 +189,29 @@ def get_authordata(xml):
     return name,birth,death
 
 
+def get_reference_year(row, metadata): 
+    """
+    Determine a year of reference for the earliest documented year of publication, 
+    or alternatively, the earliest year of known completion of the text. 
+    For a closed list of texts, where it is known that publication was much later than
+    production, a date is supplied here explicitly. 
+    For all other cases, a heuristics is used to use the earliest documented year. 
+    """
+    # Texts with known year of completion but much later publication
+    if row["xmlid"] == "Diderot_Neveu": 
+        ref_year = "1773"
+    # Other novels where a useful year of publication is known
+    if row["first-edition"]: 
+        ref_year = row["first-edition"][-4:]
+    # Other novels still, where at least a useful, early print edition was used and is known. 
+    elif row["print-edition"]: 
+        ref_year = row["print-edition"][-4:]
+    elif row["digital-edition"]: 
+        ref_year = row["digital-edition"][-4:]
+    else: 
+        ref_year = "NA"
+    return ref_year
+
 
 def save_metadata(metadata, metadatafile, ordering, sorting): 
     """
@@ -133,24 +219,28 @@ def save_metadata(metadata, metadatafile, ordering, sorting):
     The ordering of the columns follows the list defined above.
     """
     metadata = pd.DataFrame(metadata)
+    metadata["reference-year"] = metadata.apply(lambda x: get_reference_year(x, metadata), axis=1)
     metadata = metadata[ordering]
+    #print(metadata.head())
+    #print(metadata.columns)
     metadata = metadata.sort_values(by=sorting[0], ascending=sorting[1])
-    print(metadatafile)
+    #print(metadatafile)
     with open(join(metadatafile), "w", encoding="utf8") as outfile: 
         metadata.to_csv(outfile, sep="\t", index=None)
 
 
 # === Coordinating function ===
 
-def main(collection, level, xpaths, ordering, sorting):
+def main(corpus, level, xpaths, ordering, sorting):
     """
     From a collection of ELTeC XML-TEI files,
     create a CSV file with some metadata about each file.
     """
+    print(corpus, end=" ")
     current_dir = join(os.path.realpath(os.path.dirname(__file__)))
-    workingDir = join(current_dir, "..", "..", collection)
+    workingDir = join(current_dir, "..", "..", corpus)
     teiFolder = join(workingDir, level, "*.xml")
-    metadatafile = join(current_dir, "..", "..", collection, collection+"_metadata.tsv")
+    metadatafile = join(current_dir, "..", "..", corpus, corpus+"_metadata.tsv")
     allmetadata = []
     counter = 0
     for teiFile in glob.glob(teiFolder): 
@@ -164,9 +254,9 @@ def main(collection, level, xpaths, ordering, sorting):
                 keys.append("filename")
                 metadata.append(filename)
                 xml = open_file(teiFile)
-                name,birth,death = get_authordata(xml)
-                keys.extend(["au-name", "au-birth", "au-death"])
-                metadata.extend([name, birth, death])
+                name, birth, death = get_authordata(xml)
+                keys.extend(["corpus-id", "author-name", "author-birth", "author-death"])
+                metadata.extend([corpus, name, birth, death])
                 for key,xpath in xpaths.items(): 
                     metadatum = get_metadatum(xml, xpath)
                     keys.append(key)
@@ -174,7 +264,8 @@ def main(collection, level, xpaths, ordering, sorting):
                 allmetadata.append(dict(zip(keys, metadata)))
         except: 
             print("ERROR!!!", filename)
-    print("FILES:", counter)
+    print(":", counter, "files.")
     save_metadata(allmetadata, metadatafile, ordering, sorting)
-    
-main(collection, level, xpaths, ordering, sorting)
+
+for corpus in corpora:     
+    main(corpus, level, xpaths, ordering, sorting)

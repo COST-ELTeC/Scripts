@@ -11,9 +11,9 @@ from os.path import join
 
 # === Parameters === 
 
-wdir = join("/", "media", "christof", "mydata", "repos", "cost", "")
-teipath = join(wdir, "ELTeC-fra", "level1", "*.xml*")
-rngfile = join(wdir, "Schemas", "eltec-1.rng")
+wdir = join("/", "media", "christof", "Data", "Github", "eltec", "")
+teipath = join(wdir, "ELTeC-fra", "level2", "*.xml*")
+rngfile = join(wdir, "Schemas", "eltec-2.rng")
 
 
 # === Functions === 
