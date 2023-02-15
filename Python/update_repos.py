@@ -43,10 +43,6 @@ repos = [
     "ELTeC-ukr",
 ]
 
-repos = [
-    "ELTeC-fra",
-    "ELTeC-pol",
-]
 
 def execute_command(fullpath):
     if action == "pull":

@@ -73,10 +73,7 @@ corpora = [
 "ELTeC-ukr",
     ]
 
-corpora = [
-    "ELTeC-fra",
-    "ELTeC-pol",
-]
+#corpora = ["ELTeC-fra", "ELTeC-pol"] # for testing
 
 
 level = "level1"
@@ -126,7 +123,7 @@ ordering = [
     "reprint-count", 
     "time-slot"]
 
-sorting = ["first-edition", True] # column, ascending?
+sorting = ["reference-year", True] # column, ascending?
 
 
 # === Functions ===
@@ -158,8 +155,29 @@ def get_metadatum(xml, xpath):
         metadatum = "NA"
     metadatum = re.sub(": ELTeC edition", "", metadatum)
     metadatum = re.sub(" : ELTeC edition", "", metadatum)
+    metadatum = re.sub(" : ELTeC Edition", "", metadatum)
+    metadatum = re.sub(": ELTeC Edition", "", metadatum)
+    metadatum = re.sub(" : ELTec edition", "", metadatum)
+    metadatum = re.sub(" : ELTeC\n     edition", "", metadatum, re.DOTALL)
     metadatum = re.sub(" : édition ELTeC", "", metadatum)
     metadatum = re.sub(" : edition ELTeC", "", metadatum)
+    metadatum = re.sub(" : vydání ELTeC", "", metadatum)
+    metadatum = re.sub(" \(vydání ELTeC\)", "", metadatum)
+    metadatum = re.sub(" : ELTeC ausgabe", "", metadatum) 
+    metadatum = re.sub(": MiMoText edition", "", metadatum)     
+    metadatum = re.sub(" : ELTeC kiadás", "", metadatum) 
+    metadatum = re.sub(": edizion ELTeC", "", metadatum) 
+    metadatum = re.sub(" : Edição para o ELTeC", "", metadatum) 
+    metadatum = re.sub(": Edição para o ELTeC", "", metadatum) 
+    metadatum = re.sub(": edição para o ELTeC", "", metadatum) 
+    metadatum = re.sub(": editie ELTeC", "", metadatum) 
+    metadatum = re.sub(": ediție ELTeC", "", metadatum) 
+    metadatum = re.sub(": Ediție ELTeC", "", metadatum) 
+    metadatum = re.sub(" : edicija ELTeC", "", metadatum) 
+    metadatum = re.sub(" : edición ELTeC", "", metadatum) 
+    metadatum = re.sub(" : Edición ELTeC", "", metadatum) 
+    metadatum = re.sub(" : ELTeC издање", "", metadatum) 
+    metadatum = re.sub(" : ELTeC видання", "", metadatum)     
     metadatum = metadatum.strip()
     metadatum = re.sub("\n", "", metadatum)
     return metadatum
@@ -180,13 +198,20 @@ def get_authordata(xml):
                                namespaces=namespaces)[0]
         authordata = authordata.strip()
         name = re.search("(.*?) \(", authordata).group(1)
+    except: 
+        if "nonymous" in authordata: 
+            name = "Anonymous"
+        else: 
+            name = "NA"
+    try: 
         birth = re.search("\((\d\d\d\d)", authordata).group(1)
+    except: 
+        birth = "NA"
+    try: 
         death = re.search("(\d\d\d\d)\)", authordata).group(1)
     except: 
-        name = "NA"
-        birth = "NA"
         death = "NA"        
-    return name,birth,death
+    return name, birth, death
 
 
 def get_reference_year(row, metadata): 
@@ -200,16 +225,24 @@ def get_reference_year(row, metadata):
     # Texts with known year of completion but much later publication
     if row["xmlid"] == "Diderot_Neveu": 
         ref_year = "1773"
+    if row["xmlid"] == "FRA20018": 
+        ref_year = "1773"
+    if row["xmlid"] == "DEU004": 
+        ref_year = "1859"
+    if row["xmlid"] == "DEU049": 
+        ref_year = "1863"
+
     # Other novels where a useful year of publication is known
-    if row["first-edition"]: 
-        ref_year = row["first-edition"][-4:]
+    elif row["first-edition"] != "NA": 
+        ref_year = re.sub("\D", "", row["first-edition"])[-4:]
     # Other novels still, where at least a useful, early print edition was used and is known. 
-    elif row["print-edition"]: 
+    elif row["print-edition"] != "NA": 
         ref_year = row["print-edition"][-4:]
-    elif row["digital-edition"]: 
+    elif row["digital-edition"] != "NA": 
         ref_year = row["digital-edition"][-4:]
     else: 
         ref_year = "NA"
+        ref_year = "1880"
     return ref_year
 
 
@@ -220,6 +253,7 @@ def save_metadata(metadata, metadatafile, ordering, sorting):
     """
     metadata = pd.DataFrame(metadata)
     metadata["reference-year"] = metadata.apply(lambda x: get_reference_year(x, metadata), axis=1)
+    metadata["language"] = metadata["language"].str.lower()
     metadata = metadata[ordering]
     #print(metadata.head())
     #print(metadata.columns)
@@ -237,35 +271,38 @@ def main(corpus, level, xpaths, ordering, sorting):
     create a CSV file with some metadata about each file.
     """
     print(corpus, end=" ")
-    current_dir = join(os.path.realpath(os.path.dirname(__file__)))
-    workingDir = join(current_dir, "..", "..", corpus)
-    teiFolder = join(workingDir, level, "*.xml")
-    metadatafile = join(current_dir, "..", "..", corpus, corpus+"_metadata.tsv")
-    allmetadata = []
-    counter = 0
-    for teiFile in glob.glob(teiFolder): 
-        filename,ext = basename(teiFile).split(".")
-        #print(filename)
-        try: 
-            if "schemas" not in filename:
-                counter +=1
-                keys = []
-                metadata = []
-                keys.append("filename")
-                metadata.append(filename)
-                xml = open_file(teiFile)
-                name, birth, death = get_authordata(xml)
-                keys.extend(["corpus-id", "author-name", "author-birth", "author-death"])
-                metadata.extend([corpus, name, birth, death])
-                for key,xpath in xpaths.items(): 
-                    metadatum = get_metadatum(xml, xpath)
-                    keys.append(key)
-                    metadata.append(metadatum)
-                allmetadata.append(dict(zip(keys, metadata)))
-        except: 
-            print("ERROR!!!", filename)
-    print(":", counter, "files.")
-    save_metadata(allmetadata, metadatafile, ordering, sorting)
+    try: 
+        current_dir = join(os.path.realpath(os.path.dirname(__file__)))
+        workingDir = join(current_dir, "..", "..", corpus)
+        teiFolder = join(workingDir, level, "*.xml")
+        metadatafile = join(current_dir, "..", "..", corpus, corpus+"_metadata.tsv")
+        allmetadata = []
+        counter = 0
+        for teiFile in glob.glob(teiFolder): 
+            filename,ext = basename(teiFile).split(".")
+            #print(filename)
+            try: 
+                if "schemas" not in filename:
+                    counter +=1
+                    keys = []
+                    metadata = []
+                    keys.append("filename")
+                    metadata.append(filename)
+                    xml = open_file(teiFile)
+                    name, birth, death = get_authordata(xml)
+                    keys.extend(["corpus-id", "author-name", "author-birth", "author-death"])
+                    metadata.extend([corpus, name, birth, death])
+                    for key,xpath in xpaths.items(): 
+                        metadatum = get_metadatum(xml, xpath)
+                        keys.append(key)
+                        metadata.append(metadatum)
+                    allmetadata.append(dict(zip(keys, metadata)))
+            except: 
+                print("ERROR!!!", filename)
+        print(":", counter, "files.")
+        save_metadata(allmetadata, metadatafile, ordering, sorting)
+    except: 
+        print("ERROR :-(")
 
 for corpus in corpora:     
     main(corpus, level, xpaths, ordering, sorting)
